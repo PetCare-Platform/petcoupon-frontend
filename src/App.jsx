@@ -1,122 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastProvider } from './context/ToastContext';
+import Layout from './components/layout/Layout';
+import ScrollToTop from './components/layout/ScrollToTop';
+
+import Home from './pages/public/Home';
+import EventDetail from './pages/public/EventDetail';
+import UserProfile from './pages/user/UserProfile';
+import MyCoupons from './pages/user/MyCoupons';
+import CouponDetail from './pages/user/CouponDetail';
+import AdminHome from './pages/admin/AdminHome';
+import AdminEvents from './pages/admin/AdminEvents';
+import AdminEventForm from './pages/admin/AdminEventForm';
+import AdminCoupons from './pages/admin/AdminCoupons';
+import AdminCouponForm from './pages/admin/AdminCouponForm';
+import Monitoring from './pages/internal/Monitoring';
+import Issues from './pages/internal/Issues';
+import Failures from './pages/internal/Failures';
+import Verification from './pages/internal/Verification';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <BrowserRouter>
+      <ToastProvider>
+        <ScrollToTop />
+        <Routes>
+          <Route element={<Layout area="public" />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/event-detail" element={<EventDetail />} />
+          </Route>
+          <Route element={<Layout area="user" />}>
+            <Route path="/user" element={<UserProfile />} />
+            <Route path="/user/my-coupons" element={<MyCoupons />} />
+            <Route path="/user/coupon-detail" element={<CouponDetail />} />
+          </Route>
+          <Route element={<Layout area="admin" />}>
+            <Route path="/admin" element={<AdminHome />} />
+            <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/admin/event-form" element={<AdminEventForm />} />
+            <Route path="/admin/coupons" element={<AdminCoupons />} />
+            <Route path="/admin/coupon-form" element={<AdminCouponForm />} />
+          </Route>
+          <Route element={<Layout area="internal" />}>
+            <Route path="/internal/monitoring" element={<Monitoring />} />
+            <Route path="/internal/issues" element={<Issues />} />
+            <Route path="/internal/failures" element={<Failures />} />
+            <Route path="/internal/verification" element={<Verification />} />
+          </Route>
+        </Routes>
+      </ToastProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
