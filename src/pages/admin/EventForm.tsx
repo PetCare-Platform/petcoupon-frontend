@@ -1,0 +1,93 @@
+import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
+import { Layout } from "../../components/Layout";
+import { Eyebrow, FieldGroup, LinkButton, inputClass } from "../../components/ui";
+import { useToast } from "../../context/ToastContext";
+
+export default function EventForm() {
+  const { showToast } = useToast();
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "필수로 입력해야 하는 항목이에요.";
+    if (!desc.trim()) next.desc = "필수로 입력해야 하는 항목이에요.";
+    if (!start) next.start = "필수로 입력해야 하는 항목이에요.";
+    if (!end) next.end = "필수로 입력해야 하는 항목이에요.";
+    if (start && end && end < start) next.end = "종료일은 시작일 이후여야 해요.";
+    setErrors(next);
+    if (Object.keys(next).length) {
+      showToast("입력 내용을 확인해 주세요.");
+      return;
+    }
+    showToast("이벤트를 저장했습니다.");
+  }
+
+  return (
+    <Layout area="admin" page="event-form">
+      <section className="py-10">
+        <div className="container-page">
+          <Link to="/admin/events" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
+            ← 이벤트 목록
+          </Link>
+          <Eyebrow>ADMIN / NEW EVENT</Eyebrow>
+          <h1 className="mt-2">이벤트 만들기</h1>
+          <p className="mt-2 text-ink/70">고객에게 보여줄 이름과 설명, 정확한 공개 일정을 입력하세요.</p>
+        </div>
+      </section>
+
+      <section className="py-6">
+        <div className="container-page">
+          <div className="rounded-block bg-lime p-6 text-[#0f172a] md:p-8">
+            <span className="font-mono text-xs uppercase tracking-wide">EDITOR'S CHECKLIST</span>
+            <h2 className="mt-1">좋은 이벤트는 일정부터 명확해요.</h2>
+            <ul className="mt-3 list-disc space-y-1 pl-5">
+              <li>고객이 혜택을 바로 이해하는 이름을 사용하세요.</li>
+              <li>공개 시작·종료 시각을 정확히 맞추세요.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-10">
+        <div className="container-page max-w-2xl">
+          <Eyebrow>EVENT DETAILS</Eyebrow>
+          <h2 className="mt-2">이벤트 정보</h2>
+          <p className="mt-1 text-sm text-ink/60">* 필수 입력</p>
+
+          <form onSubmit={handleSubmit} noValidate className="mt-6 grid gap-6 rounded-block border border-hairline p-6">
+            <h3 className="text-lg font-semibold">기본 정보</h3>
+            <FieldGroup label="이벤트 이름 *" htmlFor="event-name" error={errors.name} help="목록과 상세 화면에 함께 표시됩니다.">
+              <input id="event-name" className={inputClass} placeholder="가을 입맛 찾기" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errors.name} />
+            </FieldGroup>
+            <FieldGroup label="이벤트 설명 *" htmlFor="event-desc" error={errors.desc}>
+              <textarea id="event-desc" rows={3} className={inputClass} placeholder="환절기 반려동물의 입맛을 위한 사료와 영양 간식 할인 이벤트입니다." value={desc} onChange={(e) => setDesc(e.target.value)} aria-invalid={!!errors.desc} />
+            </FieldGroup>
+
+            <h3 className="text-lg font-semibold">공개 일정</h3>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <FieldGroup label="시작일 *" htmlFor="event-start" error={errors.start}>
+                <input id="event-start" type="date" className={inputClass} value={start} onChange={(e) => setStart(e.target.value)} aria-invalid={!!errors.start} />
+              </FieldGroup>
+              <FieldGroup label="종료일 *" htmlFor="event-end" error={errors.end}>
+                <input id="event-end" type="date" className={inputClass} value={end} onChange={(e) => setEnd(e.target.value)} aria-invalid={!!errors.end} />
+              </FieldGroup>
+            </div>
+
+            <div className="flex gap-3">
+              <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626]">
+                이벤트 저장
+              </button>
+              <LinkButton to="/admin/events" variant="secondary">취소</LinkButton>
+            </div>
+          </form>
+        </div>
+      </section>
+    </Layout>
+  );
+}
