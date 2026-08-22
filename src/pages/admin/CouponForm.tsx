@@ -42,7 +42,7 @@ export default function CouponForm() {
 
       <section className="py-6">
         <div className="container-page">
-          <div className="rounded-block bg-mint p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="text-sm font-semibold">사용자 한도</span>
@@ -59,8 +59,7 @@ export default function CouponForm() {
 
       <section className="py-10">
         <div className="container-page max-w-2xl">
-          <Eyebrow>COUPON DETAILS</Eyebrow>
-          <h2 className="mt-2">쿠폰 정보</h2>
+          <h2>쿠폰 정보</h2>
           <p className="mt-1 text-sm text-ink/60">* 필수 입력</p>
 
           <form onSubmit={handleSubmit} noValidate className="mt-6 grid gap-6 rounded-block border border-hairline p-6">
@@ -113,9 +112,9 @@ export default function CouponForm() {
               </FieldGroup>
             </div>
 
-            <div className="rounded-control bg-cream p-4 text-sm">
+            <div className="rounded-control border border-hairline bg-surface-2 p-4 text-sm">
               <strong className="block">발급 정책</strong>
-              <p className="mt-1 text-[#0f172a]/80">사용자 한 명은 같은 쿠폰을 한 장만 받을 수 있습니다.</p>
+              <p className="mt-1 text-ink/80">사용자 한 명은 같은 쿠폰을 한 장만 받을 수 있습니다.</p>
             </div>
 
             <div className="flex gap-3">

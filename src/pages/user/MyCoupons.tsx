@@ -38,10 +38,10 @@ export default function MyCoupons() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-cream p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <h3 className="text-xl font-semibold">산책용품 할인 쿠폰이 곧 만료돼요.</h3>
             <p className="mt-2">8월 25일 15:22까지 사용할 수 있어요. 가까운 제휴 매장에서 산책 준비물을 챙겨보세요.</p>
-            <Link to="/user/coupon-detail" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-[#0f172a] px-5 text-[18px] font-medium text-white hover:bg-[#1e293b]">
+            <Link to="/user/coupon-detail" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-[18px] font-medium text-white hover:bg-ink-muted">
               쿠폰 확인하기
             </Link>
           </div>
@@ -52,8 +52,7 @@ export default function MyCoupons() {
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <Eyebrow>COUPON WALLET</Eyebrow>
-              <h2 className="mt-2">보유 쿠폰</h2>
+              <h2>보유 쿠폰</h2>
               <p className="mt-1 text-ink/70">{COUPONS.length}개의 쿠폰이 있어요.</p>
             </div>
             <FilterBar
@@ -68,22 +67,22 @@ export default function MyCoupons() {
             />
           </div>
 
-          <div className="mt-8 grid gap-4">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
             {visible.map((coupon) => (
-              <article key={coupon.issue} className="rounded-block border border-hairline p-5">
-                <div className="mb-3 flex items-center justify-between">
+              <article key={coupon.issue} className="rounded-control border border-hairline p-4">
+                <div className="mb-2 flex items-center justify-between">
                   {coupon.badge ? (
-                    <span className="inline-flex min-h-8 items-center rounded-full bg-coral px-2.5 font-mono text-xs uppercase tracking-wide text-[#0f172a]">{coupon.badge}</span>
+                    <span className="inline-flex min-h-6 items-center rounded-full border border-accent/30 bg-accent/10 px-2 font-mono text-[11px] uppercase tracking-wide text-accent">{coupon.badge}</span>
                   ) : (
-                    <span className="inline-flex min-h-8 items-center rounded-full bg-hairline-soft px-2.5 font-mono text-xs uppercase tracking-wide">{statusLabel[coupon.status]}</span>
+                    <span className="inline-flex min-h-6 items-center rounded-full bg-hairline-soft px-2 font-mono text-[11px] uppercase tracking-wide">{statusLabel[coupon.status]}</span>
                   )}
-                  <span className="font-mono text-xs text-ink/50">ISSUE {coupon.issue}</span>
+                  <span className="font-mono text-[11px] text-ink/50">ISSUE {coupon.issue}</span>
                 </div>
-                <p className="text-sm text-ink/60">{coupon.event}</p>
-                <h3 className="mt-1 text-xl font-semibold">{coupon.name}</h3>
-                <p className="mt-2 text-3xl font-semibold">{coupon.value}</p>
-                <p className="mt-1 text-sm text-ink/60">{coupon.condition}</p>
-                <div className="mt-4 flex items-center justify-between border-t border-hairline-soft pt-4 text-sm">
+                <p className="text-xs text-ink/60">{coupon.event}</p>
+                <h3 className="mt-0.5 text-base font-semibold">{coupon.name}</h3>
+                <p className="mt-1 text-xl font-semibold">{coupon.value}</p>
+                <p className="mt-0.5 text-xs text-ink/60">{coupon.condition}</p>
+                <div className="mt-3 flex items-center justify-between border-t border-hairline-soft pt-3 text-xs">
                   <span className="text-ink/60">{coupon.deadline}</span>
                   <Link to="/user/coupon-detail" className="font-medium underline underline-offset-4">
                     상세 보기 →
@@ -92,7 +91,7 @@ export default function MyCoupons() {
               </article>
             ))}
             {visible.length === 0 ? (
-              <div className="rounded-block border border-dashed border-hairline p-10 text-center">
+              <div className="col-span-full rounded-block border border-dashed border-hairline p-10 text-center">
                 <h3 className="text-xl font-semibold">해당 상태의 쿠폰이 없어요.</h3>
                 <p className="mt-2 text-ink/70">다른 상태를 선택하거나 새로운 이벤트를 둘러보세요.</p>
                 <LinkButton to="/#event-list" variant="secondary" className="mt-4">

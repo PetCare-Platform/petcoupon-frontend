@@ -14,7 +14,11 @@ const COUPONS: { id: number; status: Status; event: string; name: string; value:
 ];
 
 const statusLabel: Record<Status, string> = { active: "발급 중", scheduled: "발급 예정", closed: "종료" };
-const statusClass: Record<Status, string> = { active: "bg-lime", scheduled: "bg-lilac", closed: "bg-hairline-soft" };
+const statusClass: Record<Status, string> = {
+  active: "bg-success/10 text-[#0a8f3c]",
+  scheduled: "bg-surface-2 text-ink-muted",
+  closed: "bg-hairline-soft text-ink-muted",
+};
 
 export default function Coupons() {
   const [filter, setFilter] = useState<"all" | Status>("all");
@@ -39,7 +43,7 @@ export default function Coupons() {
 
       <section className="py-6">
         <div className="container-page">
-          <div className="rounded-block bg-coral p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <span className="font-mono text-xs uppercase tracking-wide">STOCK SIGNAL</span>
             <h2 className="mt-1">산책용품 할인 쿠폰, 재고 128장.</h2>
             <p className="mt-2">발급 종료까지 남았습니다 · 소진 속도와 이벤트 총 수량을 함께 확인하세요.</p>
@@ -51,8 +55,7 @@ export default function Coupons() {
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <Eyebrow>COUPON RECORDS</Eyebrow>
-              <h2 className="mt-2">등록 쿠폰</h2>
+              <h2>등록 쿠폰</h2>
               <p className="mt-1 text-ink/70">{visible.length}개의 쿠폰</p>
             </div>
             <FilterBar
@@ -67,18 +70,18 @@ export default function Coupons() {
             />
           </div>
 
-          <div className="mt-6 grid gap-4">
+          <div className="mt-6 grid gap-2.5">
             {visible.map((coupon) => (
-              <article key={coupon.id} className="flex flex-wrap items-center justify-between gap-4 rounded-block border border-hairline p-5">
+              <article key={coupon.id} className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-hairline p-3.5">
                 <div>
-                  <div className="mb-2 flex items-center gap-2">
+                  <div className="mb-1 flex items-center gap-2">
                     <span className="font-mono text-xs text-ink/50">COUPON {coupon.id}</span>
-                    <span className={`inline-flex min-h-7 items-center rounded-full px-2 font-mono text-[11px] uppercase tracking-wide text-[#0f172a] ${statusClass[coupon.status]}`}>
+                    <span className={`inline-flex min-h-6 items-center rounded-full px-2 font-mono text-[11px] uppercase tracking-wide ${statusClass[coupon.status]}`}>
                       {statusLabel[coupon.status]}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold">{coupon.name}</h3>
-                  <p className="mt-1 text-sm text-ink/60">
+                  <h3 className="text-base font-semibold">{coupon.name}</h3>
+                  <p className="mt-0.5 text-sm text-ink/60">
                     {coupon.event} · {coupon.value} · 재고 {coupon.stock}/{coupon.total}
                   </p>
                 </div>

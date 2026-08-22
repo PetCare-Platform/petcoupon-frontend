@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "text" | "danger";
 
 const variantClass: Record<Variant, string> = {
   primary:
-    "border-ink bg-ink text-paper hover:bg-[#262626] hover:border-[#262626] dark:bg-ops-ink dark:text-ops-bg dark:border-ops-ink dark:hover:bg-white",
+    "border-accent bg-accent text-ink hover:bg-[#c85319] hover:border-[#c85319] dark:bg-ops-ink dark:text-ops-bg dark:border-ops-ink dark:hover:bg-white",
   secondary:
-    "border-hairline bg-paper text-ink hover:border-ink hover:bg-surface-soft dark:bg-ops-bg dark:border-ops-border dark:text-ops-ink dark:hover:border-ops-ink dark:hover:bg-ops-surface",
+    "border-ink bg-paper text-ink hover:bg-ink hover:text-paper dark:bg-ops-bg dark:border-ops-border dark:text-ops-ink dark:hover:border-ops-ink dark:hover:bg-ops-surface dark:hover:text-ops-ink",
   text: "border-transparent bg-transparent text-ink underline underline-offset-4 hover:underline-offset-[6px] dark:text-ops-ink",
   danger:
     "border-ink bg-paper text-ink hover:bg-surface-soft dark:bg-ops-bg dark:border-ops-border dark:text-ops-ink",
@@ -57,13 +58,13 @@ export function TextLink({ to, children }: { to: string; children: ReactNode }) 
 type StatusTone = "open" | "scheduled" | "closed" | "used" | "warning" | "danger" | "neutral";
 
 const toneClass: Record<StatusTone, string> = {
-  open: "bg-lime text-[#0f172a] border-lime",
-  scheduled: "bg-lilac text-[#0f172a] border-lilac",
-  closed: "bg-hairline-soft text-ink border-hairline-soft dark:bg-ops-border-soft dark:text-ops-ink dark:border-ops-border-soft",
-  used: "bg-mint text-[#0f172a] border-mint",
-  warning: "bg-coral text-[#0f172a] border-coral",
-  danger: "bg-pink text-[#0f172a] border-pink",
-  neutral: "bg-paper text-ink border-ink dark:bg-ops-bg dark:text-ops-ink dark:border-ops-ink",
+  open: "bg-success/10 text-[#0a8f3c] border-success/30",
+  scheduled: "bg-surface-2 text-ink-muted border-hairline",
+  closed: "bg-surface-2 text-ink-muted border-hairline dark:bg-ops-border-soft dark:text-ops-ink dark:border-ops-border-soft",
+  used: "bg-surface-2 text-ink-muted border-hairline",
+  warning: "bg-accent/10 text-accent border-accent/30",
+  danger: "bg-danger/10 text-danger border-danger/30",
+  neutral: "bg-paper text-ink border-hairline dark:bg-ops-bg dark:text-ops-ink dark:border-ops-ink",
 };
 
 export function StatusPill({ tone = "neutral", children }: { tone?: StatusTone; children: ReactNode }) {
@@ -77,10 +78,10 @@ export function StatusPill({ tone = "neutral", children }: { tone?: StatusTone; 
 }
 
 export function Card({ href, children, className = "" }: { href?: string; children: ReactNode; className?: string }) {
-  const cls = `min-w-0 rounded-block border border-hairline bg-paper p-4 text-ink transition-all duration-200 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
+  const cls = `min-w-0 rounded-block border border-hairline bg-paper p-3.5 text-ink transition-all duration-200 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
   if (href) {
     return (
-      <Link to={href} className={`${cls} block no-underline hover:-translate-y-0.5 hover:border-ink active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30`}>
+      <Link to={href} className={`${cls} block no-underline hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_10px_24px_-12px_rgba(255,86,0,0.45)] active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30 dark:hover:shadow-none`}>
         {children}
       </Link>
     );
@@ -89,7 +90,7 @@ export function Card({ href, children, className = "" }: { href?: string; childr
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="font-mono text-xs uppercase tracking-wide text-ink/70 dark:text-ops-muted">{children}</p>;
+  return <p className="font-mono text-xs font-semibold uppercase tracking-wide text-accent dark:text-ops-muted">{children}</p>;
 }
 
 export function PageHero({
@@ -117,19 +118,12 @@ export function PageHero({
   );
 }
 
-const blockTone: Record<string, string> = {
-  lime: "bg-lime",
-  lilac: "bg-lilac",
-  cream: "bg-cream",
-  mint: "bg-mint",
-  pink: "bg-pink",
-  coral: "bg-coral",
-};
-
-export function ColorBlock({ tone, children }: { tone: keyof typeof blockTone; children: ReactNode }) {
-  return (
-    <div className={`rounded-block p-6 text-[#0f172a] md:p-10 ${blockTone[tone]}`}>{children}</div>
-  );
+export function ColorBlock({ tone = "surface", children }: { tone?: "surface" | "accent"; children: ReactNode }) {
+  const cls =
+    tone === "accent"
+      ? "relative overflow-hidden rounded-block border border-accent/25 bg-accent/[0.08] p-5 text-ink md:p-8"
+      : "rounded-block border border-hairline bg-surface-2 p-4 text-ink md:p-6";
+  return <div className={cls}>{children}</div>;
 }
 
 export function MetricGrid({ children, cols = 4, compact = false }: { children: ReactNode; cols?: 2 | 3 | 4; compact?: boolean }) {
@@ -161,11 +155,11 @@ export function MetricTile({
   return (
     <div
       className={`min-w-0 bg-paper dark:bg-ops-surface dark:text-ops-ink ${
-        compact ? "px-4 py-3.5" : "rounded-control border border-hairline p-4 dark:border-white/[0.14]"
+        compact ? "px-4 py-3.5" : "rounded-control border border-hairline p-3.5 dark:border-white/[0.14]"
       }`}
     >
-      <dt className="mb-1.5 font-mono text-xs uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
-      <dd className={`font-semibold leading-none tracking-tight ${compact ? "text-[26px]" : "text-[40px]"}`}>
+      <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
+      <dd className={`font-semibold leading-none tracking-tight ${compact ? "text-[26px]" : "text-[30px]"}`}>
         {value}
         {hint ? <small className="ml-1.5 block text-sm font-normal text-ink/60 dark:text-ops-muted md:inline">{hint}</small> : null}
       </dd>
@@ -243,10 +237,160 @@ export function FilterBar<T extends string>({
 
 export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
   return (
-    <div className="rounded-block border border-dashed border-hairline p-10 text-center dark:border-ops-border">
-      <h3 className="text-xl font-semibold">{title}</h3>
-      <p className="mt-2 text-ink/70 dark:text-ops-muted">{description}</p>
-      {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
+    <div className="rounded-block border border-dashed border-hairline p-6 text-center dark:border-ops-border">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="mt-1.5 text-ink/70 dark:text-ops-muted">{description}</p>
+      {action ? <div className="mt-3 flex justify-center">{action}</div> : null}
+    </div>
+  );
+}
+
+export function BarChart({
+  points,
+  unit = "건",
+}: {
+  points: { label: string; value: number }[];
+  unit?: string;
+}) {
+  const max = Math.max(...points.map((p) => p.value));
+  const peakIndex = points.findIndex((p) => p.value === max);
+  return (
+    <div role="img" aria-label={`${points.map((p) => `${p.label} ${p.value}${unit}`).join(", ")}`}>
+      <div className="flex h-40 items-end gap-2">
+        {points.map((p, i) => (
+          <div key={p.label} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
+            <span className={`font-mono text-[11px] tabular-nums ${i === peakIndex ? "font-semibold text-ink dark:text-ops-ink" : "text-ink/50 dark:text-ops-muted"}`}>
+              {p.value}
+            </span>
+            <div
+              className={`w-full flex-none rounded-t-sm ${i === peakIndex ? "bg-ink dark:bg-ops-ink" : "bg-ink/70 dark:bg-ops-ink/60"}`}
+              style={{ height: `${(p.value / max) * 100}%` }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-1.5 flex gap-2 border-t border-ink/30 pt-1.5 dark:border-white/25">
+        {points.map((p) => (
+          <span key={p.label} className="flex-1 text-center font-mono text-[10px] text-ink/50 dark:text-ops-muted">
+            {p.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export interface CrossfadeImage {
+  src: string;
+  alt: string;
+  credit: string;
+  creditUrl: string;
+  license: string;
+}
+
+export const PET_SHOWCASE_IMAGES_HOME: CrossfadeImage[] = [
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/9/90/Labrador_Retriever_portrait.jpg",
+    alt: "카메라를 바라보는 래브라도 리트리버",
+    credit: "Herwig Kavallar, Wikimedia Commons",
+    creditUrl: "https://commons.wikimedia.org/wiki/File:Labrador_Retriever_portrait.jpg",
+    license: "Public Domain",
+  },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Kittyply_edit1.jpg",
+    alt: "카메라를 바라보는 회색 고양이",
+    credit: "David Corby, Wikimedia Commons",
+    creditUrl: "https://commons.wikimedia.org/wiki/File:Kittyply_edit1.jpg",
+    license: "CC BY 2.5",
+  },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Siberian_Husky_pho.jpg",
+    alt: "정면을 응시하는 시베리안 허스키",
+    credit: "Per Harald Olsen, Wikimedia Commons",
+    creditUrl: "https://commons.wikimedia.org/wiki/File:Siberian_Husky_pho.jpg",
+    license: "CC BY 2.5",
+  },
+];
+
+export const PET_SHOWCASE_IMAGES_EVENT: CrossfadeImage[] = [
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Tabby_cat_with_blue_eyes-3336579.jpg",
+    alt: "파란 눈을 가진 태비 고양이",
+    credit: "AdinaVoicu, Wikimedia Commons",
+    creditUrl: "https://commons.wikimedia.org/wiki/File:Tabby_cat_with_blue_eyes-3336579.jpg",
+    license: "CC0",
+  },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/65/Dog_portrait_Budapest.jpg",
+    alt: "거리에서 촬영된 강아지의 초상",
+    credit: "CONTRERAS Roberto, Wikimedia Commons",
+    creditUrl: "https://commons.wikimedia.org/wiki/File:Dog_portrait_Budapest.jpg",
+    license: "CC BY 4.0",
+  },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Felis_catus-cat_on_snow.jpg",
+    alt: "눈밭에 앉아 있는 고양이",
+    credit: "Von.grzanka, Wikimedia Commons",
+    creditUrl: "https://commons.wikimedia.org/wiki/File:Felis_catus-cat_on_snow.jpg",
+    license: "CC BY-SA 3.0",
+  },
+];
+
+export function ImageCrossfade({
+  images,
+  intervalMs = 3200,
+  aspect = "aspect-square",
+}: {
+  images: CrossfadeImage[];
+  intervalMs?: number;
+  aspect?: string;
+}) {
+  const [index, setIndex] = useState(0);
+  const reduceMotionRef = useRef(false);
+
+  useEffect(() => {
+    reduceMotionRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotionRef.current) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % images.length), intervalMs);
+    return () => clearInterval(id);
+  }, [images.length, intervalMs]);
+
+  const current = images[index];
+
+  return (
+    <div>
+      <div className={`relative ${aspect} w-full overflow-hidden rounded-block shadow-[0_24px_48px_-24px_rgba(26,26,26,0.35)]`}>
+        {images.map((img, i) => (
+          <img
+            key={img.src}
+            src={img.src}
+            alt={img.alt}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-fluid ${
+              i === index ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex items-center gap-1.5" role="tablist" aria-label="사진 넘기기">
+        {images.map((img, i) => (
+          <button
+            key={img.src}
+            type="button"
+            role="tab"
+            aria-selected={i === index}
+            aria-label={`${i + 1}번째 사진 보기`}
+            onClick={() => setIndex(i)}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${i === index ? "bg-accent" : "bg-hairline hover:bg-ink/30"}`}
+          />
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-ink/40">
+        사진:{" "}
+        <a href={current.creditUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
+          {current.credit}
+        </a>{" "}
+        ({current.license})
+      </p>
     </div>
   );
 }

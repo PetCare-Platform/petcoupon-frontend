@@ -1,6 +1,16 @@
 import { Layout } from "../../components/Layout";
-import { Eyebrow, LinkButton, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
+import { BarChart, Eyebrow, LinkButton, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
+
+const THROUGHPUT = [
+  { label: "10:45", value: 142 },
+  { label: "10:55", value: 158 },
+  { label: "11:05", value: 168 },
+  { label: "11:15", value: 201 },
+  { label: "11:25", value: 172 },
+  { label: "11:35", value: 216 },
+  { label: "11:45", value: 189 },
+];
 
 const PIPELINE = [
   { step: "01", title: "요청 수신", detail: "해시 생성 · 12ms" },
@@ -11,10 +21,10 @@ const PIPELINE = [
 ];
 
 const COMPONENTS = [
-  { name: "Application", role: "HTTP 요청 처리", status: "정상" as const, tone: "open" as const, latency: "42ms" },
-  { name: "MySQL", role: "원장과 운영 데이터", status: "정상" as const, tone: "open" as const, latency: "8ms" },
-  { name: "Redis", role: "재고와 중복 제어", status: "정상" as const, tone: "open" as const, latency: "3ms" },
-  { name: "Kafka", role: "발급 메시지 전달", status: "관찰" as const, tone: "warning" as const, latency: "92ms" },
+  { name: "Application", role: "HTTP 요청 처리", status: "정상" as const, tone: "open" as const, latency: "42ms", checked: "11:42:08" },
+  { name: "MySQL", role: "원장과 운영 데이터", status: "정상" as const, tone: "open" as const, latency: "8ms", checked: "11:42:07" },
+  { name: "Redis", role: "재고와 중복 제어", status: "정상" as const, tone: "open" as const, latency: "3ms", checked: "11:42:07" },
+  { name: "Kafka", role: "발급 메시지 전달", status: "관찰" as const, tone: "warning" as const, latency: "92ms", checked: "11:42:06" },
 ];
 
 const FAILURES = [
@@ -50,38 +60,38 @@ export default function Dashboard() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-lime p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="font-mono text-xs uppercase tracking-wide">LIVE PULSE</span>
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
-              <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-[#0f172a]/70">
-                <span className="h-3 w-3 animate-live-pulse rounded-full bg-[#0f172a]" aria-hidden="true" /> 마지막 확인 11:42:08
+              <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-ink-muted">
+                <span className="h-3 w-3 animate-live-pulse rounded-full bg-ink" aria-hidden="true" /> 마지막 확인 11:42:08
               </span>
             </div>
-            <div className="mt-5 overflow-hidden rounded-control border border-[#0f172a]/10 bg-white/70">
-              <div className="grid grid-cols-2 gap-px bg-[#0f172a]/10 md:grid-cols-4">
+            <div className="mt-5 overflow-hidden rounded-control border border-hairline-soft bg-white/70">
+              <div className="grid grid-cols-2 gap-px bg-ink/10 md:grid-cols-4">
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-[#0f172a]/60">API 성공률</dt>
+                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">API 성공률</dt>
                   <dd className="text-[26px] font-semibold">
                     99.98%<small className="ml-1.5 text-sm font-normal">최근 15분</small>
                   </dd>
                 </div>
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-[#0f172a]/60">분당 발급</dt>
+                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">분당 발급</dt>
                   <dd className="text-[26px] font-semibold">
                     186<small className="ml-1.5 text-sm font-normal">평균 172건</small>
                   </dd>
                 </div>
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-[#0f172a]/60">처리 지연</dt>
+                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">처리 지연</dt>
                   <dd className="text-[26px] font-semibold">
                     184ms<small className="ml-1.5 text-sm font-normal">목표 250ms 이하</small>
                   </dd>
                 </div>
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-[#0f172a]/60">실패 대기</dt>
+                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">실패 대기</dt>
                   <dd className="text-[26px] font-semibold">
                     3<small className="ml-1.5 text-sm font-normal">긴급 항목 없음</small>
                   </dd>
@@ -107,6 +117,7 @@ export default function Dashboard() {
                     <th className="pb-2 font-medium">역할</th>
                     <th className="pb-2 font-medium">상태</th>
                     <th className="pb-2 font-medium">응답</th>
+                    <th className="pb-2 font-medium">최근 확인</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -118,6 +129,7 @@ export default function Dashboard() {
                         <StatusPill tone={c.tone}>{c.status}</StatusPill>
                       </td>
                       <td className="py-3">{c.latency}</td>
+                      <td className="py-3 text-ink/60 dark:text-ops-muted">{c.checked}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -180,12 +192,8 @@ export default function Dashboard() {
               <h3 className="text-lg font-semibold">최근 발급 처리량</h3>
               <TextLink to="/internal/monitoring">시간대별 추이 보기 →</TextLink>
             </div>
-            <div className="flex h-52 items-end gap-2 border-b border-ink/40 pt-4 dark:border-white/35">
-              {[58, 64, 72, 86, 74, 93, 81].map((h, i) => (
-                <span key={i} className="min-w-3 flex-1 rounded-t-sm bg-ink dark:bg-ops-ink" style={{ height: `${h}%` }} />
-              ))}
-            </div>
-            <p className="mt-3 font-mono text-xs text-ink/50 dark:text-ops-muted">10:45 — 11:45 · 실패율 0.04%</p>
+            <BarChart points={THROUGHPUT} />
+            <p className="mt-3 font-mono text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</p>
           </article>
 
           <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">

@@ -5,21 +5,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#000000",
+        // Editorial cream + charcoal system (adapted from a real product's
+        // marketing design language) — one neutral canvas, white lift-cards,
+        // and a single accent reserved for the one thing worth noticing.
+        canvas: "#f5f5f5",
         paper: "#ffffff",
-        hairline: "#e6e6e6",
-        "hairline-soft": "#f1f1f1",
-        "surface-soft": "#f7f7f5",
-        lime: "#dceeb1",
-        lilac: "#c5b0f4",
-        cream: "#f4ecd6",
-        mint: "#c8e6cd",
-        pink: "#efd4d4",
-        coral: "#f3c9b6",
-        navy: "#1f1d3d",
-        magenta: "#ff3d8b",
-        success: "#1ea64a",
-        danger: "#a3372c",
+        "surface-2": "#ebe7e1",
+        ink: "#1a1a1a",
+        "ink-muted": "#5c5c59",
+        "ink-subtle": "#7b7b78",
+        hairline: "#d3cec6",
+        "hairline-soft": "#ebe7e1",
+        "surface-soft": "#ebe7e1",
+        accent: "#e35e1c",
+        success: "#0bdf50",
+        danger: "#c41c1c",
         // Internal ops dark theme
         "ops-bg": "#0f172a",
         "ops-ink": "#f1f5f9",
@@ -42,8 +42,8 @@ export default {
       },
       borderRadius: {
         control: "8px",
-        block: "24px",
-        panel: "18px",
+        block: "12px",
+        panel: "16px",
       },
       transitionTimingFunction: {
         fluid: "cubic-bezier(0.16, 1, 0.3, 1)",
@@ -57,10 +57,15 @@ export default {
           "0%, 100%": { opacity: "1", transform: "scale(1)" },
           "50%": { opacity: "0.45", transform: "scale(0.85)" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
       },
       animation: {
         "reveal-up": "reveal-up 220ms cubic-bezier(0.16,1,0.3,1) backwards",
         "live-pulse": "live-pulse 2.4s cubic-bezier(0.16,1,0.3,1) infinite",
+        float: "float 5s cubic-bezier(0.45,0,0.55,1) infinite",
       },
     },
   },

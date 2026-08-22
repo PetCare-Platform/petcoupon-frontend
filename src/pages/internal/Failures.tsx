@@ -37,7 +37,7 @@ export default function Failures() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-pink p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="font-mono text-xs uppercase tracking-wide">ATTENTION QUEUE</span>
@@ -128,8 +128,7 @@ export default function Failures() {
       <section className="py-10 pb-16">
         <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.2fr]">
           <div>
-            <Eyebrow>OPERATING GUIDE</Eyebrow>
-            <h2 className="mt-2">실패 처리 원칙</h2>
+            <h2>실패 처리 원칙</h2>
           </div>
           <ol className="grid gap-4">
             {[

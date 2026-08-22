@@ -27,7 +27,7 @@ export default function Verification() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-mint p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <StatusPill tone="warning">2건 확인 필요</StatusPill>
             <h2 className="mt-3">대부분의 원장이 일치합니다.</h2>
             <div className="mt-6">
@@ -46,8 +46,7 @@ export default function Verification() {
         <div className="container-page">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <Eyebrow>CHECK RESULTS</Eyebrow>
-              <h2 className="mt-2">검증 결과</h2>
+              <h2>검증 결과</h2>
             </div>
             <FilterBar
               value={filter}
@@ -59,18 +58,18 @@ export default function Verification() {
               ]}
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-2.5 sm:grid-cols-2">
             {visible.map((check) => (
-              <article key={check.id} className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface">
-                <div className="mb-3 flex items-center justify-between">
+              <article key={check.id} className="rounded-control border border-hairline p-3.5 dark:border-white/[0.14] dark:bg-ops-surface">
+                <div className="mb-2 flex items-center justify-between">
                   <span className="font-mono text-xs uppercase tracking-wide text-ink/60 dark:text-ops-muted">{check.label}</span>
                   <StatusPill tone={check.status === "match" ? "open" : "danger"}>{check.status === "match" ? "일치" : "불일치"}</StatusPill>
                 </div>
-                <p className="text-lg font-semibold">
+                <p className="text-base font-semibold">
                   기대 {check.expected} · 실제 {check.actual}
                 </p>
-                <p className="mt-1 text-sm text-ink/60 dark:text-ops-muted">{check.source}</p>
-                {check.status === "mismatch" ? <button className="mt-3 text-sm font-medium underline underline-offset-4">재검증</button> : <span className="mt-3 block text-sm underline underline-offset-4 opacity-0">상세</span>}
+                <p className="mt-0.5 text-sm text-ink/60 dark:text-ops-muted">{check.source}</p>
+                {check.status === "mismatch" ? <button className="mt-2 text-sm font-medium underline underline-offset-4">재검증</button> : <span className="mt-2 block text-sm underline underline-offset-4 opacity-0">상세</span>}
               </article>
             ))}
           </div>

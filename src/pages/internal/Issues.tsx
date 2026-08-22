@@ -58,38 +58,38 @@ export default function Issues() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-lilac p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="font-mono text-xs uppercase tracking-wide">REQUEST FOUND</span>
                 <h2 className="mt-1">{query || "REQ-20260821-8F3A21"}</h2>
-                <p className="mt-1 text-[#0f172a]/70">2026.08.21 09:14:22 · 사용자 #1 · 쿠폰 #10</p>
+                <p className="mt-1 text-ink-muted">2026.08.21 09:14:22 · 사용자 #1 · 쿠폰 #10</p>
               </div>
               <div className="text-right">
-                <span className="inline-flex min-h-8 items-center rounded-full bg-lime px-2.5 font-mono text-xs uppercase tracking-wide">처리 완료</span>
+                <span className="inline-flex min-h-8 items-center rounded-full border border-success/30 bg-success/10 px-2.5 font-mono text-xs uppercase tracking-wide text-[#0a8f3c]">처리 완료</span>
                 <strong className="mt-1 block font-mono text-xl">184ms</strong>
               </div>
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[#0f172a]/20 pt-4 md:grid-cols-4">
+            <div className="mt-6 grid grid-cols-2 gap-4 border-t border-hairline pt-4 md:grid-cols-4">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-[#0f172a]/60">멱등성</dt>
+                <dt className="text-xs uppercase tracking-wide text-ink/60">멱등성</dt>
                 <dd className="text-2xl font-semibold">통과</dd>
-                <small className="text-[#0f172a]/70">중복 없음</small>
+                <small className="text-ink-muted">중복 없음</small>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-[#0f172a]/60">재고 순번</dt>
+                <dt className="text-xs uppercase tracking-wide text-ink/60">재고 순번</dt>
                 <dd className="text-2xl font-semibold">216</dd>
-                <small className="text-[#0f172a]/70">잔여 284장</small>
+                <small className="text-ink-muted">잔여 284장</small>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-[#0f172a]/60">발급 번호</dt>
+                <dt className="text-xs uppercase tracking-wide text-ink/60">발급 번호</dt>
                 <dd className="text-2xl font-semibold">1042</dd>
-                <small className="text-[#0f172a]/70">상태 ISSUED</small>
+                <small className="text-ink-muted">상태 ISSUED</small>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-[#0f172a]/60">알림</dt>
+                <dt className="text-xs uppercase tracking-wide text-ink/60">알림</dt>
                 <dd className="text-2xl font-semibold">SENT</dd>
-                <small className="text-[#0f172a]/70">Push 전송</small>
+                <small className="text-ink-muted">Push 전송</small>
               </div>
             </div>
           </div>
@@ -128,8 +128,7 @@ export default function Issues() {
         <div className="container-page">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <Eyebrow>RECORD DETAILS</Eyebrow>
-              <h2 className="mt-1">처리 원장</h2>
+              <h2>처리 원장</h2>
             </div>
             <TextLink to="/internal/failures">실패 처리 보기</TextLink>
           </div>

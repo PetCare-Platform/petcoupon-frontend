@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { Eyebrow } from "../../components/ui";
+import { Eyebrow, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
 const CODE = "PET-7K3M-82QD";
@@ -34,8 +34,8 @@ export default function CouponDetail() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-pink p-6 text-[#0f172a] md:p-8">
-            <span className="inline-flex min-h-8 items-center rounded-full bg-lime px-2.5 font-mono text-xs uppercase tracking-wide">{used ? "사용 완료" : "사용 가능"}</span>
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
+            <StatusPill tone={used ? "closed" : "open"}>{used ? "사용 완료" : "사용 가능"}</StatusPill>
             <h2 className="mt-4">
               결제 전에
               <br />
@@ -58,9 +58,8 @@ export default function CouponDetail() {
 
       <section className="py-10">
         <div className="container-page">
-          <Eyebrow>BENEFIT &amp; RULES</Eyebrow>
-          <h2 className="mt-2">혜택과 조건</h2>
-          <Link to="/event-detail" className="mt-2 inline-block underline underline-offset-4">
+          <h2>혜택과 조건</h2>
+          <Link to="/event-detail/1" className="mt-2 inline-block underline underline-offset-4">
             연결 이벤트 보기
           </Link>
           <div className="mt-6 rounded-block border border-hairline p-6">
@@ -89,7 +88,7 @@ export default function CouponDetail() {
 
       <section className="py-10">
         <div className="container-page">
-          <div className="rounded-block bg-lime p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <Eyebrow>COUPON ACTION</Eyebrow>
             <h2 className="mt-2">
               사용 상태를
@@ -104,7 +103,7 @@ export default function CouponDetail() {
                   setUsed(true);
                   showToast("여름 정률 쿠폰을 사용 완료로 표시했습니다.");
                 }}
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#0f172a] bg-[#0f172a] px-5 text-[18px] font-medium text-white transition-all active:scale-[0.97] hover:bg-[#1e293b]"
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-white transition-all active:scale-[0.97] hover:bg-ink-muted"
               >
                 쿠폰 사용
               </button>
@@ -114,7 +113,7 @@ export default function CouponDetail() {
                   setUsed(false);
                   showToast("쿠폰 사용 취소 요청을 기록했습니다.");
                 }}
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#0f172a] px-5 text-[18px] font-medium transition-all active:scale-[0.97] hover:bg-white/40"
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink px-5 text-[18px] font-medium transition-all active:scale-[0.97] hover:bg-white/40"
               >
                 사용 취소
               </button>

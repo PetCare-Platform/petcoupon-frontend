@@ -23,7 +23,7 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
     home: "/",
     routes: [
       { page: "index", label: "이벤트", path: "/" },
-      { page: "event-detail", label: "이벤트 상세", path: "/event-detail" },
+      { page: "event-detail", label: "이벤트 상세", path: "/event-detail/1" },
     ],
   },
   user: {

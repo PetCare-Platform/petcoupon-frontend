@@ -43,7 +43,7 @@ export default function EventForm() {
 
       <section className="py-6">
         <div className="container-page">
-          <div className="rounded-block bg-lime p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <span className="font-mono text-xs uppercase tracking-wide">EDITOR'S CHECKLIST</span>
             <h2 className="mt-1">좋은 이벤트는 일정부터 명확해요.</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5">
@@ -56,8 +56,7 @@ export default function EventForm() {
 
       <section className="py-10">
         <div className="container-page max-w-2xl">
-          <Eyebrow>EVENT DETAILS</Eyebrow>
-          <h2 className="mt-2">이벤트 정보</h2>
+          <h2>이벤트 정보</h2>
           <p className="mt-1 text-sm text-ink/60">* 필수 입력</p>
 
           <form onSubmit={handleSubmit} noValidate className="mt-6 grid gap-6 rounded-block border border-hairline p-6">

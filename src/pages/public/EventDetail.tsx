@@ -1,65 +1,75 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { ColorBlock, Eyebrow, MetricGrid, MetricTile } from "../../components/ui";
+import { ColorBlock, Eyebrow, ImageCrossfade, MetricGrid, MetricTile, PET_SHOWCASE_IMAGES_EVENT, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
+import { getEvent, type EventStatus } from "../../data/events";
+import NotFound from "./NotFound";
 
-const COUPONS = [
-  { id: "rate", name: "여름 정률 쿠폰", detail: "3만원 이상 구매 · 최대 1만원 할인", value: "20%" },
-  { id: "amount", name: "첫 만남 정액 쿠폰", detail: "2만원 이상 구매 · 첫 구매 전용", value: "5,000원" },
-];
+const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
 
 export default function EventDetail() {
-  const [selected, setSelected] = useState("rate");
+  const { id } = useParams();
+  const event = getEvent(Number(id));
+  const [selected, setSelected] = useState(event?.coupons[0]?.id ?? "");
   const { showToast } = useToast();
 
-  function handleIssue(event: FormEvent) {
-    event.preventDefault();
-    const coupon = COUPONS.find((c) => c.id === selected)!;
+  if (!event) return <NotFound />;
+
+  const isClosed = event.status === "closed";
+
+  function handleIssue(formEvent: FormEvent) {
+    formEvent.preventDefault();
+    if (!event || isClosed) return;
+    const coupon = event.coupons.find((c) => c.id === selected)!;
     showToast(`${coupon.name}이 내 쿠폰에 담겼습니다.`);
   }
 
   return (
     <Layout area="public" page="event-detail">
       <section className="py-10">
-        <div className="container-page">
-          <Link to="/" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
-            ← 이벤트 목록
-          </Link>
-          <Eyebrow>EVENT 01 / OPEN</Eyebrow>
-          <h1 className="mt-2">
-            반려동물
-            <br />
-            여름 케어 위크
-          </h1>
-          <p className="mt-4 max-w-[56ch] text-ink/70">더운 계절에도 산뜻하게. 제휴 미용·목욕 서비스에 사용할 수 있는 두 가지 쿠폰을 준비했어요.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#coupon-choice" className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper hover:bg-[#262626]">
-              쿠폰 고르기
-            </a>
-            <a href="#event-guide" className="inline-flex min-h-11 items-center justify-center rounded-full border border-hairline px-5 text-[18px] font-medium hover:border-ink hover:bg-surface-soft">
-              사용 안내
-            </a>
+        <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
+          <div>
+            <Link to="/" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
+              ← 이벤트 목록
+            </Link>
+            <Eyebrow>
+              {event.label} / {statusLabel[event.status].toUpperCase()}
+            </Eyebrow>
+            <h1 className="mt-2">{event.title}</h1>
+            <p className="mt-4 max-w-[56ch] text-ink/70">{event.detailDesc}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-6">
+              <a
+                href="#coupon-choice"
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-accent bg-accent px-5 text-[18px] font-medium text-ink hover:bg-[#c85319]"
+              >
+                쿠폰 고르기
+              </a>
+              <a href="#event-guide" className="inline-flex min-h-11 items-center gap-2 text-[18px] font-medium underline underline-offset-4 hover:underline-offset-[6px]">
+                사용 안내
+              </a>
+            </div>
+          </div>
+          <div>
+            <ImageCrossfade images={PET_SHOWCASE_IMAGES_EVENT} aspect="aspect-[4/3]" />
           </div>
         </div>
       </section>
 
       <section className="py-6">
         <div className="container-page">
-          <ColorBlock tone="lilac">
+          <ColorBlock tone="surface">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <Eyebrow>AT A GLANCE</Eyebrow>
-                <h2 className="mt-1">한눈에 보는 혜택</h2>
+                <h2>한눈에 보는 혜택</h2>
               </div>
-              <span className="inline-flex min-h-8 flex-none items-center rounded-full bg-lime px-2.5 font-mono text-xs uppercase tracking-wide">진행 중</span>
+              <StatusPill tone={event.status}>{statusLabel[event.status]}</StatusPill>
             </div>
             <div className="mt-6">
               <MetricGrid cols={4}>
-                <MetricTile label="최대 할인" value="20%" hint="최대 10,000원" />
-                <MetricTile label="현재 잔여" value="284" hint="총 500장" />
-                <MetricTile label="발급 종료" value="D-10" hint="8월 30일 23:59" />
-                <MetricTile label="사용 기한" value="7일" hint="발급 후 7일" />
+                {event.metrics.map((metric) => (
+                  <MetricTile key={metric.label} label={metric.label} value={metric.value} hint={metric.hint} />
+                ))}
               </MetricGrid>
             </div>
           </ColorBlock>
@@ -75,7 +85,7 @@ export default function EventDetail() {
           <form onSubmit={handleIssue} className="mt-6 rounded-block border border-hairline p-6">
             <h3 className="mb-4 text-lg font-semibold">발급할 쿠폰</h3>
             <div className="grid gap-3">
-              {COUPONS.map((coupon) => (
+              {event.coupons.map((coupon) => (
                 <label
                   key={coupon.id}
                   className={`flex min-h-[76px] cursor-pointer items-center justify-between gap-4 rounded-control border p-4 transition-colors ${
@@ -101,16 +111,17 @@ export default function EventDetail() {
               ))}
             </div>
 
-            <div className="mt-6 rounded-control bg-cream p-4 text-sm">
+            <div className="mt-6 rounded-control border border-hairline bg-surface-2 p-4 text-sm">
               <strong className="block">발급 전 확인</strong>
-              <p className="mt-1 text-[#0f172a]/80">선택한 쿠폰은 사용자 계정에 바로 보관되며, 발급 후에는 다른 쿠폰으로 바꿀 수 없습니다.</p>
+              <p className="mt-1 text-ink/80">선택한 쿠폰은 사용자 계정에 바로 보관되며, 발급 후에는 다른 쿠폰으로 바꿀 수 없습니다.</p>
             </div>
 
             <button
               type="submit"
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626]"
+              disabled={isClosed}
+              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] disabled:cursor-not-allowed disabled:border-hairline disabled:bg-surface-2 disabled:text-ink-muted disabled:active:scale-100"
             >
-              선택한 쿠폰 발급하기
+              {isClosed ? "발급이 종료되었습니다" : "선택한 쿠폰 발급하기"}
             </button>
           </form>
         </div>
@@ -119,13 +130,12 @@ export default function EventDetail() {
       <section id="event-guide" className="py-14">
         <div className="container-page grid gap-8 md:grid-cols-[1fr_1.2fr]">
           <div>
-            <Eyebrow>USAGE GUIDE</Eyebrow>
-            <h2 className="mt-2">사용 안내</h2>
+            <h2>사용 안내</h2>
           </div>
           <ul className="grid gap-3 text-ink/80">
-            <li>다른 쿠폰과 중복 적용할 수 없습니다.</li>
-            <li>결제 취소 시 매장의 환불 정책을 따릅니다.</li>
-            <li>사용 기한이 지난 쿠폰은 다시 발급되지 않습니다.</li>
+            {event.guide.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
         </div>
       </section>

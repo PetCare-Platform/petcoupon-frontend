@@ -17,34 +17,34 @@ export default function UserHome() {
 
       <section className="py-6">
         <div className="container-page">
-          <ColorBlock tone="mint">
+          <ColorBlock tone="surface">
             <span className="inline-flex min-h-8 items-center rounded-full bg-paper px-2.5 font-mono text-xs uppercase tracking-wide">ACTIVE MEMBER</span>
             <div className="mt-4 flex items-center gap-4">
-              <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-[#0f172a] text-xl font-bold text-white">김</span>
+              <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-ink text-xl font-bold text-white">김</span>
               <div>
                 <h2>김하늘 님</h2>
-                <p className="text-[#0f172a]/70">반려생활을 꼼꼼하게 기록하는 PetCoupon 회원</p>
+                <p className="text-ink-muted">반려생활을 꼼꼼하게 기록하는 PetCoupon 회원</p>
               </div>
             </div>
-            <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-[#0f172a]/20 pt-4 text-sm">
+            <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-hairline pt-4 text-sm">
               <div>
-                <dt className="text-[#0f172a]/60">이메일</dt>
+                <dt className="text-ink/60">이메일</dt>
                 <dd className="font-medium">haneul.kim@example.com</dd>
               </div>
               <div>
-                <dt className="text-[#0f172a]/60">휴대전화</dt>
+                <dt className="text-ink/60">휴대전화</dt>
                 <dd className="font-medium">010-27**-84**</dd>
               </div>
               <div>
-                <dt className="text-[#0f172a]/60">가입일</dt>
+                <dt className="text-ink/60">가입일</dt>
                 <dd className="font-medium">2026년 3월 12일</dd>
               </div>
               <div>
-                <dt className="text-[#0f172a]/60">사용자 번호</dt>
+                <dt className="text-ink/60">사용자 번호</dt>
                 <dd className="font-medium">#1</dd>
               </div>
             </dl>
-            <LinkButton to="/user/my-coupons" variant="secondary" className="mt-6 !bg-[#0f172a] !text-white !border-[#0f172a] hover:!bg-[#1e293b]">
+            <LinkButton to="/user/my-coupons" variant="secondary" className="mt-6 !bg-ink !text-white !border-ink hover:!bg-ink-muted">
               보유 쿠폰 보기
             </LinkButton>
           </ColorBlock>
@@ -53,8 +53,7 @@ export default function UserHome() {
 
       <section className="py-14">
         <div className="container-page">
-          <Eyebrow>COUPON ACTIVITY</Eyebrow>
-          <h2 className="mt-2">쿠폰 활동 요약</h2>
+          <h2>쿠폰 활동 요약</h2>
           <div className="mt-6">
             <MetricGrid cols={3}>
               <MetricTile label="사용 가능" value="2장" hint="이번 주 만료 1장" />

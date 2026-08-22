@@ -155,10 +155,10 @@ export default function RepoIssues() {
                   href={issue.html_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex flex-wrap items-start justify-between gap-4 rounded-block border border-hairline p-5 no-underline transition-all duration-200 ease-fluid hover:-translate-y-0.5 hover:border-ink dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] dark:hover:border-white/30"
+                  className="flex flex-wrap items-start justify-between gap-3 rounded-control border border-hairline p-3.5 no-underline transition-all duration-200 ease-fluid hover:-translate-y-0.5 hover:border-ink dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] dark:hover:border-white/30"
                 >
                   <div className="min-w-0">
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <div className="mb-1.5 flex flex-wrap items-center gap-2">
                       <StatusPill tone={issue.state === "open" ? "open" : "closed"}>{issue.state === "open" ? "OPEN" : "CLOSED"}</StatusPill>
                       <span className="font-mono text-xs text-ink/50 dark:text-ops-muted">#{issue.number}</span>
                       {issue.labels.map((label) => (
@@ -171,7 +171,7 @@ export default function RepoIssues() {
                         </span>
                       ))}
                     </div>
-                    <h3 className="truncate text-lg font-semibold">{issue.title}</h3>
+                    <h3 className="truncate text-base font-semibold">{issue.title}</h3>
                     <p className="mt-1 text-sm text-ink/60 dark:text-ops-muted">
                       {issue.user?.login ?? "unknown"} · {timeAgo(issue.created_at)} · 댓글 {issue.comments}
                     </p>

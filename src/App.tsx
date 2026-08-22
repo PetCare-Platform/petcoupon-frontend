@@ -3,6 +3,7 @@ import { ToastProvider } from "./context/ToastContext";
 
 import Index from "./pages/public/Index";
 import EventDetail from "./pages/public/EventDetail";
+import NotFound from "./pages/public/NotFound";
 
 import UserHome from "./pages/user/UserHome";
 import MyCoupons from "./pages/user/MyCoupons";
@@ -26,7 +27,7 @@ export default function App() {
     <ToastProvider>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/event-detail" element={<EventDetail />} />
+        <Route path="/event-detail/:id" element={<EventDetail />} />
 
         <Route path="/user" element={<UserHome />} />
         <Route path="/user/my-coupons" element={<MyCoupons />} />
@@ -44,6 +45,8 @@ export default function App() {
         <Route path="/internal/failures" element={<Failures />} />
         <Route path="/internal/verification" element={<Verification />} />
         <Route path="/internal/repo-issues" element={<RepoIssues />} />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ToastProvider>
   );

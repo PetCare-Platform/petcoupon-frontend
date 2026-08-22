@@ -1,6 +1,16 @@
 import { Layout } from "../../components/Layout";
-import { Card, Eyebrow, LinkButton, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
+import { BarChart, Card, Eyebrow, LinkButton, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
+
+const THROUGHPUT = [
+  { label: "10:45", value: 142 },
+  { label: "10:55", value: 158 },
+  { label: "11:05", value: 168 },
+  { label: "11:15", value: 201 },
+  { label: "11:25", value: 172 },
+  { label: "11:35", value: 216 },
+  { label: "11:45", value: 189 },
+];
 
 const COMPONENTS = [
   { name: "Application", role: "HTTP 요청 처리", tone: "open" as const, status: "정상", latency: "42ms", checked: "11:42:08" },
@@ -36,14 +46,14 @@ export default function Monitoring() {
 
       <section className="py-4">
         <div className="container-page">
-          <div className="rounded-block bg-lime p-6 text-[#0f172a] md:p-8">
+          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="font-mono text-xs uppercase tracking-wide">LIVE PULSE</span>
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
-              <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-[#0f172a]/70">
-                <span className="h-3 w-3 animate-live-pulse rounded-full bg-[#0f172a]" aria-hidden="true" /> 마지막 확인 11:42:08
+              <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-ink-muted">
+                <span className="h-3 w-3 animate-live-pulse rounded-full bg-ink" aria-hidden="true" /> 마지막 확인 11:42:08
               </span>
             </div>
             <div className="mt-6">
@@ -101,12 +111,8 @@ export default function Monitoring() {
             <p className="mt-2 text-ink/70 dark:text-ops-muted">한 시간 동안의 분당 발급 요청과 실패 비율입니다.</p>
           </div>
           <figure className="rounded-block border border-hairline p-6 dark:border-white/[0.14] dark:bg-ops-surface">
-            <div className="flex h-60 items-end gap-3 border-b border-ink pt-6 dark:border-white/35">
-              {[58, 64, 72, 86, 74, 93, 81].map((h, i) => (
-                <span key={i} className="min-w-3 flex-1 rounded-t-sm bg-ink dark:bg-ops-ink" style={{ height: `${h}%` }} />
-              ))}
-            </div>
-            <figcaption className="mt-4 font-mono text-xs text-ink/50 dark:text-ops-muted">10:45 — 11:45 · 실패율 0.04%</figcaption>
+            <BarChart points={THROUGHPUT} />
+            <figcaption className="mt-3 font-mono text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</figcaption>
           </figure>
         </div>
       </section>
