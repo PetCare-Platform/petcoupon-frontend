@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { ColorBlock, Eyebrow, ImageCrossfade, MetricGrid, MetricTile, PET_SHOWCASE_IMAGES_EVENT, StatusPill } from "../../components/ui";
+import { ColorBlock, Eyebrow, ImageCrossfade, LinkButton, MetricGrid, MetricTile, PET_SHOWCASE_IMAGES_EVENT, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 import { getEvent, type EventStatus } from "../../data/events";
 import NotFound from "./NotFound";
@@ -39,12 +39,7 @@ export default function EventDetail() {
             <h1 className="mt-2">{event.title}</h1>
             <p className="mt-4 max-w-[56ch] text-ink/70">{event.detailDesc}</p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
-              <a
-                href="#coupon-choice"
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-accent bg-accent px-5 text-[18px] font-medium text-ink hover:bg-[#c85319]"
-              >
-                쿠폰 고르기
-              </a>
+              <LinkButton to="#coupon-choice">쿠폰 고르기</LinkButton>
               <a href="#event-guide" className="inline-flex min-h-11 items-center gap-2 text-[18px] font-medium underline underline-offset-4 hover:underline-offset-[6px]">
                 사용 안내
               </a>

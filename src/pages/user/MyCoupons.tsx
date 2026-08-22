@@ -72,7 +72,7 @@ export default function MyCoupons() {
               <article key={coupon.issue} className="rounded-control border border-hairline p-4">
                 <div className="mb-2 flex items-center justify-between">
                   {coupon.badge ? (
-                    <span className="inline-flex min-h-6 items-center rounded-full border border-accent/30 bg-accent/10 px-2 font-mono text-[11px] uppercase tracking-wide text-accent">{coupon.badge}</span>
+                    <span className="inline-flex min-h-6 items-center rounded-full border border-accent/30 bg-accent/10 px-2 font-mono text-[11px] uppercase tracking-wide text-accent-ink">{coupon.badge}</span>
                   ) : (
                     <span className="inline-flex min-h-6 items-center rounded-full bg-hairline-soft px-2 font-mono text-[11px] uppercase tracking-wide">{statusLabel[coupon.status]}</span>
                   )}

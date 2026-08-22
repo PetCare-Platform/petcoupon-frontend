@@ -74,23 +74,6 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
           </button>
         </div>
 
-        <nav aria-label="전체 영역" className="flex items-center gap-1 overflow-x-auto px-6 pb-2.5 md:hidden">
-          {Object.entries(AREA_ROUTES).map(([key, cfg]) => {
-            const isCurrentArea = key === area;
-            return (
-              <Link
-                key={key}
-                to={cfg.home}
-                className={`inline-flex min-h-9 flex-none items-center whitespace-nowrap rounded-full px-3 text-[15px] font-medium transition-colors ${
-                  isCurrentArea ? "bg-accent text-ink" : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-surface"
-                }`}
-              >
-                {cfg.label}
-              </Link>
-            );
-          })}
-        </nav>
-
         <nav
           aria-label={`${AREA_ROUTES[area].label} 메뉴`}
           className="flex min-h-12 items-center gap-1.5 overflow-x-auto border-t border-hairline-soft px-6 dark:border-ops-border-soft md:px-10"
@@ -116,7 +99,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
         {open ? (
           <div
             id="site-navigation"
-            className="fixed inset-x-0 top-[150px] bottom-0 z-[110] flex flex-col gap-5 overflow-y-auto bg-canvas px-6 py-5 dark:bg-ops-bg md:hidden"
+            className="fixed inset-x-0 top-[104px] bottom-0 z-[110] flex flex-col gap-5 overflow-y-auto bg-canvas px-6 py-5 dark:bg-ops-bg md:hidden"
           >
             {Object.entries(AREA_ROUTES).map(([key, cfg]) => (
               <div key={key} className="border-b border-hairline-soft pb-5 dark:border-ops-border-soft">

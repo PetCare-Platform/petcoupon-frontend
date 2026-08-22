@@ -62,7 +62,7 @@ const toneClass: Record<StatusTone, string> = {
   scheduled: "bg-surface-2 text-ink-muted border-hairline",
   closed: "bg-surface-2 text-ink-muted border-hairline dark:bg-ops-border-soft dark:text-ops-ink dark:border-ops-border-soft",
   used: "bg-surface-2 text-ink-muted border-hairline",
-  warning: "bg-accent/10 text-accent border-accent/30",
+  warning: "bg-accent/10 text-accent-ink border-accent/30",
   danger: "bg-danger/10 text-danger border-danger/30",
   neutral: "bg-paper text-ink border-hairline dark:bg-ops-bg dark:text-ops-ink dark:border-ops-ink",
 };
@@ -90,7 +90,7 @@ export function Card({ href, children, className = "" }: { href?: string; childr
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="font-mono text-xs font-semibold uppercase tracking-wide text-accent dark:text-ops-muted">{children}</p>;
+  return <p className="font-mono text-xs font-semibold uppercase tracking-wide text-accent-ink dark:text-ops-muted">{children}</p>;
 }
 
 export function PageHero({

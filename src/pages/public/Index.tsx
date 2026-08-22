@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { ColorBlock, Eyebrow, FilterBar, ImageCrossfade, PET_SHOWCASE_IMAGES_HOME, TextLink } from "../../components/ui";
+import { ColorBlock, Eyebrow, FilterBar, ImageCrossfade, LinkButton, PET_SHOWCASE_IMAGES_HOME, TextLink } from "../../components/ui";
 import { EVENTS, type EventStatus } from "../../data/events";
 
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
@@ -31,9 +31,7 @@ export default function Index() {
               미용부터 건강검진, 산책용품까지. 지금 참여할 수 있는 반려생활 혜택을 골라 쿠폰으로 간직하세요.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
-              <a href="#event-list" className="inline-flex min-h-11 items-center justify-center rounded-full border border-accent bg-accent px-5 text-[18px] font-medium text-ink transition-colors hover:bg-[#c85319]">
-                이벤트 둘러보기
-              </a>
+              <LinkButton to="#event-list">이벤트 둘러보기</LinkButton>
               <TextLink to="/user/my-coupons">내 쿠폰 보기</TextLink>
             </div>
           </div>
@@ -61,7 +59,7 @@ export default function Index() {
             </h2>
             <p className="mt-4 max-w-[56ch]">
               {FEATURED_EVENT.title}에서 미용·목욕 결제에 쓸 수 있는 {FEATURED_EVENT.benefit}{" "}
-              <strong className="font-semibold text-accent">할인</strong> 쿠폰을 만나보세요.
+              <strong className="font-semibold text-accent-ink">할인</strong> 쿠폰을 만나보세요.
             </p>
             <dl className="mt-6 grid max-w-md grid-cols-2 gap-4 border-t border-hairline pt-4">
               <div>
@@ -73,12 +71,9 @@ export default function Index() {
                 <dd className="font-semibold">{FEATURED_EVENT.metrics.find((m) => m.label === "현재 잔여")?.value}장</dd>
               </div>
             </dl>
-            <Link
-              to={`/event-detail/${FEATURED_EVENT.id}`}
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 text-[18px] font-medium text-ink transition-colors hover:bg-[#c85319]"
-            >
+            <LinkButton to={`/event-detail/${FEATURED_EVENT.id}`} className="mt-6">
               혜택 자세히 보기
-            </Link>
+            </LinkButton>
           </ColorBlock>
         </div>
       </section>
@@ -124,9 +119,13 @@ export default function Index() {
                     <dt className="text-ink/60">기간</dt>
                     <dd className="font-medium">{event.period}</dd>
                   </div>
-                  <div className="flex justify-between pb-2 text-sm">
+                  <div className="flex justify-between border-b border-hairline-soft pb-2 text-sm">
                     <dt className="text-ink/60">대표 혜택</dt>
                     <dd className="font-medium">{event.benefit}</dd>
+                  </div>
+                  <div className="flex justify-between pb-2 text-sm">
+                    <dt className="text-ink/60">{event.metrics[1].label}</dt>
+                    <dd className={`font-medium ${event.status === "open" ? "text-accent-ink" : ""}`}>{event.metrics[1].value}장</dd>
                   </div>
                 </dl>
                 <Link
@@ -171,6 +170,9 @@ export default function Index() {
               </li>
             ))}
           </ol>
+        </div>
+        <div className="container-page mt-10 flex justify-center">
+          <LinkButton to="#event-list">이벤트 둘러보기</LinkButton>
         </div>
       </section>
     </Layout>

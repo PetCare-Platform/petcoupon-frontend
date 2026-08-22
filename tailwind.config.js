@@ -18,6 +18,7 @@ export default {
         "hairline-soft": "#ebe7e1",
         "surface-soft": "#ebe7e1",
         accent: "#e35e1c",
+        "accent-ink": "#ad4815",
         success: "#0bdf50",
         danger: "#c41c1c",
         // Internal ops dark theme
