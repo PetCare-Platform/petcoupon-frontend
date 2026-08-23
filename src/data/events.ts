@@ -32,7 +32,7 @@ export const EVENTS: EventRecord[] = [
   {
     id: 1,
     status: "open",
-    label: "EVENT 01",
+    label: "이벤트 01",
     title: "반려동물 여름 케어 위크",
     desc: "목욕과 미용을 함께 챙기는 계절 한정 혜택",
     detailDesc: "더운 계절에도 산뜻하게. 제휴 미용·목욕 서비스에 사용할 수 있는 두 가지 쿠폰을 준비했어요.",
@@ -58,7 +58,7 @@ export const EVENTS: EventRecord[] = [
   {
     id: 2,
     status: "scheduled",
-    label: "EVENT 02",
+    label: "이벤트 02",
     title: "건강검진 데이",
     desc: "기본 검진 패키지를 부담 없이 시작하는 주간",
     detailDesc: "1년에 한 번은 꼭 필요한 건강검진. 기본 검진 패키지를 합리적인 가격에 시작해 보세요.",
@@ -83,7 +83,7 @@ export const EVENTS: EventRecord[] = [
   {
     id: 3,
     status: "open",
-    label: "EVENT 03",
+    label: "이벤트 03",
     title: "함께 걷는 계절",
     desc: "산책용품과 야외 활동을 위한 정액 할인",
     detailDesc: "선선해진 날씨에 산책을 더 즐겁게. 목줄과 하네스, 산책용품 구매에 쓸 수 있는 쿠폰이에요.",
@@ -106,7 +106,7 @@ export const EVENTS: EventRecord[] = [
   {
     id: 5,
     status: "closed",
-    label: "EVENT 05",
+    label: "이벤트 05",
     title: "웰컴 펫데이",
     desc: "첫 구매 고객을 위한 반가운 시작 쿠폰",
     detailDesc: "PetCoupon이 처음이신가요? 첫 구매를 응원하는 정액 할인 쿠폰이었어요. 지금은 발급이 종료되었습니다.",

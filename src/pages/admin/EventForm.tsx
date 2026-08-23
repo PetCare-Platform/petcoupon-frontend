@@ -35,7 +35,7 @@ export default function EventForm() {
           <Link to="/admin/events" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
             ← 이벤트 목록
           </Link>
-          <Eyebrow>ADMIN / NEW EVENT</Eyebrow>
+          <Eyebrow>관리자 · 이벤트 등록</Eyebrow>
           <h1 className="mt-2">이벤트 만들기</h1>
           <p className="mt-2 text-ink/70">고객에게 보여줄 이름과 설명, 정확한 공개 일정을 입력하세요.</p>
         </div>
@@ -44,7 +44,7 @@ export default function EventForm() {
       <section className="py-6">
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <span className="font-mono text-xs uppercase tracking-wide">EDITOR'S CHECKLIST</span>
+            <span className="text-xs font-semibold uppercase tracking-wide">작성 체크리스트</span>
             <h2 className="mt-1">좋은 이벤트는 일정부터 명확해요.</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5">
               <li>고객이 혜택을 바로 이해하는 이름을 사용하세요.</li>

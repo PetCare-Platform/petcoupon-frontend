@@ -1,5 +1,5 @@
 import { Layout } from "../../components/Layout";
-import { BarChart, Card, Eyebrow, LinkButton, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
+import { BarChart, Card, Eyebrow, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
 const THROUGHPUT = [
@@ -27,20 +27,17 @@ export default function Monitoring() {
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>INTERNAL / MONITORING</Eyebrow>
+            <Eyebrow>내부 운영 · 시스템 현황</Eyebrow>
             <h1 className="mt-2">시스템 현황</h1>
             <p className="mt-2 text-ink/70 dark:text-ops-muted">쿠폰 발급 흐름의 가용성, 처리량과 지연을 한 화면에서 점검하세요.</p>
           </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => showToast("시스템 현황을 최신 시각으로 갱신했습니다.")}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg"
-            >
-              현황 새로고침
-            </button>
-            <LinkButton to="/internal/failures" variant="secondary">실패 목록</LinkButton>
-          </div>
+          <button
+            type="button"
+            onClick={() => showToast("시스템 현황을 최신 시각으로 갱신했습니다.")}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg"
+          >
+            현황 새로고침
+          </button>
         </div>
       </section>
 
@@ -49,10 +46,10 @@ export default function Monitoring() {
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="font-mono text-xs uppercase tracking-wide">LIVE PULSE</span>
+                <span className="text-xs font-semibold uppercase tracking-wide">실시간 현황</span>
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
-              <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-ink-muted">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 <span className="h-3 w-3 animate-live-pulse rounded-full bg-ink" aria-hidden="true" /> 마지막 확인 11:42:08
               </span>
             </div>
@@ -106,13 +103,13 @@ export default function Monitoring() {
       <section className="py-10">
         <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.3fr]">
           <div>
-            <Eyebrow>ISSUE THROUGHPUT</Eyebrow>
+            <Eyebrow>처리량</Eyebrow>
             <h2 className="mt-2">최근 발급 처리량</h2>
             <p className="mt-2 text-ink/70 dark:text-ops-muted">한 시간 동안의 분당 발급 요청과 실패 비율입니다.</p>
           </div>
           <figure className="rounded-block border border-hairline p-6 dark:border-white/[0.14] dark:bg-ops-surface">
             <BarChart points={THROUGHPUT} />
-            <figcaption className="mt-3 font-mono text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</figcaption>
+            <figcaption className="mt-3 text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</figcaption>
           </figure>
         </div>
       </section>
@@ -120,14 +117,14 @@ export default function Monitoring() {
       <section className="py-10">
         <div className="container-page">
           <h2 className="mb-6">운영 상세로 이동</h2>
-          <nav aria-label="내부 운영 화면" className="grid gap-4 sm:grid-cols-3">
+          <nav aria-label="내부 운영 화면" className="grid items-start gap-4 sm:grid-cols-3">
             {[
-              { to: "/internal/issues", tag: "ISSUE FLOW", title: "발급 처리 흐름", desc: "요청 단계 추적" },
-              { to: "/internal/failures", tag: "FAILURES", title: "실패 처리", desc: "Retry와 DLQ" },
-              { to: "/internal/verification", tag: "VERIFY", title: "정합성 검증", desc: "원장 차이 확인" },
+              { to: "/internal/issues", tag: "발급", title: "발급 처리 흐름", desc: "요청 단계 추적" },
+              { to: "/internal/failures", tag: "실패", title: "실패 처리", desc: "Retry와 DLQ" },
+              { to: "/internal/verification", tag: "검증", title: "정합성 검증", desc: "원장 차이 확인" },
             ].map((item) => (
               <Card key={item.to} href={item.to}>
-                <span className="block font-mono text-xs uppercase tracking-wide text-ink/60 dark:text-ops-muted">{item.tag}</span>
+                <span className="block text-xs font-semibold uppercase tracking-wide text-ink/60 dark:text-ops-muted">{item.tag}</span>
                 <strong className="mt-1 block text-lg">{item.title}</strong>
                 <span className="text-ink/60 dark:text-ops-muted">{item.desc} →</span>
               </Card>

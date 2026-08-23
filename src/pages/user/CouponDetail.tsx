@@ -26,7 +26,7 @@ export default function CouponDetail() {
           <Link to="/user/my-coupons" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
             ← 내 쿠폰
           </Link>
-          <Eyebrow>COUPON ISSUE / 1042</Eyebrow>
+          <Eyebrow>쿠폰 발급 · 1042</Eyebrow>
           <h1 className="mt-2">여름 정률 쿠폰</h1>
           <p className="mt-2 text-ink/70">반려동물 여름 케어 위크 · 미용과 목욕 서비스에 사용할 수 있어요.</p>
         </div>
@@ -42,7 +42,7 @@ export default function CouponDetail() {
               이 코드를 보여주세요.
             </h2>
             <div className="mt-6 rounded-control bg-paper p-5">
-              <span className="font-mono text-xs uppercase tracking-wide text-ink/60">COUPON CODE</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-ink/60">쿠폰 코드</span>
               <p className="mt-2 font-mono text-3xl font-bold tracking-wide">{CODE}</p>
               <button
                 type="button"
@@ -89,7 +89,7 @@ export default function CouponDetail() {
       <section className="py-10">
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <Eyebrow>COUPON ACTION</Eyebrow>
+            <Eyebrow>쿠폰 처리</Eyebrow>
             <h2 className="mt-2">
               사용 상태를
               <br />

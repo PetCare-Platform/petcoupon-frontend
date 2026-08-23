@@ -35,7 +35,7 @@ export default function CouponForm() {
           <Link to="/admin/coupons" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
             ← 쿠폰 목록
           </Link>
-          <Eyebrow>ADMIN / NEW COUPON</Eyebrow>
+          <Eyebrow>관리자 · 쿠폰 등록</Eyebrow>
           <h1 className="mt-2">쿠폰 만들기</h1>
         </div>
       </section>

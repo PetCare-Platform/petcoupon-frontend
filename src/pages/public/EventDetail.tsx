@@ -73,7 +73,7 @@ export default function EventDetail() {
 
       <section id="coupon-choice" className="py-14">
         <div className="container-page max-w-2xl">
-          <Eyebrow>CHOOSE YOUR COUPON</Eyebrow>
+          <Eyebrow>쿠폰 선택</Eyebrow>
           <h2 className="mt-2">받을 혜택을 골라주세요.</h2>
           <p className="mt-2 text-ink/70">쿠폰별로 한 사람당 한 장만 받을 수 있어요.</p>
 

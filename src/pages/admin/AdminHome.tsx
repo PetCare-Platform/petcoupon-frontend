@@ -7,10 +7,11 @@ export default function AdminHome() {
       <section className="py-10">
         <div className="container-page grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-start">
           <div>
-            <Eyebrow>ADMIN / CONTROL ROOM</Eyebrow>
+            <Eyebrow>관리자 홈</Eyebrow>
             <h1 className="mt-2">
-              혜택 운영을
-              <br />더 선명하게.
+              이벤트와 쿠폰을
+              <br />
+              한 곳에서 관리하세요.
             </h1>
             <p className="mt-3 text-ink/70">이벤트 일정과 쿠폰 재고, 최근 변경 사항을 한 흐름으로 관리하세요.</p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -19,7 +20,7 @@ export default function AdminHome() {
             </div>
           </div>
           <ColorBlock tone="surface">
-            <span className="font-mono text-xs uppercase tracking-wide">OPS NOTE</span>
+            <span className="text-xs font-semibold uppercase tracking-wide">운영 메모</span>
             <strong className="mt-2 block text-xl">예정 이벤트 점검</strong>
             <p className="mt-2">건강검진 데이 오픈 전 쿠폰 수량과 발급 기간을 확인해 주세요.</p>
           </ColorBlock>
@@ -47,17 +48,17 @@ export default function AdminHome() {
 
       <section className="py-10">
         <div className="container-page">
-          <Eyebrow>MANAGE</Eyebrow>
+          <Eyebrow>바로가기</Eyebrow>
           <h2 className="mt-2">운영 바로가기</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <div className="mt-6 grid items-start gap-4 sm:grid-cols-2 md:grid-cols-4">
             {[
-              { to: "/admin/events", tag: "EVENTS", title: "이벤트 목록", desc: "일정과 상태 관리" },
-              { to: "/admin/event-form", tag: "NEW EVENT", title: "이벤트 등록", desc: "새 일정 만들기" },
-              { to: "/admin/coupons", tag: "COUPONS", title: "쿠폰 목록", desc: "혜택과 재고 관리" },
-              { to: "/admin/coupon-form", tag: "NEW COUPON", title: "쿠폰 등록", desc: "새 혜택 만들기" },
+              { to: "/admin/events", tag: "이벤트", title: "이벤트 목록", desc: "일정과 상태 관리" },
+              { to: "/admin/event-form", tag: "이벤트", title: "이벤트 등록", desc: "새 일정 만들기" },
+              { to: "/admin/coupons", tag: "쿠폰", title: "쿠폰 목록", desc: "혜택과 재고 관리" },
+              { to: "/admin/coupon-form", tag: "쿠폰", title: "쿠폰 등록", desc: "새 혜택 만들기" },
             ].map((item) => (
-              <Card key={item.to} href={item.to} className="flex min-h-[120px] flex-col justify-between gap-3">
-                <span className="font-mono text-xs uppercase tracking-wide text-ink/60">{item.tag}</span>
+              <Card key={item.to} href={item.to} className="flex flex-col gap-3">
+                <span className="text-xs font-semibold uppercase tracking-wide text-ink/60">{item.tag}</span>
                 <div>
                   <strong className="block text-lg">{item.title}</strong>
                   <span className="text-ink/60">{item.desc} →</span>

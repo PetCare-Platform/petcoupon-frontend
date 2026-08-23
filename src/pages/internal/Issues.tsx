@@ -39,7 +39,7 @@ export default function Issues() {
       <section className="py-8">
         <div className="container-page grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:items-end">
           <div>
-            <Eyebrow>INTERNAL / ISSUE FLOW</Eyebrow>
+            <Eyebrow>내부 운영 · 발급 흐름</Eyebrow>
             <h1 className="mt-2">발급 처리 흐름</h1>
             <p className="mt-2 text-ink/70 dark:text-ops-muted">하나의 요청이 받은 순간부터 저장과 알림까지 이동한 경로를 살펴보세요.</p>
           </div>
@@ -61,12 +61,12 @@ export default function Issues() {
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="font-mono text-xs uppercase tracking-wide">REQUEST FOUND</span>
+                <span className="text-xs font-semibold uppercase tracking-wide">요청 조회 결과</span>
                 <h2 className="mt-1">{query || "REQ-20260821-8F3A21"}</h2>
                 <p className="mt-1 text-ink-muted">2026.08.21 09:14:22 · 사용자 #1 · 쿠폰 #10</p>
               </div>
               <div className="text-right">
-                <span className="inline-flex min-h-8 items-center rounded-full border border-success/30 bg-success/10 px-2.5 font-mono text-xs uppercase tracking-wide text-[#0a8f3c]">처리 완료</span>
+                <span className="inline-flex min-h-8 items-center rounded-full border border-success/30 bg-success/10 px-2.5 text-xs font-semibold uppercase tracking-wide text-[#0a8f3c]">처리 완료</span>
                 <strong className="mt-1 block font-mono text-xl">184ms</strong>
               </div>
             </div>
@@ -100,7 +100,7 @@ export default function Issues() {
         <div className="container-page">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <Eyebrow>PROCESS PIPELINE</Eyebrow>
+              <Eyebrow>발급 요청 · {query || "REQ-20260821-8F3A21"}</Eyebrow>
               <h2 className="mt-1">처리 단계</h2>
             </div>
             <button
@@ -111,13 +111,13 @@ export default function Issues() {
               Request ID 복사
             </button>
           </div>
-          <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <ol className="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {PIPELINE.map((step) => (
-              <li key={step.step} className="rounded-control border-t-[3px] border-ink bg-paper p-4 dark:border-ops-ink dark:bg-ops-surface">
+              <li key={step.step} className="rounded-control border-t-[3px] border-ink bg-paper p-3.5 dark:border-ops-ink dark:bg-ops-surface">
                 <span className="font-mono text-xs text-ink/50 dark:text-ops-muted">{step.step}</span>
-                <h3 className="mt-2 text-base font-semibold">{step.title}</h3>
-                <p className="mt-1 text-sm text-ink/60 dark:text-ops-muted">{step.detail}</p>
-                {step.tag ? <span className="mt-2 inline-block font-mono text-xs text-ink/50 dark:text-ops-muted">{step.tag}</span> : null}
+                <h3 className="mt-1.5 text-base font-semibold">{step.title}</h3>
+                <p className="mt-0.5 text-sm text-ink/60 dark:text-ops-muted">{step.detail}</p>
+                {step.tag ? <span className="mt-1.5 inline-block font-mono text-xs text-ink/50 dark:text-ops-muted">{step.tag}</span> : null}
               </li>
             ))}
           </ol>
@@ -132,10 +132,10 @@ export default function Issues() {
             </div>
             <TextLink to="/internal/failures">실패 처리 보기</TextLink>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid items-start gap-3 sm:grid-cols-2">
             {RECORDS.map((record) => (
-              <article key={record.title} className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface">
-                <div className="mb-3 flex items-center justify-between">
+              <article key={record.title} className="rounded-block border border-hairline p-4 dark:border-white/[0.14] dark:bg-ops-surface">
+                <div className="mb-2.5 flex items-center justify-between">
                   <h3 className="text-base font-semibold">{record.title}</h3>
                   <StatusPill tone={record.tone}>{record.status}</StatusPill>
                 </div>

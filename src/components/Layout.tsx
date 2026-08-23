@@ -1,21 +1,30 @@
+import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { AREA_ROUTES, type AreaKey } from "../routes";
 
 export function Layout({ area, page, children }: { area: AreaKey; page: string; children: ReactNode }) {
   const dark = AREA_ROUTES[area].dark;
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView();
+      return;
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [location.pathname, location.hash]);
+
   return (
     <div className={dark ? "dark" : undefined}>
-      <div className={`relative min-h-screen bg-canvas text-ink dark:bg-ops-bg dark:text-ops-ink dark:font-ops-sans ${dark ? "mesh-ops" : "mesh-canvas"}`}>
-        <div className="grain-overlay" aria-hidden="true" />
-        <div className="relative z-[2]">
-          <Header area={area} page={page} />
-          <main id="main-content" tabIndex={-1}>
-            {children}
-          </main>
-          <Footer />
-        </div>
+      <div className="min-h-screen bg-canvas text-ink dark:bg-ops-bg dark:text-ops-ink dark:font-ops-sans">
+        <Header area={area} page={page} />
+        <main key={location.pathname} id="main-content" tabIndex={-1} className="animate-reveal-up">
+          {children}
+        </main>
+        <Footer />
       </div>
     </div>
   );

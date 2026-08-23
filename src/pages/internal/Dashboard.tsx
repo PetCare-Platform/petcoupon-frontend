@@ -1,5 +1,5 @@
 import { Layout } from "../../components/Layout";
-import { BarChart, Eyebrow, LinkButton, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
+import { BarChart, Eyebrow, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
 const THROUGHPUT = [
@@ -41,20 +41,17 @@ export default function Dashboard() {
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>INTERNAL / DASHBOARD</Eyebrow>
+            <Eyebrow>내부 운영 · 대시보드</Eyebrow>
             <h1 className="mt-2">내부 운영 대시보드</h1>
             <p className="mt-2 text-ink/70 dark:text-ops-muted">시스템 현황과 발급 처리 흐름, 실패 처리를 한 화면에서 점검하세요.</p>
           </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => showToast("대시보드를 최신 상태로 갱신했습니다.")}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg dark:hover:bg-white"
-            >
-              전체 새로고침
-            </button>
-            <LinkButton to="/internal/verification" variant="secondary">정합성 검증</LinkButton>
-          </div>
+          <button
+            type="button"
+            onClick={() => showToast("대시보드를 최신 상태로 갱신했습니다.")}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg dark:hover:bg-white"
+          >
+            전체 새로고침
+          </button>
         </div>
       </section>
 
@@ -63,35 +60,35 @@ export default function Dashboard() {
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="font-mono text-xs uppercase tracking-wide">LIVE PULSE</span>
+                <span className="text-xs font-semibold uppercase tracking-wide">실시간 현황</span>
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
-              <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-ink-muted">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 <span className="h-3 w-3 animate-live-pulse rounded-full bg-ink" aria-hidden="true" /> 마지막 확인 11:42:08
               </span>
             </div>
             <div className="mt-5 overflow-hidden rounded-control border border-hairline-soft bg-white/70">
               <div className="grid grid-cols-2 gap-px bg-ink/10 md:grid-cols-4">
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">API 성공률</dt>
+                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">API 성공률</dt>
                   <dd className="text-[26px] font-semibold">
                     99.98%<small className="ml-1.5 text-sm font-normal">최근 15분</small>
                   </dd>
                 </div>
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">분당 발급</dt>
+                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">분당 발급</dt>
                   <dd className="text-[26px] font-semibold">
                     186<small className="ml-1.5 text-sm font-normal">평균 172건</small>
                   </dd>
                 </div>
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">처리 지연</dt>
+                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">처리 지연</dt>
                   <dd className="text-[26px] font-semibold">
                     184ms<small className="ml-1.5 text-sm font-normal">목표 250ms 이하</small>
                   </dd>
                 </div>
                 <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/60">실패 대기</dt>
+                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">실패 대기</dt>
                   <dd className="text-[26px] font-semibold">
                     3<small className="ml-1.5 text-sm font-normal">긴급 항목 없음</small>
                   </dd>
@@ -168,11 +165,11 @@ export default function Dashboard() {
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="text-lg font-semibold">발급 처리 흐름</h3>
-                <p className="font-mono text-xs text-ink/50 dark:text-ops-muted">REQ-20260821-8F3A21 · 사용자 #1 · 쿠폰 #10 · 184ms</p>
+                <p className="text-xs text-ink/50 dark:text-ops-muted">REQ-20260821-8F3A21 · 사용자 #1 · 쿠폰 #10 · 184ms</p>
               </div>
               <TextLink to="/internal/issues">요청 조회 전체 화면 →</TextLink>
             </div>
-            <ol className="grid grid-cols-2 gap-3 md:grid-cols-5">
+            <ol className="grid items-start grid-cols-2 gap-3 md:grid-cols-5">
               {PIPELINE.map((step) => (
                 <li key={step.step} className="rounded-control border-t-[3px] border-ink bg-paper p-3.5 dark:border-ops-ink dark:bg-ops-bg">
                   <span className="font-mono text-xs text-ink/50 dark:text-ops-muted">{step.step}</span>
@@ -193,7 +190,7 @@ export default function Dashboard() {
               <TextLink to="/internal/monitoring">시간대별 추이 보기 →</TextLink>
             </div>
             <BarChart points={THROUGHPUT} />
-            <p className="mt-3 font-mono text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</p>
+            <p className="mt-3 text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</p>
           </article>
 
           <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">

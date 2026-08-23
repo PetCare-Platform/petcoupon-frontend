@@ -6,7 +6,7 @@ export default function UserHome() {
     <Layout area="user" page="user">
       <section className="py-10">
         <div className="container-page">
-          <Eyebrow>USER / PROFILE</Eyebrow>
+          <Eyebrow>사용자 정보</Eyebrow>
           <h1 className="mt-2">
             사용자 정보를
             <br />
@@ -18,7 +18,7 @@ export default function UserHome() {
       <section className="py-6">
         <div className="container-page">
           <ColorBlock tone="surface">
-            <span className="inline-flex min-h-8 items-center rounded-full bg-paper px-2.5 font-mono text-xs uppercase tracking-wide">ACTIVE MEMBER</span>
+            <span className="inline-flex min-h-8 items-center rounded-full bg-paper px-2.5 text-xs font-semibold uppercase tracking-wide">활성 회원</span>
             <div className="mt-4 flex items-center gap-4">
               <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-ink text-xl font-bold text-white">김</span>
               <div>

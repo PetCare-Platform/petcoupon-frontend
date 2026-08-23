@@ -19,7 +19,7 @@ export default function Verification() {
     <Layout area="internal" page="verification">
       <section className="py-8">
         <div className="container-page">
-          <Eyebrow>INTERNAL / VERIFICATION</Eyebrow>
+          <Eyebrow>내부 운영 · 정합성 검증</Eyebrow>
           <h1 className="mt-2">정합성 검증</h1>
           <p className="mt-2 text-ink/70 dark:text-ops-muted">쿠폰 재고와 발급 원장, 메시지 처리 결과의 정합성을 검증합니다.</p>
         </div>

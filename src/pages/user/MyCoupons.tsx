@@ -23,7 +23,7 @@ export default function MyCoupons() {
     <Layout area="user" page="my-coupons">
       <section className="py-10">
         <div className="container-page">
-          <Eyebrow>USER / MY COUPONS</Eyebrow>
+          <Eyebrow>보유 쿠폰</Eyebrow>
           <h1 className="mt-2">
             내 쿠폰을
             <br />
@@ -31,7 +31,7 @@ export default function MyCoupons() {
           </h1>
           <p className="mt-2 text-ink/70">김하늘 님이 받은 혜택의 상태와 사용 기한을 확인하세요.</p>
           <div className="mt-6 max-w-xs">
-            <MetricTile label="AVAILABLE NOW" value={availableCount} hint="지금 사용할 수 있는 쿠폰" />
+            <MetricTile label="지금 사용 가능" value={availableCount} hint="지금 사용할 수 있는 쿠폰" />
           </div>
         </div>
       </section>
@@ -67,16 +67,16 @@ export default function MyCoupons() {
             />
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <div className="mt-8 grid items-start gap-3 sm:grid-cols-2">
             {visible.map((coupon) => (
-              <article key={coupon.issue} className="rounded-control border border-hairline p-4">
+              <article key={coupon.issue} className="rounded-control border border-hairline p-3.5">
                 <div className="mb-2 flex items-center justify-between">
                   {coupon.badge ? (
-                    <span className="inline-flex min-h-6 items-center rounded-full border border-accent/30 bg-accent/10 px-2 font-mono text-[11px] uppercase tracking-wide text-accent-ink">{coupon.badge}</span>
+                    <span className="inline-flex min-h-6 items-center rounded-full border border-accent/30 bg-accent/10 px-2 text-[11px] font-semibold uppercase tracking-wide text-accent-ink">{coupon.badge}</span>
                   ) : (
-                    <span className="inline-flex min-h-6 items-center rounded-full bg-hairline-soft px-2 font-mono text-[11px] uppercase tracking-wide">{statusLabel[coupon.status]}</span>
+                    <span className="inline-flex min-h-6 items-center rounded-full bg-hairline-soft px-2 text-[11px] font-semibold uppercase tracking-wide">{statusLabel[coupon.status]}</span>
                   )}
-                  <span className="font-mono text-[11px] text-ink/50">ISSUE {coupon.issue}</span>
+                  <span className="text-[11px] text-ink/50">발급번호 {coupon.issue}</span>
                 </div>
                 <p className="text-xs text-ink/60">{coupon.event}</p>
                 <h3 className="mt-0.5 text-base font-semibold">{coupon.name}</h3>

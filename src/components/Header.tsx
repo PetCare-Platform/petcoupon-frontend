@@ -53,7 +53,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
                               to={route.path}
                               className={`block rounded-xl px-3 py-2 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
                                 isCurrentPage
-                                  ? "bg-accent text-paper dark:bg-ops-ink dark:text-ops-bg"
+                                  ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg"
                                   : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-bg"
                               }`}
                             >
@@ -103,7 +103,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
                 className={({ isActive }) =>
                   `inline-flex min-h-9 flex-none items-center whitespace-nowrap rounded-full px-3 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
                     isActive
-                      ? "bg-accent text-paper dark:bg-ops-ink dark:text-ops-bg"
+                      ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg"
                       : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-surface"
                   }`
                 }
@@ -141,7 +141,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
                       to={route.path}
                       onClick={() => setOpen(false)}
                       className={`flex min-h-11 items-center rounded-xl px-3 text-[17px] font-medium transition-all duration-500 ease-fluid ${
-                        isCurrentPage ? "bg-accent text-paper dark:bg-ops-ink dark:text-ops-bg" : "text-ink/80 dark:text-ops-muted"
+                        isCurrentPage ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg" : "text-ink/80 dark:text-ops-muted"
                       } ${open ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
                       style={{ transitionDelay: open ? `${groupIndex * 60 + (i + 1) * 40}ms` : "0ms" }}
                     >

@@ -30,21 +30,18 @@ export default function Events() {
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>ADMIN / EVENTS</Eyebrow>
+            <Eyebrow>관리자 · 이벤트</Eyebrow>
             <h1 className="mt-2">이벤트 목록</h1>
             <p className="mt-2 text-ink/70">공개 일정과 상태, 연결된 쿠폰을 확인하고 필요한 항목을 관리하세요.</p>
           </div>
-          <div className="flex gap-3">
-            <LinkButton to="/admin/event-form">새 이벤트</LinkButton>
-            <LinkButton to="/admin" variant="secondary">관리자 홈</LinkButton>
-          </div>
+          <LinkButton to="/admin/event-form">새 이벤트</LinkButton>
         </div>
       </section>
 
       <section className="py-6">
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <span className="font-mono text-xs uppercase tracking-wide">NEXT OPEN</span>
+            <span className="text-xs font-semibold uppercase tracking-wide">다음 오픈</span>
             <h2 className="mt-1">건강검진 데이가 3일 뒤 시작됩니다.</h2>
             <p className="mt-2">연결 쿠폰의 발급 시간과 총 수량을 마지막으로 점검해 주세요.</p>
           </div>
@@ -75,8 +72,8 @@ export default function Events() {
               <article key={event.id} className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-hairline p-3.5">
                 <div>
                   <div className="mb-1 flex items-center gap-2">
-                    <span className="font-mono text-xs text-ink/50">EVENT {String(event.id).padStart(2, "0")}</span>
-                    <span className={`inline-flex min-h-6 items-center rounded-full px-2 font-mono text-[11px] uppercase tracking-wide ${statusClass[event.status]}`}>
+                    <span className="text-xs text-ink/50">이벤트 {String(event.id).padStart(2, "0")}</span>
+                    <span className={`inline-flex min-h-6 items-center rounded-full px-2 text-[11px] font-semibold uppercase tracking-wide ${statusClass[event.status]}`}>
                       {statusLabel[event.status]}
                     </span>
                   </div>

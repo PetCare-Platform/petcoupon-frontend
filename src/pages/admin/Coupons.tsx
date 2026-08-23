@@ -30,21 +30,18 @@ export default function Coupons() {
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>ADMIN / COUPONS</Eyebrow>
+            <Eyebrow>관리자 · 쿠폰</Eyebrow>
             <h1 className="mt-2">쿠폰 목록</h1>
             <p className="mt-2 text-ink/70">할인 조건과 발급 기간, 남은 재고를 빠르게 확인하세요.</p>
           </div>
-          <div className="flex gap-3">
-            <LinkButton to="/admin/coupon-form">새 쿠폰</LinkButton>
-            <LinkButton to="/admin" variant="secondary">관리자 홈</LinkButton>
-          </div>
+          <LinkButton to="/admin/coupon-form">새 쿠폰</LinkButton>
         </div>
       </section>
 
       <section className="py-6">
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <span className="font-mono text-xs uppercase tracking-wide">STOCK SIGNAL</span>
+            <span className="text-xs font-semibold uppercase tracking-wide">재고 알림</span>
             <h2 className="mt-1">산책용품 할인 쿠폰, 재고 128장.</h2>
             <p className="mt-2">발급 종료까지 남았습니다 · 소진 속도와 이벤트 총 수량을 함께 확인하세요.</p>
           </div>
@@ -75,8 +72,8 @@ export default function Coupons() {
               <article key={coupon.id} className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-hairline p-3.5">
                 <div>
                   <div className="mb-1 flex items-center gap-2">
-                    <span className="font-mono text-xs text-ink/50">COUPON {coupon.id}</span>
-                    <span className={`inline-flex min-h-6 items-center rounded-full px-2 font-mono text-[11px] uppercase tracking-wide ${statusClass[coupon.status]}`}>
+                    <span className="text-xs text-ink/50">쿠폰 {coupon.id}</span>
+                    <span className={`inline-flex min-h-6 items-center rounded-full px-2 text-[11px] font-semibold uppercase tracking-wide ${statusClass[coupon.status]}`}>
                       {statusLabel[coupon.status]}
                     </span>
                   </div>

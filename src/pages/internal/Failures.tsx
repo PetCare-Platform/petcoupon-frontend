@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Layout } from "../../components/Layout";
-import { Eyebrow, FilterBar, LinkButton, MetricGrid, MetricTile, StatusPill } from "../../components/ui";
+import { Eyebrow, FilterBar, MetricGrid, MetricTile, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
 type Status = "failed" | "retry" | "dlq";
@@ -24,13 +24,9 @@ export default function Failures() {
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>INTERNAL / FAILURES</Eyebrow>
+            <Eyebrow>내부 운영 · 실패 처리</Eyebrow>
             <h1 className="mt-2">FAILED · Retry · DLQ</h1>
             <p className="mt-2 text-ink/70 dark:text-ops-muted">실패 원인을 분류하고 안전하게 재시도하거나 격리 큐로 이동하세요.</p>
-          </div>
-          <div className="flex gap-3">
-            <LinkButton to="/internal/issues">발급 흐름 추적</LinkButton>
-            <LinkButton to="/internal/monitoring" variant="secondary">시스템 현황</LinkButton>
           </div>
         </div>
       </section>
@@ -40,7 +36,7 @@ export default function Failures() {
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="font-mono text-xs uppercase tracking-wide">ATTENTION QUEUE</span>
+                <span className="text-xs font-semibold uppercase tracking-wide">확인 필요 큐</span>
                 <h2 className="mt-1">확인이 필요한 메시지 3건</h2>
               </div>
               <StatusPill tone="warning">관찰 중</StatusPill>
@@ -60,7 +56,7 @@ export default function Failures() {
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <Eyebrow>FAILURE RECORDS</Eyebrow>
+              <Eyebrow>실패 기록</Eyebrow>
               <h2 className="mt-2">실패 메시지</h2>
               <p className="mt-1 text-ink/70 dark:text-ops-muted">{visible.length}개의 항목</p>
             </div>
