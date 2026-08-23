@@ -59,10 +59,10 @@ export default function Events() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: "all", label: "전체" },
-                { value: "open", label: "진행 중" },
-                { value: "scheduled", label: "예정" },
-                { value: "closed", label: "종료" },
+                { value: "all", label: `전체 ${EVENTS.length}` },
+                { value: "open", label: `진행 중 ${EVENTS.filter((e) => e.status === "open").length}` },
+                { value: "scheduled", label: `예정 ${EVENTS.filter((e) => e.status === "scheduled").length}` },
+                { value: "closed", label: `종료 ${EVENTS.filter((e) => e.status === "closed").length}` },
               ]}
             />
           </div>

@@ -2,6 +2,8 @@ import { Layout } from "../../components/Layout";
 import { BarChart, Eyebrow, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
+const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
+
 const THROUGHPUT = [
   { label: "10:45", value: 142 },
   { label: "10:55", value: 158 },
@@ -55,7 +57,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <section className="py-4">
+      <section className="py-4 animate-reveal-up" style={reveal(1)}>
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -64,42 +66,26 @@ export default function Dashboard() {
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
               <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                <span className="h-3 w-3 animate-live-pulse rounded-full bg-ink" aria-hidden="true" /> 마지막 확인 11:42:08
+                <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
+                  <span className="absolute inline-flex h-full w-full animate-live-pulse rounded-full bg-success" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
+                </span>
+                마지막 확인 11:42:08
               </span>
             </div>
-            <div className="mt-5 overflow-hidden rounded-control border border-hairline-soft bg-white/70">
-              <div className="grid grid-cols-2 gap-px bg-ink/10 md:grid-cols-4">
-                <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">API 성공률</dt>
-                  <dd className="text-[26px] font-semibold">
-                    99.98%<small className="ml-1.5 text-sm font-normal">최근 15분</small>
-                  </dd>
-                </div>
-                <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">분당 발급</dt>
-                  <dd className="text-[26px] font-semibold">
-                    186<small className="ml-1.5 text-sm font-normal">평균 172건</small>
-                  </dd>
-                </div>
-                <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">처리 지연</dt>
-                  <dd className="text-[26px] font-semibold">
-                    184ms<small className="ml-1.5 text-sm font-normal">목표 250ms 이하</small>
-                  </dd>
-                </div>
-                <div className="bg-white/70 px-4 py-3.5">
-                  <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">실패 대기</dt>
-                  <dd className="text-[26px] font-semibold">
-                    3<small className="ml-1.5 text-sm font-normal">긴급 항목 없음</small>
-                  </dd>
-                </div>
-              </div>
+            <div className="mt-5">
+              <MetricGrid cols={4}>
+                <MetricTile label="API 성공률" value="99.98%" hint="최근 15분" tone="success" />
+                <MetricTile label="분당 발급" value="186" hint="평균 172건" tone="success" trend="up" />
+                <MetricTile label="처리 지연" value="184ms" hint="목표 250ms 이하" tone="success" trend="down" />
+                <MetricTile label="실패 대기" value="3" hint="긴급 항목 없음" tone="warning" />
+              </MetricGrid>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-4">
+      <section className="py-4 animate-reveal-up" style={reveal(2)}>
         <div className="container-page grid gap-6 lg:grid-cols-[7fr_5fr]">
           <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <div className="mb-4 flex items-center justify-between">
@@ -141,9 +127,9 @@ export default function Dashboard() {
               <StatusPill tone="warning">관찰 중</StatusPill>
             </div>
             <MetricGrid cols={3} compact>
-              <MetricTile label="FAILED" value="1" compact />
-              <MetricTile label="Retry" value="1" compact />
-              <MetricTile label="DLQ" value="1" compact />
+              <MetricTile label="FAILED" value="1" compact tone="danger" />
+              <MetricTile label="Retry" value="1" compact tone="warning" />
+              <MetricTile label="DLQ" value="1" compact tone="neutral" />
             </MetricGrid>
             <ul className="my-4 flex flex-col">
               {FAILURES.map((f, i) => (
@@ -159,7 +145,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <section className="py-4">
+      <section className="py-4 animate-reveal-up" style={reveal(3)}>
         <div className="container-page">
           <div className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -182,7 +168,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <section className="py-4 pb-14">
+      <section className="py-4 pb-14 animate-reveal-up" style={reveal(4)}>
         <div className="container-page grid gap-6 lg:grid-cols-[8fr_4fr]">
           <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <div className="mb-4 flex items-center justify-between">
@@ -199,8 +185,8 @@ export default function Dashboard() {
               <StatusPill tone="warning">2건 확인 필요</StatusPill>
             </div>
             <MetricGrid cols={2} compact>
-              <MetricTile label="일치" value="1,246" hint="99.84%" compact />
-              <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" compact />
+              <MetricTile label="일치" value="1,246" hint="99.84%" compact tone="success" />
+              <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" compact tone="danger" />
             </MetricGrid>
             <div className="mt-4">
               <TextLink to="/internal/verification">정합성 검증 전체 보기 →</TextLink>

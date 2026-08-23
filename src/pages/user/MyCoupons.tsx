@@ -39,7 +39,9 @@ export default function MyCoupons() {
       <section className="py-4">
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <h3 className="text-xl font-semibold">산책용품 할인 쿠폰이 곧 만료돼요.</h3>
+            <h3 className="text-xl font-semibold">
+              산책용품 할인 쿠폰이 <span className="text-clay-ink">곧 만료</span>돼요.
+            </h3>
             <p className="mt-2">8월 25일 15:22까지 사용할 수 있어요. 가까운 제휴 매장에서 산책 준비물을 챙겨보세요.</p>
             <Link to="/user/coupon-detail" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-[18px] font-medium text-white hover:bg-ink-muted">
               쿠폰 확인하기
@@ -72,7 +74,7 @@ export default function MyCoupons() {
               <article key={coupon.issue} className="rounded-control border border-hairline p-3.5">
                 <div className="mb-2 flex items-center justify-between">
                   {coupon.badge ? (
-                    <span className="inline-flex min-h-6 items-center rounded-full border border-accent/30 bg-accent/10 px-2 text-[11px] font-semibold uppercase tracking-wide text-accent-ink">{coupon.badge}</span>
+                    <span className="inline-flex min-h-6 items-center rounded-full border border-clay/30 bg-clay/10 px-2 text-[11px] font-semibold uppercase tracking-wide text-clay-ink">{coupon.badge}</span>
                   ) : (
                     <span className="inline-flex min-h-6 items-center rounded-full bg-hairline-soft px-2 text-[11px] font-semibold uppercase tracking-wide">{statusLabel[coupon.status]}</span>
                   )}
@@ -83,7 +85,7 @@ export default function MyCoupons() {
                 <p className="mt-1 text-xl font-semibold">{coupon.value}</p>
                 <p className="mt-0.5 text-xs text-ink/60">{coupon.condition}</p>
                 <div className="mt-3 flex items-center justify-between border-t border-hairline-soft pt-3 text-xs">
-                  <span className="text-ink/60">{coupon.deadline}</span>
+                  <span className={coupon.badge === "곧 만료" ? "font-semibold text-clay-ink" : "text-ink/60"}>{coupon.deadline}</span>
                   <Link to="/user/coupon-detail" className="font-medium underline underline-offset-4">
                     상세 보기 →
                   </Link>

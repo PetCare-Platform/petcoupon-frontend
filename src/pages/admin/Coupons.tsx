@@ -59,10 +59,10 @@ export default function Coupons() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: "all", label: "전체" },
-                { value: "active", label: "발급 중" },
-                { value: "scheduled", label: "발급 예정" },
-                { value: "closed", label: "종료" },
+                { value: "all", label: `전체 ${COUPONS.length}` },
+                { value: "active", label: `발급 중 ${COUPONS.filter((c) => c.status === "active").length}` },
+                { value: "scheduled", label: `발급 예정 ${COUPONS.filter((c) => c.status === "scheduled").length}` },
+                { value: "closed", label: `종료 ${COUPONS.filter((c) => c.status === "closed").length}` },
               ]}
             />
           </div>

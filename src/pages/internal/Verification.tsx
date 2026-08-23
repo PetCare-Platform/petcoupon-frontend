@@ -11,6 +11,9 @@ const CHECKS: { id: string; label: string; source: string; expected: string; act
   { id: "message-88231", label: "MESSAGE 88231 / DELIVERY", source: "Kafka ↔ NotificationLog", expected: "SENT", actual: "PENDING", status: "mismatch" },
 ];
 
+const countByStatus = (status: Status) => CHECKS.filter((c) => c.status === status).length;
+const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
+
 export default function Verification() {
   const [filter, setFilter] = useState<"all" | Status>("all");
   const visible = useMemo(() => (filter === "all" ? CHECKS : CHECKS.filter((c) => c.status === filter)), [filter]);
@@ -25,7 +28,7 @@ export default function Verification() {
         </div>
       </section>
 
-      <section className="py-4">
+      <section className="py-4 animate-reveal-up" style={reveal(1)}>
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <StatusPill tone="warning">2건 확인 필요</StatusPill>
@@ -33,16 +36,16 @@ export default function Verification() {
             <div className="mt-6">
               <MetricGrid cols={4}>
                 <MetricTile label="검사 대상" value="1,248" hint="쿠폰·발급·메시지" />
-                <MetricTile label="일치" value="1,246" hint="99.84%" />
-                <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" />
-                <MetricTile label="검증 시간" value="2.8s" hint="직전 대비 −0.4s" />
+                <MetricTile label="일치" value="1,246" hint="99.84%" tone="success" />
+                <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" tone="danger" />
+                <MetricTile label="검증 시간" value="2.8s" hint="직전 대비 -0.4s" tone="success" trend="down" />
               </MetricGrid>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-10 pb-16">
+      <section className="py-10 pb-16 animate-reveal-up" style={reveal(2)}>
         <div className="container-page">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -52,9 +55,9 @@ export default function Verification() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: "all", label: "전체" },
-                { value: "match", label: "일치" },
-                { value: "mismatch", label: "불일치" },
+                { value: "all", label: `전체 ${CHECKS.length}` },
+                { value: "match", label: `일치 ${countByStatus("match")}` },
+                { value: "mismatch", label: `불일치 ${countByStatus("mismatch")}` },
               ]}
             />
           </div>

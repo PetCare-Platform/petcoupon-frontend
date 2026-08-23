@@ -62,7 +62,7 @@ const toneClass: Record<StatusTone, string> = {
   scheduled: "bg-surface-2 text-ink-muted border-hairline",
   closed: "bg-surface-2 text-ink-muted border-hairline dark:bg-ops-border-soft dark:text-ops-ink dark:border-ops-border-soft",
   used: "bg-surface-2 text-ink-muted border-hairline",
-  warning: "bg-accent/10 text-accent-ink border-accent/30",
+  warning: "bg-clay/10 text-clay-ink border-clay/30",
   danger: "bg-danger/10 text-danger border-danger/30",
   neutral: "bg-paper text-ink border-hairline dark:bg-ops-bg dark:text-ops-ink dark:border-ops-ink",
 };
@@ -78,7 +78,7 @@ export function StatusPill({ tone = "neutral", children }: { tone?: StatusTone; 
 }
 
 export function Card({ href, children, className = "" }: { href?: string; children: ReactNode; className?: string }) {
-  const cls = `min-w-0 rounded-[1.25rem] border border-hairline bg-paper p-3.5 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
+  const cls = `min-w-0 rounded-panel border border-hairline bg-paper p-3.5 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
   if (href) {
     return (
       <Link to={href} className={`${cls} block no-underline hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_20px_40px_-20px_rgba(51,80,63,0.35)] active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30 dark:hover:shadow-none`}>
@@ -145,27 +145,45 @@ export function MetricGrid({ children, cols = 4, compact = false }: { children: 
   );
 }
 
+type MetricTone = "neutral" | "success" | "warning" | "danger";
+
+const metricToneClass: Record<MetricTone, string> = {
+  neutral: "text-ink dark:text-ops-ink",
+  success: "text-accent-ink dark:text-success",
+  warning: "text-clay-ink dark:text-ops-accent",
+  danger: "text-danger dark:text-[#e0654a]",
+};
+
+const trendGlyph: Record<"up" | "down" | "flat", string> = { up: "▲", down: "▼", flat: "●" };
+
 export function MetricTile({
   label,
   value,
   hint,
   compact = false,
+  tone = "neutral",
+  trend,
 }: {
   label: string;
   value: ReactNode;
   hint?: string;
   compact?: boolean;
+  tone?: MetricTone;
+  trend?: "up" | "down" | "flat";
 }) {
   return (
     <div
       className={`min-w-0 bg-paper shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${
-        compact ? "px-4 py-3.5" : "rounded-2xl border border-hairline p-3.5 dark:border-white/[0.14]"
+        compact ? "px-4 py-3.5" : "rounded-2xl border border-hairline p-4 dark:border-white/[0.14]"
       }`}
     >
-      <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
-      <dd className={`font-semibold leading-none tracking-tight ${compact ? "text-[26px]" : "text-[30px]"}`}>
-        {value}
-        {hint ? <small className="ml-1.5 block text-sm font-normal text-ink/60 dark:text-ops-muted md:inline">{hint}</small> : null}
+      <dt className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
+      <dd className={`flex flex-wrap items-baseline gap-x-2 font-bold leading-none tracking-tight ${metricToneClass[tone]} ${compact ? "text-[30px]" : "text-[40px]"}`}>
+        <span className="inline-flex items-baseline gap-1.5">
+          {trend ? <span className={`text-[0.4em] ${metricToneClass[tone]}`} aria-hidden="true">{trendGlyph[trend]}</span> : null}
+          {value}
+        </span>
+        {hint ? <small className="text-sm font-normal text-ink/60 dark:text-ops-muted">{hint}</small> : null}
       </dd>
     </div>
   );
@@ -257,25 +275,29 @@ export function BarChart({
   unit?: string;
 }) {
   const max = Math.max(...points.map((p) => p.value));
+  const avg = points.reduce((sum, p) => sum + p.value, 0) / points.length;
   const peakIndex = points.findIndex((p) => p.value === max);
   return (
-    <div role="img" aria-label={`${points.map((p) => `${p.label} ${p.value}${unit}`).join(", ")}`}>
-      <div className="flex h-40 items-end gap-2">
+    <div role="img" aria-label={`${points.map((p) => `${p.label} ${p.value}${unit}`).join(", ")}, 평균 ${Math.round(avg)}${unit}`}>
+      <div className="relative flex h-56 items-end gap-2.5">
+        <div className="pointer-events-none absolute inset-x-0 border-t-2 border-dashed border-ink/50 dark:border-white/60" style={{ bottom: `${(avg / max) * 100}%` }}>
+          <span className="absolute right-0 -top-5 rounded bg-paper px-1 font-mono text-[10px] font-semibold text-ink dark:bg-ops-bg dark:text-white">평균 {Math.round(avg)}</span>
+        </div>
         {points.map((p, i) => (
-          <div key={p.label} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-            <span className={`font-mono text-[11px] tabular-nums ${i === peakIndex ? "font-semibold text-ink dark:text-ops-ink" : "text-ink/50 dark:text-ops-muted"}`}>
+          <div key={p.label} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+            <span className={`font-mono text-sm tabular-nums ${i === peakIndex ? "font-bold text-accent-ink dark:text-success" : "text-ink/70 dark:text-ops-ink/60"}`}>
               {p.value}
             </span>
             <div
-              className={`w-full flex-none rounded-t-sm ${i === peakIndex ? "bg-ink dark:bg-ops-ink" : "bg-ink/70 dark:bg-ops-ink/60"}`}
+              className={`w-full flex-none rounded-t-sm ${i === peakIndex ? "bg-accent" : "bg-ink/70 dark:bg-ops-ink/60"}`}
               style={{ height: `${(p.value / max) * 100}%` }}
             />
           </div>
         ))}
       </div>
-      <div className="mt-1.5 flex gap-2 border-t border-ink/30 pt-1.5 dark:border-white/25">
+      <div className="mt-1.5 flex gap-2.5 border-t border-ink/30 pt-1.5 dark:border-white/25">
         {points.map((p) => (
-          <span key={p.label} className="flex-1 text-center font-mono text-[10px] text-ink/50 dark:text-ops-muted">
+          <span key={p.label} className="flex-1 text-center font-mono text-xs text-ink/50 dark:text-ops-muted">
             {p.label}
           </span>
         ))}

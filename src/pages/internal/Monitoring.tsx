@@ -2,6 +2,8 @@ import { Layout } from "../../components/Layout";
 import { BarChart, Card, Eyebrow, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
+const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
+
 const THROUGHPUT = [
   { label: "10:45", value: 142 },
   { label: "10:55", value: 158 },
@@ -41,7 +43,7 @@ export default function Monitoring() {
         </div>
       </section>
 
-      <section className="py-4">
+      <section className="py-4 animate-reveal-up" style={reveal(1)}>
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -50,22 +52,26 @@ export default function Monitoring() {
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
               <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                <span className="h-3 w-3 animate-live-pulse rounded-full bg-ink" aria-hidden="true" /> 마지막 확인 11:42:08
+                <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
+                  <span className="absolute inline-flex h-full w-full animate-live-pulse rounded-full bg-success" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
+                </span>
+                마지막 확인 11:42:08
               </span>
             </div>
             <div className="mt-6">
               <MetricGrid cols={4}>
-                <MetricTile label="API 성공률" value="99.98%" hint="최근 15분" />
-                <MetricTile label="분당 발급" value="186" hint="평균 172건" />
-                <MetricTile label="처리 지연" value="184ms" hint="목표 250ms 이하" />
-                <MetricTile label="실패 대기" value="3" hint="긴급 항목 없음" />
+                <MetricTile label="API 성공률" value="99.98%" hint="최근 15분" tone="success" />
+                <MetricTile label="분당 발급" value="186" hint="평균 172건" tone="success" trend="up" />
+                <MetricTile label="처리 지연" value="184ms" hint="목표 250ms 이하" tone="success" trend="down" />
+                <MetricTile label="실패 대기" value="3" hint="긴급 항목 없음" tone="warning" />
               </MetricGrid>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="py-10 animate-reveal-up" style={reveal(2)}>
         <div className="container-page">
           <div className="flex items-center justify-between">
             <h2>구성요소 상태</h2>
@@ -100,7 +106,7 @@ export default function Monitoring() {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="py-10 animate-reveal-up" style={reveal(3)}>
         <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.3fr]">
           <div>
             <Eyebrow>처리량</Eyebrow>
@@ -114,7 +120,7 @@ export default function Monitoring() {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="py-10 animate-reveal-up" style={reveal(4)}>
         <div className="container-page">
           <h2 className="mb-6">운영 상세로 이동</h2>
           <nav aria-label="내부 운영 화면" className="grid items-start gap-4 sm:grid-cols-3">

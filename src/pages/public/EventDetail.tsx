@@ -8,6 +8,12 @@ import NotFound from "./NotFound";
 
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
 
+function deadlineTone(label: string, value: string): "warning" | undefined {
+  if (!label.includes("종료")) return undefined;
+  const match = /^D-(\d+)$/.exec(value);
+  return match && Number(match[1]) <= 3 ? "warning" : undefined;
+}
+
 export default function EventDetail() {
   const { id } = useParams();
   const event = getEvent(Number(id));
@@ -63,7 +69,7 @@ export default function EventDetail() {
             <div className="mt-6">
               <MetricGrid cols={4}>
                 {event.metrics.map((metric) => (
-                  <MetricTile key={metric.label} label={metric.label} value={metric.value} hint={metric.hint} />
+                  <MetricTile key={metric.label} label={metric.label} value={metric.value} hint={metric.hint} tone={deadlineTone(metric.label, metric.value)} />
                 ))}
               </MetricGrid>
             </div>

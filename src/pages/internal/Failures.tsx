@@ -13,6 +13,8 @@ const MESSAGES: { id: string; ref: string; status: Status; error: string; retrie
 
 const statusTone: Record<Status, "danger" | "warning" | "neutral"> = { failed: "danger", retry: "warning", dlq: "neutral" };
 const statusLabel: Record<Status, string> = { failed: "FAILED", retry: "RETRY", dlq: "DLQ" };
+const countByStatus = (status: Status) => MESSAGES.filter((m) => m.status === status).length;
+const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
 
 export default function Failures() {
   const { showToast } = useToast();
@@ -31,7 +33,7 @@ export default function Failures() {
         </div>
       </section>
 
-      <section className="py-4">
+      <section className="py-4 animate-reveal-up" style={reveal(1)}>
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -43,16 +45,16 @@ export default function Failures() {
             </div>
             <div className="mt-6">
               <MetricGrid cols={3}>
-                <MetricTile label="FAILED" value="1" hint="원인 확인 필요" />
-                <MetricTile label="Retry 대기" value="1" hint="다음 시도 11:45" />
-                <MetricTile label="DLQ" value="1" hint="수동 검토 필요" />
+                <MetricTile label="FAILED" value="1" hint="원인 확인 필요" tone="danger" />
+                <MetricTile label="Retry 대기" value="1" hint="다음 시도 11:45" tone="warning" />
+                <MetricTile label="DLQ" value="1" hint="수동 검토 필요" tone="neutral" />
               </MetricGrid>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="py-10 animate-reveal-up" style={reveal(2)}>
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -64,10 +66,10 @@ export default function Failures() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: "all", label: "전체" },
-                { value: "failed", label: "FAILED" },
-                { value: "retry", label: "Retry" },
-                { value: "dlq", label: "DLQ" },
+                { value: "all", label: `전체 ${MESSAGES.length}` },
+                { value: "failed", label: `FAILED ${countByStatus("failed")}` },
+                { value: "retry", label: `Retry ${countByStatus("retry")}` },
+                { value: "dlq", label: `DLQ ${countByStatus("dlq")}` },
               ]}
             />
           </div>
@@ -91,7 +93,7 @@ export default function Failures() {
                       <strong className="block">{m.id}</strong>
                       <small className="text-ink/50 dark:text-ops-muted">{m.ref}</small>
                     </td>
-                    <td className="p-4 font-mono text-xs">{m.error}</td>
+                    <td className="p-4 font-mono text-sm">{m.error}</td>
                     <td className="p-4">{m.retries}</td>
                     <td className="p-4">
                       <StatusPill tone={statusTone[m.status]}>{statusLabel[m.status]}</StatusPill>
@@ -121,7 +123,7 @@ export default function Failures() {
         </div>
       </section>
 
-      <section className="py-10 pb-16">
+      <section className="py-10 pb-16 animate-reveal-up" style={reveal(3)}>
         <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <h2>실패 처리 원칙</h2>

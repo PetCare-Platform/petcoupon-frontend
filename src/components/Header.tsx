@@ -20,7 +20,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
       </a>
 
       <header className="sticky top-0 z-[100] px-3 pt-3 md:px-5">
-        <div className="mx-auto max-w-[1280px] overflow-hidden rounded-[1.5rem] border border-hairline/70 bg-paper/80 shadow-[0_8px_32px_-16px_rgba(32,29,24,0.25)] backdrop-blur-xl dark:border-white/10 dark:bg-ops-surface/70">
+        <div className="mx-auto max-w-[1280px] rounded-[1.5rem] border border-hairline/70 bg-paper/80 shadow-[0_8px_32px_-16px_rgba(32,29,24,0.25)] backdrop-blur-xl dark:border-white/10 dark:bg-ops-surface/70">
           <div className="flex h-14 items-center gap-5 px-4 md:px-6">
             <Link to="/" aria-label="PetCoupon 홈" className="inline-flex flex-none items-center text-[20px] font-bold tracking-tight">
               PetCoupon

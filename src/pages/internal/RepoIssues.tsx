@@ -104,7 +104,7 @@ export default function RepoIssues() {
         </div>
       </section>
 
-      <section className="py-4 pb-16">
+      <section className="py-4 pb-16 animate-reveal-up">
         <div className="container-page">
           {status === "loading" ? (
             <div className="grid gap-3">

@@ -13,6 +13,13 @@ const statusClass: Record<EventStatus, string> = {
 
 const FEATURED_EVENT = EVENTS[0];
 
+function isClosingSoon(event: (typeof EVENTS)[number]) {
+  if (event.status !== "open") return false;
+  const closeMetric = event.metrics.find((m) => m.label === "발급 종료");
+  const match = closeMetric ? /^D-(\d+)$/.exec(closeMetric.value) : null;
+  return !!match && Number(match[1]) <= 3;
+}
+
 export default function Index() {
   const [filter, setFilter] = useState<"all" | EventStatus>("all");
   const visible = useMemo(() => (filter === "all" ? EVENTS : EVENTS.filter((e) => e.status === filter)), [filter]);
@@ -59,7 +66,7 @@ export default function Index() {
             <dl className="mt-6 grid max-w-md grid-cols-2 gap-4 border-t border-hairline pt-4">
               <div>
                 <dt className="text-sm text-ink-muted">발급 마감</dt>
-                <dd className="font-semibold">{FEATURED_EVENT.metrics.find((m) => m.label === "발급 종료")?.hint}</dd>
+                <dd className={`font-semibold ${isClosingSoon(FEATURED_EVENT) ? "text-clay-ink" : ""}`}>{FEATURED_EVENT.metrics.find((m) => m.label === "발급 종료")?.hint}</dd>
               </div>
               <div>
                 <dt className="text-sm text-ink-muted">남은 수량</dt>
@@ -86,10 +93,10 @@ export default function Index() {
               value={filter}
               onChange={setFilter}
               options={[
-                { value: "all", label: "전체" },
-                { value: "open", label: "진행 중" },
-                { value: "scheduled", label: "오픈 예정" },
-                { value: "closed", label: "종료" },
+                { value: "all", label: `전체 ${EVENTS.length}` },
+                { value: "open", label: `진행 중 ${EVENTS.filter((e) => e.status === "open").length}` },
+                { value: "scheduled", label: `오픈 예정 ${EVENTS.filter((e) => e.status === "scheduled").length}` },
+                { value: "closed", label: `종료 ${EVENTS.filter((e) => e.status === "closed").length}` },
               ]}
             />
           </div>
@@ -112,7 +119,7 @@ export default function Index() {
                 <dl className="my-3 space-y-1.5">
                   <div className="flex justify-between border-b border-hairline-soft pb-2 text-sm">
                     <dt className="text-ink/60">기간</dt>
-                    <dd className="font-medium">{event.period}</dd>
+                    <dd className={`font-medium ${isClosingSoon(event) ? "text-clay-ink" : ""}`}>{event.period}</dd>
                   </div>
                   <div className="flex justify-between border-b border-hairline-soft pb-2 text-sm">
                     <dt className="text-ink/60">대표 혜택</dt>
@@ -159,7 +166,7 @@ export default function Index() {
             ))}
           </ul>
           <div className="mt-8 flex justify-center">
-            <LinkButton to="#event-list">이벤트 둘러보기</LinkButton>
+            <LinkButton to="/user/my-coupons">내 쿠폰 보기</LinkButton>
           </div>
         </div>
       </section>
