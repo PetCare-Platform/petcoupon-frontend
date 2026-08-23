@@ -5,29 +5,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Editorial cream + charcoal system (adapted from a real product's
-        // marketing design language) — one neutral canvas, white lift-cards,
-        // and a single accent reserved for the one thing worth noticing.
-        canvas: "#f5f5f5",
+        // Soft-structuralism neutral system: near-white/silver-grey canvas
+        // (no yellow cast) with a forest-green primary accent and a
+        // terracotta secondary — pet-native warmth carried by the accents,
+        // not by a dingy cream base.
+        canvas: "#f3f3f1",
         paper: "#ffffff",
-        "surface-2": "#ebe7e1",
-        ink: "#1a1a1a",
-        "ink-muted": "#5c5c59",
-        "ink-subtle": "#7b7b78",
-        hairline: "#d3cec6",
-        "hairline-soft": "#ebe7e1",
-        "surface-soft": "#ebe7e1",
-        accent: "#e35e1c",
-        "accent-ink": "#ad4815",
+        "surface-2": "#e7e6e1",
+        ink: "#1d1d1b",
+        "ink-muted": "#57564f",
+        "ink-subtle": "#79776f",
+        hairline: "#d6d4cc",
+        "hairline-soft": "#e7e6e1",
+        "surface-soft": "#e7e6e1",
+        accent: "#33503f",
+        "accent-ink": "#1e3226",
+        clay: "#c1714e",
+        "clay-ink": "#8a4a2f",
         success: "#0bdf50",
-        danger: "#c41c1c",
+        danger: "#c1442c",
         // Internal ops dark theme
-        "ops-bg": "#0f172a",
-        "ops-ink": "#f1f5f9",
-        "ops-border": "#334155",
-        "ops-border-soft": "#263349",
-        "ops-surface": "#1b2336",
-        "ops-muted": "#94a3b8",
+        "ops-bg": "#0b1210",
+        "ops-ink": "#f2f6f0",
+        "ops-border": "#2b3b32",
+        "ops-border-soft": "#1c2822",
+        "ops-surface": "#141f1a",
+        "ops-muted": "#93a89c",
+        "ops-accent": "#c1714e",
       },
       fontFamily: {
         sans: [

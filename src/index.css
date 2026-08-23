@@ -44,4 +44,28 @@
   .container-page {
     @apply mx-auto w-full max-w-[1280px] px-6 md:px-10;
   }
+
+  /* Fixed, pointer-events-none film-grain layer for the editorial-luxury
+     texture — never attached to scrolling containers per perf guardrails. */
+  .grain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .mesh-canvas {
+    background-image:
+      radial-gradient(38rem 26rem at 12% -8%, rgba(51, 80, 63, 0.1), transparent 60%),
+      radial-gradient(30rem 24rem at 100% 8%, rgba(193, 113, 78, 0.06), transparent 55%);
+  }
+
+  .mesh-ops {
+    background-image:
+      radial-gradient(34rem 26rem at 8% -10%, rgba(193, 113, 78, 0.16), transparent 60%),
+      radial-gradient(28rem 26rem at 96% 0%, rgba(242, 246, 240, 0.06), transparent 55%);
+  }
 }

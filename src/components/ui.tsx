@@ -6,7 +6,7 @@ type Variant = "primary" | "secondary" | "text" | "danger";
 
 const variantClass: Record<Variant, string> = {
   primary:
-    "border-accent bg-accent text-ink hover:bg-[#c85319] hover:border-[#c85319] dark:bg-ops-ink dark:text-ops-bg dark:border-ops-ink dark:hover:bg-white",
+    "border-accent bg-accent text-paper hover:bg-accent-ink hover:border-accent-ink dark:bg-ops-ink dark:text-ops-bg dark:border-ops-ink dark:hover:bg-white",
   secondary:
     "border-ink bg-paper text-ink hover:bg-ink hover:text-paper dark:bg-ops-bg dark:border-ops-border dark:text-ops-ink dark:hover:border-ops-ink dark:hover:bg-ops-surface dark:hover:text-ops-ink",
   text: "border-transparent bg-transparent text-ink underline underline-offset-4 hover:underline-offset-[6px] dark:text-ops-ink",
@@ -14,32 +14,56 @@ const variantClass: Record<Variant, string> = {
     "border-ink bg-paper text-ink hover:bg-surface-soft dark:bg-ops-bg dark:border-ops-border dark:text-ops-ink",
 };
 
+const iconWrapClass: Record<Variant, string> = {
+  primary: "bg-white/15 group-hover:bg-white/25 dark:bg-ops-bg/10",
+  secondary: "bg-ink/5 group-hover:bg-paper/20 dark:bg-white/10",
+  text: "bg-ink/5 dark:bg-white/10",
+  danger: "bg-ink/5 dark:bg-white/10",
+};
+
 const base =
-  "inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border px-5 py-2 text-[18px] font-medium leading-tight transition-all duration-150 ease-fluid active:scale-[0.97]";
+  "group inline-flex min-h-11 min-w-11 items-center justify-center gap-2.5 rounded-full border px-5 py-2 text-[18px] font-medium leading-tight transition-all duration-300 ease-fluid active:scale-[0.97]";
+
+function ArrowNub({ variant }: { variant: Variant }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`flex h-7 w-7 flex-none items-center justify-center rounded-full transition-all duration-300 ease-fluid group-hover:translate-x-0.5 group-hover:-translate-y-[1px] group-hover:scale-105 ${iconWrapClass[variant]}`}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.5 11.5L11.5 2.5M11.5 2.5H5M11.5 2.5V9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  );
+}
 
 export function Button({
   variant = "primary",
+  arrow = false,
   className = "",
   children,
   ...rest
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; arrow?: boolean }) {
   return (
-    <button className={`${base} ${variantClass[variant]} ${className}`} {...rest}>
+    <button className={`${base} ${variantClass[variant]} ${arrow ? "pr-1.5" : ""} ${className}`} {...rest}>
       {children}
+      {arrow ? <ArrowNub variant={variant} /> : null}
     </button>
   );
 }
 
 export function LinkButton({
   variant = "primary",
+  arrow = false,
   className = "",
   children,
   to,
   ...rest
-}: AnchorHTMLAttributes<HTMLAnchorElement> & { variant?: Variant; to: string }) {
+}: AnchorHTMLAttributes<HTMLAnchorElement> & { variant?: Variant; arrow?: boolean; to: string }) {
   return (
-    <Link to={to} className={`${base} ${variantClass[variant]} ${className}`} {...rest}>
+    <Link to={to} className={`${base} ${variantClass[variant]} ${arrow ? "pr-1.5" : ""} ${className}`} {...rest}>
       {children}
+      {arrow ? <ArrowNub variant={variant} /> : null}
     </Link>
   );
 }
@@ -78,10 +102,10 @@ export function StatusPill({ tone = "neutral", children }: { tone?: StatusTone; 
 }
 
 export function Card({ href, children, className = "" }: { href?: string; children: ReactNode; className?: string }) {
-  const cls = `min-w-0 rounded-block border border-hairline bg-paper p-3.5 text-ink transition-all duration-200 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
+  const cls = `min-w-0 rounded-[1.25rem] border border-hairline bg-paper p-3.5 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
   if (href) {
     return (
-      <Link to={href} className={`${cls} block no-underline hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_10px_24px_-12px_rgba(255,86,0,0.45)] active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30 dark:hover:shadow-none`}>
+      <Link to={href} className={`${cls} block no-underline hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_20px_40px_-20px_rgba(51,80,63,0.35)] active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30 dark:hover:shadow-none`}>
         {children}
       </Link>
     );
@@ -89,8 +113,25 @@ export function Card({ href, children, className = "" }: { href?: string; childr
   return <div className={cls}>{children}</div>;
 }
 
+/** Outer "shell + core" nested enclosure for hero-weight feature cards. */
+export function BezelCard({ children, className = "", coreClassName = "" }: { children: ReactNode; className?: string; coreClassName?: string }) {
+  return (
+    <div className={`rounded-[2rem] bg-ink/[0.04] p-2 ring-1 ring-ink/[0.06] dark:bg-white/[0.04] dark:ring-white/10 ${className}`}>
+      <div
+        className={`rounded-[calc(2rem-0.5rem)] bg-paper shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] dark:bg-ops-surface dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)] ${coreClassName}`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="font-mono text-xs font-semibold uppercase tracking-wide text-accent-ink dark:text-ops-muted">{children}</p>;
+  return (
+    <p className="flex w-fit items-center rounded-full border border-accent/20 bg-accent/[0.07] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-accent-ink dark:border-ops-border-soft dark:bg-transparent dark:text-ops-muted">
+      {children}
+    </p>
+  );
 }
 
 export function PageHero({
@@ -105,7 +146,7 @@ export function PageHero({
   actions?: ReactNode;
 }) {
   return (
-    <section className="py-10 md:py-14">
+    <section className="py-14 md:py-24">
       <div className="container-page flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
           <Eyebrow>{eyebrow}</Eyebrow>
@@ -121,8 +162,8 @@ export function PageHero({
 export function ColorBlock({ tone = "surface", children }: { tone?: "surface" | "accent"; children: ReactNode }) {
   const cls =
     tone === "accent"
-      ? "relative overflow-hidden rounded-block border border-accent/25 bg-accent/[0.08] p-5 text-ink md:p-8"
-      : "rounded-block border border-hairline bg-surface-2 p-4 text-ink md:p-6";
+      ? "relative overflow-hidden rounded-[2rem] border border-accent/20 bg-accent/[0.07] p-6 text-ink shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] md:p-10"
+      : "rounded-[1.75rem] border border-hairline bg-surface-2 p-4 text-ink md:p-6";
   return <div className={cls}>{children}</div>;
 }
 
@@ -154,8 +195,8 @@ export function MetricTile({
 }) {
   return (
     <div
-      className={`min-w-0 bg-paper dark:bg-ops-surface dark:text-ops-ink ${
-        compact ? "px-4 py-3.5" : "rounded-control border border-hairline p-3.5 dark:border-white/[0.14]"
+      className={`min-w-0 bg-paper shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${
+        compact ? "px-4 py-3.5" : "rounded-2xl border border-hairline p-3.5 dark:border-white/[0.14]"
       }`}
     >
       <dt className="mb-1 font-mono text-xs uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
@@ -200,7 +241,7 @@ export function FieldGroup({
 }
 
 export const inputClass =
-  "w-full min-h-12 rounded-control border border-hairline bg-paper px-3.5 py-2.5 text-[18px] text-ink placeholder:text-ink outline-none transition-colors focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-ink dark:border-ops-border dark:bg-ops-bg dark:text-ops-ink";
+  "w-full min-h-12 rounded-control border border-hairline bg-paper px-3.5 py-2.5 text-[18px] text-ink placeholder:text-ink-subtle outline-none transition-colors focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-ink dark:border-ops-border dark:bg-ops-bg dark:text-ops-ink dark:placeholder:text-ops-muted";
 
 export function FilterBar<T extends string>({
   options,
@@ -237,7 +278,7 @@ export function FilterBar<T extends string>({
 
 export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
   return (
-    <div className="rounded-block border border-dashed border-hairline p-6 text-center dark:border-ops-border">
+    <div className="rounded-[1.75rem] border border-dashed border-hairline p-10 text-center dark:border-ops-border">
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="mt-1.5 text-ink/70 dark:text-ops-muted">{description}</p>
       {action ? <div className="mt-3 flex justify-center">{action}</div> : null}
@@ -359,17 +400,19 @@ export function ImageCrossfade({
 
   return (
     <div>
-      <div className={`relative ${aspect} w-full overflow-hidden rounded-block shadow-[0_24px_48px_-24px_rgba(26,26,26,0.35)]`}>
-        {images.map((img, i) => (
-          <img
-            key={img.src}
-            src={img.src}
-            alt={img.alt}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-fluid ${
-              i === index ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+      <div className="rounded-[2rem] bg-ink/[0.05] p-2 ring-1 ring-ink/[0.06] dark:bg-white/[0.05] dark:ring-white/10">
+        <div className={`relative ${aspect} w-full overflow-hidden rounded-[calc(2rem-0.5rem)] shadow-[0_24px_48px_-24px_rgba(32,29,24,0.4)]`}>
+          {images.map((img, i) => (
+            <img
+              key={img.src}
+              src={img.src}
+              alt={img.alt}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-fluid ${
+                i === index ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+        </div>
       </div>
       <div className="mt-2 flex items-center gap-1.5" role="tablist" aria-label="사진 넘기기">
         {images.map((img, i) => (

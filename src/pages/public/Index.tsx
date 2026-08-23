@@ -31,7 +31,7 @@ export default function Index() {
               미용부터 건강검진, 산책용품까지. 지금 참여할 수 있는 반려생활 혜택을 골라 쿠폰으로 간직하세요.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
-              <LinkButton to="#event-list">이벤트 둘러보기</LinkButton>
+              <LinkButton to="#event-list" arrow>이벤트 둘러보기</LinkButton>
               <TextLink to="/user/my-coupons">내 쿠폰 보기</TextLink>
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function Index() {
                 <dd className="font-semibold">{FEATURED_EVENT.metrics.find((m) => m.label === "현재 잔여")?.value}장</dd>
               </div>
             </dl>
-            <LinkButton to={`/event-detail/${FEATURED_EVENT.id}`} className="mt-6">
+            <LinkButton to={`/event-detail/${FEATURED_EVENT.id}`} arrow className="mt-6">
               혜택 자세히 보기
             </LinkButton>
           </ColorBlock>
@@ -172,7 +172,7 @@ export default function Index() {
           </ol>
         </div>
         <div className="container-page mt-10 flex justify-center">
-          <LinkButton to="#event-list">이벤트 둘러보기</LinkButton>
+          <LinkButton to="#event-list" arrow>이벤트 둘러보기</LinkButton>
         </div>
       </section>
     </Layout>
