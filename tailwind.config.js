@@ -66,11 +66,21 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "paw-pop": {
+          "0%": { transform: "translate(-50%, -50%) scale(0.4) rotate(var(--paw-rot, 0deg))", opacity: "0" },
+          "20%": { opacity: "1" },
+          "100%": {
+            transform:
+              "translate(calc(-50% + var(--paw-x, 0px)), calc(-50% + var(--paw-y, -40px))) scale(1) rotate(var(--paw-rot, 0deg))",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "reveal-up": "reveal-up 220ms cubic-bezier(0.16,1,0.3,1) backwards",
         "live-pulse": "live-pulse 2.4s cubic-bezier(0.16,1,0.3,1) infinite",
         float: "float 5s cubic-bezier(0.45,0,0.55,1) infinite",
+        "paw-pop": "paw-pop 750ms cubic-bezier(0.16,1,0.3,1) forwards",
       },
     },
   },

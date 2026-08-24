@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
-import { ArrowLeft, ArrowRight, PawPrint } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, Bird, Cat, Dog, PawPrint, Rabbit } from "@phosphor-icons/react";
 
 export { PawPrint };
 
@@ -292,10 +292,14 @@ export function BarChart({
   const peakIndex = points.findIndex((p) => p.value === max);
   return (
     <div role="img" aria-label={`${points.map((p) => `${p.label} ${p.value}${unit}`).join(", ")}, 평균 ${Math.round(avg)}${unit}`}>
+      <div className="mb-2 flex justify-end">
+        <span className="inline-flex items-center gap-1 rounded-full border border-hairline bg-surface-soft px-2 py-0.5 font-mono text-[11px] font-semibold text-ink/70 dark:border-ops-border dark:bg-ops-surface dark:text-ops-muted">
+          평균 {Math.round(avg)}
+          {unit}
+        </span>
+      </div>
       <div className="relative flex h-56 items-end gap-2.5">
-        <div className="pointer-events-none absolute inset-x-0 border-t-2 border-dashed border-ink/50 dark:border-white/60" style={{ bottom: `${(avg / max) * 100}%` }}>
-          <span className="absolute right-0 -top-5 rounded bg-paper px-1 font-mono text-[10px] font-semibold text-ink dark:bg-ops-bg dark:text-white">평균 {Math.round(avg)}</span>
-        </div>
+        <div className="pointer-events-none absolute inset-x-0 border-t-2 border-dashed border-ink/50 dark:border-white/60" style={{ bottom: `${(avg / max) * 100}%` }} />
         {points.map((p, i) => (
           <div key={p.label} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
             <span className={`font-mono text-sm tabular-nums ${i === peakIndex ? "font-bold text-accent-ink dark:text-success" : "text-ink/70 dark:text-ops-ink/60"}`}>
@@ -319,117 +323,68 @@ export function BarChart({
   );
 }
 
-export interface CrossfadeImage {
-  src: string;
-  alt: string;
-  credit: string;
-  creditUrl: string;
-  license: string;
+interface BrandScene {
+  label: string;
+  Icon: typeof Dog;
+  tone: "accent" | "clay";
 }
 
-export const PET_SHOWCASE_IMAGES_HOME: CrossfadeImage[] = [
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/9/90/Labrador_Retriever_portrait.jpg",
-    alt: "카메라를 바라보는 래브라도 리트리버",
-    credit: "Herwig Kavallar, Wikimedia Commons",
-    creditUrl: "https://commons.wikimedia.org/wiki/File:Labrador_Retriever_portrait.jpg",
-    license: "Public Domain",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Kittyply_edit1.jpg",
-    alt: "카메라를 바라보는 회색 고양이",
-    credit: "David Corby, Wikimedia Commons",
-    creditUrl: "https://commons.wikimedia.org/wiki/File:Kittyply_edit1.jpg",
-    license: "CC BY 2.5",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Siberian_Husky_pho.jpg",
-    alt: "정면을 응시하는 시베리안 허스키",
-    credit: "Per Harald Olsen, Wikimedia Commons",
-    creditUrl: "https://commons.wikimedia.org/wiki/File:Siberian_Husky_pho.jpg",
-    license: "CC BY 2.5",
-  },
+const BRAND_SCENES: BrandScene[] = [
+  { label: "강아지", Icon: Dog, tone: "accent" },
+  { label: "고양이", Icon: Cat, tone: "clay" },
+  { label: "토끼", Icon: Rabbit, tone: "accent" },
+  { label: "새", Icon: Bird, tone: "clay" },
 ];
 
-export const PET_SHOWCASE_IMAGES_EVENT: CrossfadeImage[] = [
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Tabby_cat_with_blue_eyes-3336579.jpg",
-    alt: "파란 눈을 가진 태비 고양이",
-    credit: "AdinaVoicu, Wikimedia Commons",
-    creditUrl: "https://commons.wikimedia.org/wiki/File:Tabby_cat_with_blue_eyes-3336579.jpg",
-    license: "CC0",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/6/65/Dog_portrait_Budapest.jpg",
-    alt: "거리에서 촬영된 강아지의 초상",
-    credit: "CONTRERAS Roberto, Wikimedia Commons",
-    creditUrl: "https://commons.wikimedia.org/wiki/File:Dog_portrait_Budapest.jpg",
-    license: "CC BY 4.0",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Felis_catus-cat_on_snow.jpg",
-    alt: "눈밭에 앉아 있는 고양이",
-    credit: "Von.grzanka, Wikimedia Commons",
-    creditUrl: "https://commons.wikimedia.org/wiki/File:Felis_catus-cat_on_snow.jpg",
-    license: "CC BY-SA 3.0",
-  },
-];
+const brandToneClass: Record<BrandScene["tone"], { bg: string; icon: string; blobA: string; blobB: string }> = {
+  accent: { bg: "bg-accent/12", icon: "text-accent-ink", blobA: "bg-accent/25", blobB: "bg-paper/50" },
+  clay: { bg: "bg-clay/12", icon: "text-clay-ink", blobA: "bg-clay/20", blobB: "bg-paper/50" },
+};
 
-export function ImageCrossfade({
-  images,
-  intervalMs = 3200,
-  aspect = "aspect-square",
-}: {
-  images: CrossfadeImage[];
-  intervalMs?: number;
-  aspect?: string;
-}) {
+export function BrandIllustration({ aspect = "aspect-square", intervalMs = 3600 }: { aspect?: string; intervalMs?: number }) {
   const [index, setIndex] = useState(0);
   const reduceMotionRef = useRef(false);
 
   useEffect(() => {
     reduceMotionRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotionRef.current) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % images.length), intervalMs);
+    const id = setInterval(() => setIndex((i) => (i + 1) % BRAND_SCENES.length), intervalMs);
     return () => clearInterval(id);
-  }, [images.length, intervalMs]);
-
-  const current = images[index];
+  }, [intervalMs]);
 
   return (
     <div>
       <div className={`relative ${aspect} w-full overflow-hidden rounded-block shadow-[0_16px_32px_-20px_rgba(32,29,24,0.35)]`}>
-        {images.map((img, i) => (
-          <img
-            key={img.src}
-            src={img.src}
-            alt={img.alt}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-fluid ${
-              i === index ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+        {BRAND_SCENES.map((scene, i) => {
+          const tone = brandToneClass[scene.tone];
+          const Icon = scene.Icon;
+          return (
+            <div
+              key={scene.label}
+              className={`absolute inset-0 flex items-center justify-center ${tone.bg} transition-opacity duration-[1400ms] ease-fluid ${
+                i === index ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <span className={`absolute -left-8 -top-8 h-32 w-32 rounded-full ${tone.blobB}`} aria-hidden="true" />
+              <span className={`absolute -bottom-10 -right-10 h-40 w-40 rounded-full ${tone.blobA}`} aria-hidden="true" />
+              <Icon weight="duotone" className={`relative h-[42%] w-[42%] ${tone.icon}`} aria-hidden="true" />
+            </div>
+          );
+        })}
       </div>
-      <div className="mt-2 flex items-center gap-1.5" role="tablist" aria-label="사진 넘기기">
-        {images.map((img, i) => (
+      <div className="mt-2 flex items-center gap-1.5" role="tablist" aria-label="일러스트 넘기기">
+        {BRAND_SCENES.map((scene, i) => (
           <button
-            key={img.src}
+            key={scene.label}
             type="button"
             role="tab"
             aria-selected={i === index}
-            aria-label={`${i + 1}번째 사진 보기`}
+            aria-label={`${scene.label} 보기`}
             onClick={() => setIndex(i)}
             className={`h-1.5 flex-1 rounded-full transition-colors ${i === index ? "bg-accent" : "bg-hairline hover:bg-ink/30"}`}
           />
         ))}
       </div>
-      <p className="mt-2 text-xs text-ink/40">
-        사진:{" "}
-        <a href={current.creditUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
-          {current.credit}
-        </a>{" "}
-        ({current.license})
-      </p>
     </div>
   );
 }

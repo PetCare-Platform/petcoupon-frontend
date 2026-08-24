@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import { Layout } from "../../components/Layout";
 import { BackLink, Eyebrow, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
@@ -39,16 +40,24 @@ export default function CouponDetail() {
               <br />
               이 코드를 보여주세요.
             </h2>
-            <div className="mt-6 rounded-control bg-paper p-5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-ink/60">쿠폰 코드</span>
-              <p className="mt-2 font-mono text-3xl font-bold tracking-wide">{CODE}</p>
-              <button
-                type="button"
-                onClick={copyCode}
-                className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[16px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626]"
-              >
-                코드 복사
-              </button>
+            <div className="mt-6 flex flex-col items-center gap-6 rounded-control bg-paper p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+                <span className="text-xs font-semibold uppercase tracking-wide text-ink/60">쿠폰 코드</span>
+                <p className="mt-2 font-mono text-3xl font-bold tracking-wide">{CODE}</p>
+                <button
+                  type="button"
+                  onClick={copyCode}
+                  className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[16px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626]"
+                >
+                  코드 복사
+                </button>
+              </div>
+              <div className="flex flex-none flex-col items-center gap-2">
+                <div className="rounded-control border border-hairline p-2.5">
+                  <QRCodeSVG value={CODE} size={112} fgColor="#1d1d1b" level="M" />
+                </div>
+                <span className="text-[11px] text-ink/50">매장에서 QR로 제시하세요</span>
+              </div>
             </div>
           </div>
         </div>

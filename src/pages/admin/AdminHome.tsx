@@ -2,7 +2,14 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { Card, ColorBlock, Eyebrow, LinkButton, MetricGrid, MetricTile } from "../../components/ui";
 
+function formatDate(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+}
+
 export default function AdminHome() {
+  const todayLabel = formatDate(new Date());
+
   return (
     <Layout area="admin" page="admin">
       <section className="py-10">
@@ -33,7 +40,7 @@ export default function AdminHome() {
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex items-center justify-between">
               <h2>운영 요약</h2>
-              <span className="text-sm text-ink-muted">2026.08.21</span>
+              <span className="text-sm text-ink-muted">{todayLabel}</span>
             </div>
             <div className="mt-6">
               <MetricGrid cols={4}>

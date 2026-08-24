@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, PawPrint } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
-import { ColorBlock, Eyebrow, FilterBar, ImageCrossfade, LinkButton, PET_SHOWCASE_IMAGES_HOME, TextLink } from "../../components/ui";
+import { BrandIllustration, ColorBlock, Eyebrow, FilterBar, LinkButton, TextLink } from "../../components/ui";
 import { EVENTS, type EventStatus } from "../../data/events";
 
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
@@ -48,8 +48,8 @@ export default function Index() {
             </div>
           </div>
           <div className="animate-reveal-up" style={{ animationDelay: "160ms" }}>
-            <ImageCrossfade images={PET_SHOWCASE_IMAGES_HOME} />
-            <p className="mt-3 text-sm text-ink/60">강아지든 고양이든, 우리 아이를 위한 혜택이 늘 열려 있어요.</p>
+            <BrandIllustration />
+            <p className="mt-3 text-sm text-ink/60">강아지든 고양이든 토끼든 새든, 우리 아이를 위한 혜택이 늘 열려 있어요.</p>
           </div>
         </div>
       </section>

@@ -1,16 +1,15 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Layout } from "../../components/Layout";
 import {
   BackLink,
+  BrandIllustration,
   ColorBlock,
   Eyebrow,
-  ImageCrossfade,
   LinkButton,
   MetricGrid,
   MetricTile,
   PawPrint,
-  PET_SHOWCASE_IMAGES_EVENT,
   StatusPill,
 } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
@@ -43,6 +42,15 @@ function formatCountdown(ms: number): string {
   return `${pad(Math.floor(totalSeconds / 3600))}:${pad(Math.floor((totalSeconds % 3600) / 60))}:${pad(totalSeconds % 60)}`;
 }
 
+const PAW_BURST = [
+  { x: -46, y: -54, rot: -24 },
+  { x: 0, y: -68, rot: 4 },
+  { x: 46, y: -54, rot: 24 },
+  { x: -66, y: -14, rot: -46 },
+  { x: 66, y: -14, rot: 46 },
+  { x: -22, y: -74, rot: -8 },
+];
+
 export default function EventDetail() {
   const { id } = useParams();
   const event = getEvent(Number(id));
@@ -53,10 +61,18 @@ export default function EventDetail() {
   const [issuedIds, setIssuedIds] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [socialProof, setSocialProof] = useState<{ key: number; text: string } | null>(null);
+  const [justIssuedId, setJustIssuedId] = useState<string | null>(null);
+  const [celebrateKey, setCelebrateKey] = useState(0);
   const { showToast } = useToast();
+  const stockRef = useRef(stockById);
 
   const startMetric = event?.metrics.find((m) => m.label === "발급 시작");
   const startTarget = event?.status === "scheduled" && startMetric ? parseEventTimestamp(startMetric.hint) : null;
+
+  useEffect(() => {
+    stockRef.current = stockById;
+  }, [stockById]);
 
   useEffect(() => {
     if (!startTarget) return;
@@ -67,16 +83,30 @@ export default function EventDetail() {
   useEffect(() => {
     if (!event || event.status !== "open") return;
     const sim = window.setInterval(() => {
-      setStockById((prev) => {
-        const claimable = event.coupons.filter((c) => (prev[c.id] ?? 0) > 0);
-        if (claimable.length === 0) return prev;
-        const target = claimable[Math.floor(Math.random() * claimable.length)];
-        const dec = Math.min(prev[target.id] ?? 0, 1 + Math.floor(Math.random() * 2));
-        return { ...prev, [target.id]: (prev[target.id] ?? 0) - dec };
-      });
+      const current = stockRef.current;
+      const claimable = event.coupons.filter((c) => (current[c.id] ?? 0) > 0);
+      if (claimable.length === 0) return;
+      const target = claimable[Math.floor(Math.random() * claimable.length)];
+      const dec = Math.min(current[target.id] ?? 0, 1 + Math.floor(Math.random() * 2));
+      const next = { ...current, [target.id]: (current[target.id] ?? 0) - dec };
+      stockRef.current = next;
+      setStockById(next);
+      setSocialProof({ key: Date.now(), text: `방금 다른 분이 ${target.name}을 받았어요` });
     }, 3500 + Math.random() * 3000);
     return () => window.clearInterval(sim);
   }, [event]);
+
+  useEffect(() => {
+    if (!socialProof) return;
+    const t = window.setTimeout(() => setSocialProof(null), 2600);
+    return () => window.clearTimeout(t);
+  }, [socialProof]);
+
+  useEffect(() => {
+    if (!justIssuedId) return;
+    const t = window.setTimeout(() => setJustIssuedId(null), 1500);
+    return () => window.clearTimeout(t);
+  }, [justIssuedId]);
 
   if (!event) return <NotFound />;
 
@@ -107,9 +137,13 @@ export default function EventDetail() {
     window.setTimeout(() => {
       const next = remaining - 1;
       const orderNumber = selectedCoupon.total - next;
-      setStockById((prev) => ({ ...prev, [selectedCoupon.id]: next }));
+      const nextStock = { ...stockRef.current, [selectedCoupon.id]: next };
+      stockRef.current = nextStock;
+      setStockById(nextStock);
       setIssuedIds((prev) => new Set(prev).add(selectedCoupon.id));
       setSubmitting(false);
+      setJustIssuedId(selectedCoupon.id);
+      setCelebrateKey((k) => k + 1);
       showToast(`${orderNumber}번째로 받으셨어요! ${selectedCoupon.name} · 남은 재고 ${next}장`);
     }, 450 + Math.random() * 150);
   }
@@ -133,7 +167,7 @@ export default function EventDetail() {
             </div>
           </div>
           <div>
-            <ImageCrossfade images={PET_SHOWCASE_IMAGES_EVENT} aspect="aspect-[4/3]" />
+            <BrandIllustration aspect="aspect-[4/3]" />
           </div>
         </div>
       </section>
@@ -201,7 +235,21 @@ export default function EventDetail() {
           <p className="mt-2 text-[17px] text-ink/70">한 사람당 한 장만 받을 수 있어요.</p>
 
           <form onSubmit={handleIssue} className="mt-6 rounded-block border border-hairline p-6">
-            <h3 className="mb-4 text-lg font-semibold">발급할 쿠폰</h3>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold">발급할 쿠폰</h3>
+              <span
+                className="flex items-center gap-1.5 text-xs font-medium text-ink/60 transition-all duration-500 ease-fluid"
+                style={{ opacity: socialProof ? 1 : 0, transform: socialProof ? "translateY(0)" : "translateY(-4px)" }}
+                aria-live="polite"
+              >
+                {socialProof ? (
+                  <>
+                    <PawPrint weight="fill" className="h-3 w-3 flex-none text-accent" aria-hidden="true" />
+                    {socialProof.text}
+                  </>
+                ) : null}
+              </span>
+            </div>
             <div className="grid gap-4">
               {event.coupons.map((coupon) => {
                 const remaining = stockById[coupon.id] ?? coupon.stock;
@@ -213,7 +261,7 @@ export default function EventDetail() {
                 return (
                   <label
                     key={coupon.id}
-                    className={`relative flex min-h-[92px] overflow-visible rounded-control border bg-paper shadow-[0_1px_2px_rgba(29,29,27,0.06)] transition-colors ${
+                    className={`relative flex min-h-[92px] overflow-visible rounded-control border bg-paper shadow-[0_1px_2px_rgba(29,29,27,0.06)] transition-all duration-700 ease-fluid ${
                       unavailable
                         ? "cursor-not-allowed border-hairline opacity-60"
                         : isSingleCoupon
@@ -221,7 +269,7 @@ export default function EventDetail() {
                           : selected === coupon.id
                             ? "cursor-pointer border-ink"
                             : "cursor-pointer border-hairline hover:border-ink/50"
-                    }`}
+                    } ${justIssuedId === coupon.id ? "ring-2 ring-accent ring-offset-2 ring-offset-canvas" : ""}`}
                   >
                     <span className="flex flex-1 items-center gap-3 p-4">
                       {isSingleCoupon ? null : (
@@ -276,24 +324,38 @@ export default function EventDetail() {
               <p className="mt-1 text-ink/80">선택한 쿠폰은 사용자 계정에 바로 보관되며, 발급 후에는 다른 쿠폰으로 바꿀 수 없습니다.</p>
             </div>
 
-            <button
-              type="submit"
-              disabled={isClosed || selectedSoldOut || selectedAlreadyIssued || submitting}
-              className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] disabled:cursor-not-allowed disabled:border-hairline disabled:bg-surface-2 disabled:text-ink-muted disabled:active:scale-100 disabled:hover:bg-surface-2"
-            >
-              {submitting ? <span className="h-4 w-4 flex-none animate-spin rounded-full border-2 border-paper/30 border-t-paper" aria-hidden="true" /> : null}
-              {submitting
-                ? "발급하는 중"
-                : isClosed
-                  ? "발급이 종료되었습니다"
-                  : selectedAlreadyIssued
-                    ? "이미 발급받은 쿠폰이에요"
-                    : selectedSoldOut
-                      ? "품절된 쿠폰이에요"
-                      : isSingleCoupon
-                        ? "지금 받기"
-                        : "선택한 쿠폰 발급하기"}
-            </button>
+            <span className="relative mt-6 inline-block">
+              <button
+                type="submit"
+                disabled={isClosed || selectedSoldOut || selectedAlreadyIssued || submitting}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] disabled:cursor-not-allowed disabled:border-hairline disabled:bg-surface-2 disabled:text-ink-muted disabled:active:scale-100 disabled:hover:bg-surface-2"
+              >
+                {submitting ? <span className="h-4 w-4 flex-none animate-spin rounded-full border-2 border-paper/30 border-t-paper" aria-hidden="true" /> : null}
+                {submitting
+                  ? "발급하는 중"
+                  : isClosed
+                    ? "발급이 종료되었습니다"
+                    : selectedAlreadyIssued
+                      ? "이미 발급받은 쿠폰이에요"
+                      : selectedSoldOut
+                        ? "품절된 쿠폰이에요"
+                        : isSingleCoupon
+                          ? "지금 받기"
+                          : "선택한 쿠폰 발급하기"}
+              </button>
+              {celebrateKey > 0 ? (
+                <span key={celebrateKey} className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden="true">
+                  {PAW_BURST.map((offset, i) => (
+                    <PawPrint
+                      key={i}
+                      weight="fill"
+                      className="absolute left-1/2 top-1/2 h-4 w-4 animate-paw-pop text-accent"
+                      style={{ "--paw-x": `${offset.x}px`, "--paw-y": `${offset.y}px`, "--paw-rot": `${offset.rot}deg` } as CSSProperties}
+                    />
+                  ))}
+                </span>
+              ) : null}
+            </span>
           </form>
         </div>
       </section>
