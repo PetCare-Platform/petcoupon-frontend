@@ -21,7 +21,7 @@ export default {
         accent: "#85c167",
         "accent-ink": "#345921",
         clay: "#c1714e",
-        "clay-ink": "#8a4a2f",
+        "clay-ink": "#b63f0c",
         success: "#0bdf50",
         danger: "#c1442c",
         // Internal ops dark theme

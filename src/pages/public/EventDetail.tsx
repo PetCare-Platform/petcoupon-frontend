@@ -3,10 +3,15 @@ import { Link, useParams } from "react-router-dom";
 import { Layout } from "../../components/Layout";
 import { ColorBlock, Eyebrow, ImageCrossfade, LinkButton, MetricGrid, MetricTile, PET_SHOWCASE_IMAGES_EVENT, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
-import { getEvent, type EventStatus } from "../../data/events";
+import { EVENTS, getEvent, type EventStatus } from "../../data/events";
 import NotFound from "./NotFound";
 
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
+const statusDotClass: Record<EventStatus, string> = {
+  open: "bg-accent",
+  scheduled: "bg-ink/30",
+  closed: "bg-ink/20",
+};
 
 function deadlineTone(label: string, value: string): "warning" | undefined {
   if (!label.includes("종료")) return undefined;
@@ -53,6 +58,30 @@ export default function EventDetail() {
           </div>
           <div>
             <ImageCrossfade images={PET_SHOWCASE_IMAGES_EVENT} aspect="aspect-[4/3]" />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-2">
+        <div className="container-page">
+          <p className="mb-2.5 text-sm font-semibold text-ink-muted">다른 이벤트로 넘어가기</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {EVENTS.map((e) => {
+              const isCurrent = e.id === event.id;
+              return (
+                <Link
+                  key={e.id}
+                  to={`/event-detail/${e.id}`}
+                  aria-current={isCurrent ? "page" : undefined}
+                  className={`inline-flex min-h-10 flex-none items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors duration-200 ease-fluid ${
+                    isCurrent ? "border-ink bg-ink text-paper" : "border-hairline text-ink hover:border-ink"
+                  }`}
+                >
+                  <span className={`h-1.5 w-1.5 flex-none rounded-full ${isCurrent ? "bg-paper" : statusDotClass[e.status]}`} aria-hidden="true" />
+                  {e.title}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

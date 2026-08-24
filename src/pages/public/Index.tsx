@@ -35,7 +35,7 @@ export default function Index() {
               <br />
               쿠폰으로 <span className="text-accent">아끼세요</span>.
             </h1>
-            <p className="mt-4 max-w-[52ch] text-ink-muted">
+            <p className="mt-4 max-w-[52ch] text-[18px] text-ink-muted">
               미용부터 건강검진, 산책용품까지. 지금 진행 중인 이벤트에서 필요한 쿠폰을 받아보세요.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
@@ -85,7 +85,7 @@ export default function Index() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2>진행 중인 이벤트 전체</h2>
-              <p className="mt-1 text-ink-muted">
+              <p className="mt-1 text-[17px] text-ink-muted">
                 <span aria-live="polite">{visible.length}개</span>의 이벤트를 보여드려요. 각 이벤트를 눌러 전용 쿠폰을 확인하세요.
               </p>
             </div>
@@ -115,7 +115,7 @@ export default function Index() {
                   <span className="text-xs uppercase tracking-wide text-ink/60">{event.label}</span>
                 </div>
                 <h3 className="mb-1.5 text-lg font-semibold">{event.title}</h3>
-                <p className="text-sm text-ink-muted">{event.desc}</p>
+                <p className="text-[16px] text-ink-muted">{event.desc}</p>
                 <dl className="my-3 space-y-1.5">
                   <div className="flex justify-between border-b border-hairline-soft pb-2 text-sm">
                     <dt className="text-ink/60">기간</dt>
