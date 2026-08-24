@@ -36,7 +36,11 @@ export default function Monitoring() {
           </div>
           <button
             type="button"
-            onClick={() => showToast("시스템 현황을 최신 시각으로 갱신했습니다.")}
+            onClick={() => {
+              // 관련 API가 제외/2차 범위라 실제로 아무 것도 갱신되지 않는다. 갱신된
+              // 것처럼 보이지 않도록 비활성화한다.
+              // showToast("시스템 현황을 최신 시각으로 갱신했습니다.");
+            }}
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg"
           >
             현황 새로고침

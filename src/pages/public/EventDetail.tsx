@@ -42,6 +42,13 @@ function formatCountdown(ms: number): string {
   return `${pad(Math.floor(totalSeconds / 3600))}:${pad(Math.floor((totalSeconds % 3600) / 60))}:${pad(totalSeconds % 60)}`;
 }
 
+/**
+ * 아래 두 동작(실시간 재고 감소 시뮬레이션, 발급 성공 시뮬레이션)은 실제 백엔드
+ * 없이 성공한 것처럼 보이게 하는 데모용 가짜 로직이다. 실제 API 연동 전까지는
+ * 화면에 노출하지 않기 위해 비활성화한다. 다시 쓰려면 이 값을 true로 바꾸면 된다.
+ */
+const DEMO_SIMULATION_ENABLED = false;
+
 const PAW_BURST = [
   { x: -46, y: -54, rot: -24 },
   { x: 0, y: -68, rot: 4 },
@@ -81,6 +88,7 @@ export default function EventDetail() {
   }, [startTarget]);
 
   useEffect(() => {
+    if (!DEMO_SIMULATION_ENABLED) return;
     if (!event || event.status !== "open") return;
     const sim = window.setInterval(() => {
       const current = stockRef.current;
@@ -123,6 +131,7 @@ export default function EventDetail() {
 
   function handleIssue(formEvent: FormEvent) {
     formEvent.preventDefault();
+    if (!DEMO_SIMULATION_ENABLED) return;
     if (!event || isClosed || !selectedCoupon || submitting) return;
     if (issuedIds.has(selectedCoupon.id)) {
       showToast("이미 발급받은 쿠폰이에요. 한 사람당 한 장만 받을 수 있어요.");

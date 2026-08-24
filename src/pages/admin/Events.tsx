@@ -88,7 +88,11 @@ export default function Events() {
                   </LinkButton>
                   <button
                     type="button"
-                    onClick={() => showToast(`${event.title} 삭제를 요청했습니다.`)}
+                    onClick={() => {
+                      // 실제 삭제 API는 없다 — 이벤트 상태 변경(종료) API로 대체될 예정이다.
+                      // 연동 전까지는 성공한 것처럼 보이지 않도록 비활성화한다.
+                      // showToast(`${event.title} 삭제를 요청했습니다.`);
+                    }}
                     className="underline underline-offset-4"
                   >
                     삭제

@@ -32,12 +32,15 @@ export default function App() {
         <Route path="/user" element={<UserHome />} />
         <Route path="/user/my-coupons" element={<MyCoupons />} />
         <Route path="/user/coupon-detail" element={<CouponDetail />} />
+        <Route path="/user/coupon-detail/:couponIssueId" element={<CouponDetail />} />
 
         <Route path="/admin" element={<AdminHome />} />
         <Route path="/admin/events" element={<Events />} />
         <Route path="/admin/event-form" element={<EventForm />} />
+        <Route path="/admin/event-form/:eventId" element={<EventForm />} />
         <Route path="/admin/coupons" element={<Coupons />} />
         <Route path="/admin/coupon-form" element={<CouponForm />} />
+        <Route path="/admin/coupon-form/:eventId" element={<CouponForm />} />
 
         <Route path="/internal/dashboard" element={<Dashboard />} />
         <Route path="/internal/monitoring" element={<Monitoring />} />

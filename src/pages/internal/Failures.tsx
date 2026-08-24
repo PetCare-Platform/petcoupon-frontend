@@ -102,7 +102,11 @@ export default function Failures() {
                     <td className="p-4">
                       <button
                         type="button"
-                        onClick={() => showToast(`메시지 ${m.id} ${m.action}${m.action === "검토" ? "를" : "를"} 요청했습니다.`)}
+                        onClick={() => {
+                          // 실패 메시지 목록 조회·재시도 API는 제외 범위다. 아무 일도
+                          // 일어나지 않으면서 성공한 것처럼 보이지 않도록 비활성화한다.
+                          // showToast(`메시지 ${m.id} ${m.action}${m.action === "검토" ? "를" : "를"} 요청했습니다.`);
+                        }}
                         className="font-medium underline underline-offset-4"
                       >
                         {m.action}

@@ -32,7 +32,6 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
     routes: [
       { page: "user", label: "사용자 정보", path: "/user" },
       { page: "my-coupons", label: "보유 쿠폰", path: "/user/my-coupons" },
-      { page: "coupon-detail", label: "쿠폰 상세", path: "/user/coupon-detail" },
     ],
   },
   admin: {
@@ -41,9 +40,8 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
     routes: [
       { page: "admin", label: "관리자 홈", path: "/admin" },
       { page: "events", label: "이벤트 목록", path: "/admin/events" },
-      { page: "event-form", label: "이벤트 편집", path: "/admin/event-form" },
+      { page: "event-form", label: "이벤트 만들기", path: "/admin/event-form" },
       { page: "coupons", label: "쿠폰 목록", path: "/admin/coupons" },
-      { page: "coupon-form", label: "쿠폰 편집", path: "/admin/coupon-form" },
     ],
   },
   internal: {

@@ -113,7 +113,11 @@ export default function Issues() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => showToast("요청 식별자를 복사했습니다.")}
+                  onClick={() => {
+                    // 실제로 클립보드에 복사하지 않으면서 복사된 것처럼 toast만 띄우던 부분.
+                    // 발급 처리 흐름 조회 API는 제외 범위라 지금은 비활성화한다.
+                    // showToast("요청 식별자를 복사했습니다.");
+                  }}
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-hairline px-5 text-[16px] font-medium hover:border-ink hover:bg-surface-soft dark:border-ops-border dark:hover:border-ops-ink dark:hover:bg-ops-surface"
                 >
                   Request ID 복사

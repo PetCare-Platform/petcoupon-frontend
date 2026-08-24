@@ -86,7 +86,15 @@ export default function Coupons() {
                   <LinkButton to="/admin/coupon-form" variant="text" className="!text-[16px]">
                     수정
                   </LinkButton>
-                  <button type="button" onClick={() => showToast(`${coupon.name} 삭제를 요청했습니다.`)} className="underline underline-offset-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 쿠폰 상태 변경/수정 API는 이번 개발 범위에서 제외됐다. 실제로 아무 일도
+                      // 일어나지 않으면서 성공한 것처럼 보이지 않도록 비활성화한다.
+                      // showToast(`${coupon.name} 삭제를 요청했습니다.`);
+                    }}
+                    className="underline underline-offset-4"
+                  >
                     삭제
                   </button>
                 </div>
