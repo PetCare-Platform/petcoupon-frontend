@@ -1,0 +1,169 @@
+.header {
+  margin-bottom: 18px;
+}
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--pc-text);
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: 12px;
+  color: var(--pc-text-muted);
+  margin: 2px 0 0;
+}
+
+.card {
+  background: var(--pc-surface);
+  border: 0.5px solid var(--pc-border);
+  border-radius: var(--pc-radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pc-text);
+  margin: 0 0 14px;
+}
+
+.emptyState {
+  font-size: 13px;
+  color: var(--pc-text-muted);
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--pc-border);
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.field {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--pc-text-secondary);
+}
+
+.field input,
+.field select {
+  height: 36px;
+  border: 0.5px solid var(--pc-border);
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--pc-text);
+  background: var(--pc-surface);
+}
+
+.formError {
+  font-size: 12px;
+  color: var(--pc-danger-text);
+  margin: 0;
+}
+
+.submitButton {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pc-brand);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eventItem {
+  border: 0.5px solid var(--pc-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.eventHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eventName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pc-text);
+  margin: 0 0 4px;
+}
+
+.eventMeta {
+  font-size: 11px;
+  color: var(--pc-text-muted);
+  margin: 0;
+}
+
+.toggleButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0.5px solid var(--pc-border);
+  background: var(--pc-surface);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  color: var(--pc-text-secondary);
+}
+
+.toggleButton:hover {
+  background: var(--pc-neutral-soft);
+}
+
+.couponTable {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.couponTableHead,
+.couponRow {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 0.8fr 0.8fr 0.8fr;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.couponTableHead {
+  color: var(--pc-text-muted);
+  border-bottom: 0.5px solid var(--pc-border);
+}
+
+.couponRow {
+  color: var(--pc-text);
+  border-bottom: 0.5px solid var(--pc-neutral-soft);
+}
+
+.couponStatus {
+  color: var(--pc-care-text);
+}

@@ -1,0 +1,85 @@
+.row {
+  display: flex;
+  background: var(--pc-surface);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(43, 31, 46, 0.08);
+  overflow: hidden;
+}
+
+.rowMuted {
+  opacity: 0.65;
+}
+
+.cap {
+  width: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capIcon {
+  color: #fff;
+}
+
+.toneBrand {
+  background: var(--pc-brand-grad);
+}
+.toneAccent {
+  background: var(--pc-accent-grad);
+}
+.toneCare {
+  background: var(--pc-care-grad);
+}
+.toneClosed {
+  background: var(--pc-closed-fill);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-left: 1.5px dashed var(--pc-border);
+  gap: 12px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pc-text);
+  margin: 0 0 4px;
+}
+
+.detail {
+  font-size: 11px;
+  color: var(--pc-text-muted);
+  margin: 0;
+}
+
+.actionButton {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.actionButton.toneBrand {
+  background: var(--pc-brand);
+}
+.actionButton.toneAccent {
+  background: var(--pc-accent);
+}
+.actionButton.toneCare {
+  background: var(--pc-care);
+}
+
+.actionText {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--pc-text-muted);
+}

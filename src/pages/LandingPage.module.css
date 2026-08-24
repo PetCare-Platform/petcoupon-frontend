@@ -1,0 +1,258 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.blobLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 900px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.blob {
+  position: absolute;
+  aspect-ratio: 1;
+}
+
+.blobSub {
+  top: -51px;
+  left: 50%;
+  width: 34vw;
+  min-width: 320px;
+  max-width: 520px;
+  background: var(--pc-sub-soft);
+  border-radius: 58% 42% 39% 61% / 55% 38% 62% 45%;
+}
+
+.blobAccent {
+  top: 192px;
+  right: -6%;
+  width: 30vw;
+  min-width: 280px;
+  max-width: 460px;
+  background: var(--pc-accent-soft);
+  border-radius: 50% 50% 42% 58% / 45% 55% 45% 55%;
+}
+
+.blobCare {
+  top: 371px;
+  left: -8%;
+  width: 34vw;
+  min-width: 300px;
+  max-width: 480px;
+  background: var(--pc-care-soft);
+  border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.navInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--pc-text);
+}
+
+.logoPlus {
+  color: var(--pc-brand);
+}
+
+.navLinks {
+  display: flex;
+  gap: 28px;
+  font-size: 13px;
+  color: var(--pc-text-secondary);
+}
+
+.navLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 0 0;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.heroText {
+  width: 530px;
+  max-width: 100%;
+}
+
+.headline {
+  font-size: 50px;
+  font-weight: 500;
+  line-height: 1.28;
+  color: var(--pc-text);
+  margin: 34px 0 0;
+}
+
+.brandName {
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--pc-brand);
+  margin: 11px 0 26px;
+}
+
+.subtext {
+  font-size: 17px;
+  color: var(--pc-text-secondary);
+  line-height: 1.8;
+  margin: 0 0 34px;
+}
+
+.ctaRow {
+  display: flex;
+  gap: 13px;
+}
+
+.primaryButton {
+  display: inline-block;
+  background: var(--pc-brand);
+  color: #fff;
+  border: none;
+  border-radius: 11px;
+  padding: 15px 26px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.secondaryButton {
+  display: inline-block;
+  background: #fff;
+  color: var(--pc-text);
+  border: 0.5px solid var(--pc-border);
+  border-radius: 11px;
+  padding: 15px 26px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.heroVisual {
+  width: 480px;
+  flex-shrink: 0;
+  position: relative;
+  height: 380px;
+}
+
+.floatIcon {
+  position: absolute;
+}
+
+.couponCard {
+  position: absolute;
+  width: 210px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  border: 0.5px solid var(--pc-border);
+}
+
+.couponHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.couponIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tone_brand {
+  background: var(--pc-brand-soft);
+  color: var(--pc-brand-text);
+}
+.tone_accent {
+  background: var(--pc-accent-soft);
+  color: var(--pc-accent-text);
+}
+.tone_care {
+  background: var(--pc-care-soft);
+  color: var(--pc-care-text);
+}
+
+.couponLabel {
+  font-size: 12px;
+  color: var(--pc-text-muted);
+}
+
+.couponTitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--pc-text);
+  margin: 0 0 4px;
+}
+
+.couponDetail {
+  font-size: 11px;
+  color: var(--pc-text-muted);
+  margin: 0;
+}
+
+.myCouponsButton {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  z-index: 5;
+  background: var(--pc-brand);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 18px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 24px 20px 0;
+  }
+  .heroVisual {
+    height: 320px;
+  }
+}

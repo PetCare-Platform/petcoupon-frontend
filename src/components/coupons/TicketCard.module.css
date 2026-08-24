@@ -1,0 +1,210 @@
+.card {
+  display: flex;
+  background: var(--pc-surface);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(43, 31, 46, 0.08);
+  overflow: hidden;
+}
+
+.panel {
+  flex: 1;
+  min-width: 0;
+  padding: 22px 26px;
+  position: relative;
+  overflow: hidden;
+}
+
+.toneBrand {
+  background: var(--pc-brand);
+}
+.toneAccent {
+  background: var(--pc-accent);
+}
+.toneCare {
+  background: var(--pc-care);
+}
+.toneClosed {
+  background: var(--pc-closed-fill);
+}
+
+.pawWatermark {
+  position: absolute;
+  left: -14px;
+  bottom: -16px;
+  width: 100px;
+  height: 100px;
+  color: rgba(255, 255, 255, 0.08);
+  transform: rotate(-15deg);
+}
+
+.iconWatermark {
+  position: absolute;
+  right: -34px;
+  bottom: -34px;
+  width: 170px;
+  height: 170px;
+  color: rgba(255, 255, 255, 0.13);
+  transform: rotate(-25deg);
+}
+
+.pawSmallA {
+  position: absolute;
+  top: 14px;
+  right: 56px;
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.35);
+  transform: rotate(20deg);
+}
+
+.pawSmallB {
+  position: absolute;
+  top: 34px;
+  right: 40px;
+  width: 11px;
+  height: 11px;
+  color: rgba(255, 255, 255, 0.25);
+  transform: rotate(-10deg);
+}
+
+.brandName {
+  position: relative;
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 4px;
+}
+
+.category {
+  position: relative;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 4px;
+}
+
+.discount {
+  position: relative;
+  font-size: 34px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0 0 16px;
+  letter-spacing: -0.5px;
+}
+
+.badge {
+  position: relative;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-bottom: 10px;
+}
+
+.badge span {
+  font-size: 11px;
+  color: #fff;
+}
+
+.remaining {
+  position: relative;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.perforation {
+  position: relative;
+  width: 0;
+  flex-shrink: 0;
+}
+
+.dashedLine {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -1px;
+  width: 2px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--pc-border) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.notch {
+  position: absolute;
+  left: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--pc-surface);
+}
+
+.notchTop {
+  top: -12px;
+}
+
+.notchBottom {
+  bottom: -12px;
+}
+
+.stub {
+  width: 150px;
+  flex-shrink: 0;
+  background: var(--pc-surface);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.ctaButton {
+  background: var(--pc-neutral-soft);
+  color: var(--pc-neutral-text);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.ctaButton:disabled {
+  color: var(--pc-text-muted);
+  opacity: 0.55;
+}
+
+.stubIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--pc-brand);
+}
+
+.barcode {
+  width: 100%;
+}
+
+.barcodeBars {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  height: 26px;
+  width: 100%;
+}
+
+.barBlack {
+  background: var(--pc-text);
+}
+
+.barWhite {
+  background: var(--pc-surface);
+}
+
+.barcodeNumber {
+  font-size: 9px;
+  color: var(--pc-text-muted);
+  letter-spacing: 1px;
+  margin: 4px 0 0;
+  text-align: center;
+}

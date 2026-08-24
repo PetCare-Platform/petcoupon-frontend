@@ -1,0 +1,77 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: var(--pc-bg);
+}
+
+.pageWithBlobs {
+  background: #ffffff;
+}
+
+.blobLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 800px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.blob {
+  position: absolute;
+  aspect-ratio: 1;
+}
+
+.blobSub {
+  top: -60px;
+  right: -60px;
+  width: 26vw;
+  min-width: 260px;
+  max-width: 380px;
+  background: var(--pc-sub-soft);
+  border-radius: 58% 42% 39% 61% / 55% 38% 62% 45%;
+}
+
+.blobAccent {
+  top: 300px;
+  right: -90px;
+  width: 22vw;
+  min-width: 220px;
+  max-width: 320px;
+  background: var(--pc-accent-soft);
+  border-radius: 50% 50% 42% 58% / 45% 55% 45% 55%;
+}
+
+.blobCare {
+  top: 400px;
+  left: -70px;
+  width: 26vw;
+  min-width: 260px;
+  max-width: 360px;
+  background: var(--pc-care-soft);
+  border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.myCouponsButton {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  z-index: 5;
+  background: var(--pc-brand);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 18px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

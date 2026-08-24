@@ -1,0 +1,42 @@
+:root {
+  --pc-brand: #d4356e;
+  --pc-brand-soft: #fbeaf0;
+  --pc-brand-text: #993556;
+
+  --pc-sub: #6e4fa3;
+  --pc-sub-soft: #f3eefb;
+  --pc-sub-text: #534ab7;
+
+  --pc-accent: #e8785a;
+  --pc-accent-soft: #faece7;
+  --pc-accent-text: #993c1d;
+
+  --pc-care: #2fb6a0;
+  --pc-care-soft: #eaf7f4;
+  --pc-care-text: #0f6e56;
+
+  --pc-neutral-soft: #f1efe8;
+  --pc-neutral-text: #5f5e5a;
+
+  --pc-danger-soft: #fcebeb;
+  --pc-danger-text: #791f1f;
+  --pc-warning-soft: #faeeda;
+  --pc-warning-text: #633806;
+
+  --pc-bg: #fff6f1;
+  --pc-surface: #ffffff;
+  --pc-border: #e7dcd5;
+
+  --pc-text: #2b1f2e;
+  --pc-text-secondary: #6b5b54;
+  --pc-text-muted: #8a7a72;
+
+  --pc-brand-grad: linear-gradient(135deg, #d4356e, #b0296c);
+  --pc-accent-grad: linear-gradient(135deg, #e8785a, #d45c63);
+  --pc-care-grad: linear-gradient(135deg, #2fb6a0, #279e9e);
+  --pc-sub-grad: linear-gradient(120deg, #6e4fa3, #8a5fb8);
+  --pc-closed-fill: #d9d5ce;
+
+  --pc-radius: 10px;
+  --pc-radius-lg: 14px;
+}

@@ -1,0 +1,76 @@
+.card {
+  border-radius: var(--pc-radius);
+  padding: 14px;
+}
+
+.label {
+  font-size: 12px;
+  margin: 0 0 6px;
+}
+
+.value {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.brand {
+  background: var(--pc-brand-soft);
+}
+.brand .label {
+  color: var(--pc-brand-text);
+}
+.brand .value {
+  color: var(--pc-brand-text);
+}
+
+.sub {
+  background: var(--pc-sub-soft);
+}
+.sub .label {
+  color: var(--pc-sub-text);
+}
+.sub .value {
+  color: var(--pc-sub-text);
+}
+
+.accent {
+  background: var(--pc-accent-soft);
+}
+.accent .label {
+  color: var(--pc-accent-text);
+}
+.accent .value {
+  color: var(--pc-accent-text);
+}
+
+.care {
+  background: var(--pc-care-soft);
+}
+.care .label {
+  color: var(--pc-care-text);
+}
+.care .value {
+  color: var(--pc-care-text);
+}
+
+.neutral {
+  background: var(--pc-neutral-soft);
+}
+.neutral .label {
+  color: var(--pc-neutral-text);
+}
+.neutral .value {
+  color: var(--pc-text);
+}
+
+.surface {
+  background: var(--pc-surface);
+  border: 0.5px solid var(--pc-border);
+}
+.surface .label {
+  color: var(--pc-text-muted);
+}
+.surface .value {
+  color: var(--pc-care-text);
+}

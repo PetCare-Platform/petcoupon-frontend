@@ -1,0 +1,188 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(43, 31, 46, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 340px;
+  background: var(--pc-surface);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel {
+  padding: 32px 28px 26px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.toneBrand {
+  background: var(--pc-brand);
+}
+.toneAccent {
+  background: var(--pc-accent);
+}
+.toneCare {
+  background: var(--pc-care);
+}
+
+.pawWatermark {
+  position: absolute;
+  left: -20px;
+  bottom: -20px;
+  width: 110px;
+  height: 110px;
+  color: rgba(255, 255, 255, 0.08);
+  transform: rotate(-15deg);
+}
+
+.iconWatermark {
+  position: absolute;
+  right: -30px;
+  top: -20px;
+  width: 130px;
+  height: 130px;
+  color: rgba(255, 255, 255, 0.1);
+  transform: rotate(15deg);
+}
+
+.brandName {
+  position: relative;
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 6px;
+}
+
+.category {
+  position: relative;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 6px;
+}
+
+.discount {
+  position: relative;
+  font-size: 40px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0 0 14px;
+}
+
+.badge {
+  position: relative;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 6px 14px;
+}
+
+.badge span {
+  font-size: 12px;
+  color: #fff;
+}
+
+.perforation {
+  position: relative;
+  height: 0;
+}
+
+.notch {
+  position: absolute;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(43, 31, 46, 0.45);
+}
+
+.notchLeft {
+  left: -14px;
+}
+
+.notchRight {
+  right: -14px;
+}
+
+.dashedLine {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  top: 0;
+  border-top: 1.5px dashed var(--pc-border);
+}
+
+.stub {
+  padding: 26px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.barcodeBars {
+  width: 100%;
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  height: 56px;
+}
+
+.barBlack {
+  background: var(--pc-text);
+}
+
+.barWhite {
+  background: var(--pc-surface);
+}
+
+.barcodeNumber {
+  font-size: 12px;
+  color: var(--pc-text-muted);
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--pc-text-muted);
+  margin: 4px 0 0;
+}
+
+.markUsedButton {
+  width: 100%;
+  background: var(--pc-neutral-soft);
+  color: var(--pc-neutral-text);
+  border: none;
+  border-radius: 24px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+}

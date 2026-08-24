@@ -1,0 +1,63 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--pc-surface);
+  border-right: 0.5px solid var(--pc-border);
+  padding: 20px 14px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--pc-text);
+}
+
+.logoPlus {
+  color: var(--pc-brand);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--pc-text-secondary);
+  text-decoration: none;
+}
+
+.navItem:hover {
+  background: var(--pc-neutral-soft);
+}
+
+.navItemActive {
+  background: var(--pc-brand-soft);
+  color: var(--pc-brand-text);
+  font-weight: 500;
+}
+
+.navItemActive:hover {
+  background: var(--pc-brand-soft);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 28px;
+}
