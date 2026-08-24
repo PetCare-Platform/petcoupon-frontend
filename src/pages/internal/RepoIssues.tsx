@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { Eyebrow, EmptyState, FilterBar, StatusPill } from "../../components/ui";
 import { GITHUB_REPO } from "../../routes";
@@ -176,7 +177,10 @@ export default function RepoIssues() {
                       {issue.user?.login ?? "unknown"} · {timeAgo(issue.created_at)} · 댓글 {issue.comments}
                     </p>
                   </div>
-                  <span className="flex-none text-sm underline underline-offset-4">GitHub에서 보기 →</span>
+                  <span className="inline-flex flex-none items-center gap-1 text-sm underline underline-offset-4">
+                    GitHub에서 보기
+                    <ArrowRight weight="bold" className="h-3 w-3 flex-none" aria-hidden="true" />
+                  </span>
                 </a>
               ))}
             </div>

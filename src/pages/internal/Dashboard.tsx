@@ -118,7 +118,7 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <TextLink to="/internal/monitoring">시스템 현황 전체 보기 →</TextLink>
+            <TextLink to="/internal/monitoring">시스템 현황 전체 보기</TextLink>
           </article>
 
           <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
@@ -140,7 +140,7 @@ export default function Dashboard() {
                 </li>
               ))}
             </ul>
-            <TextLink to="/internal/failures">실패 처리 전체 보기 →</TextLink>
+            <TextLink to="/internal/failures">실패 처리 전체 보기</TextLink>
           </article>
         </div>
       </section>
@@ -153,7 +153,7 @@ export default function Dashboard() {
                 <h3 className="text-lg font-semibold">발급 처리 흐름</h3>
                 <p className="text-xs text-ink/50 dark:text-ops-muted">REQ-20260821-8F3A21 · 사용자 #1 · 쿠폰 #10 · 184ms</p>
               </div>
-              <TextLink to="/internal/issues">요청 조회 전체 화면 →</TextLink>
+              <TextLink to="/internal/issues">요청 조회 전체 화면</TextLink>
             </div>
             <ol className="grid items-start grid-cols-2 gap-3 md:grid-cols-5">
               {PIPELINE.map((step) => (
@@ -173,7 +173,7 @@ export default function Dashboard() {
           <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold">최근 발급 처리량</h3>
-              <TextLink to="/internal/monitoring">시간대별 추이 보기 →</TextLink>
+              <TextLink to="/internal/monitoring">시간대별 추이 보기</TextLink>
             </div>
             <BarChart points={THROUGHPUT} />
             <p className="mt-3 text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</p>
@@ -189,7 +189,7 @@ export default function Dashboard() {
               <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" compact tone="danger" />
             </MetricGrid>
             <div className="mt-4">
-              <TextLink to="/internal/verification">정합성 검증 전체 보기 →</TextLink>
+              <TextLink to="/internal/verification">정합성 검증 전체 보기</TextLink>
             </div>
           </article>
         </div>

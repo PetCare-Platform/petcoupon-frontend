@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { Eyebrow, StatusPill } from "../../components/ui";
+import { BackLink, Eyebrow, StatusPill } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
 const CODE = "PET-7K3M-82QD";
@@ -23,9 +23,7 @@ export default function CouponDetail() {
     <Layout area="user" page="coupon-detail">
       <section className="py-10">
         <div className="container-page">
-          <Link to="/user/my-coupons" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
-            ← 내 쿠폰
-          </Link>
+          <BackLink to="/user/my-coupons">내 쿠폰</BackLink>
           <Eyebrow>쿠폰 발급 · 1042</Eyebrow>
           <h1 className="mt-2">여름 정률 쿠폰</h1>
           <p className="mt-2 text-[18px] text-ink/70">반려동물 여름 케어 위크 · 미용과 목욕 서비스에 사용할 수 있어요.</p>

@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { Eyebrow, FieldGroup, LinkButton, inputClass } from "../../components/ui";
+import { BackLink, Eyebrow, FieldGroup, LinkButton, inputClass } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 
 export default function CouponForm() {
@@ -12,6 +11,7 @@ export default function CouponForm() {
   const [validDays, setValidDays] = useState("7");
   const [quantity, setQuantity] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -25,16 +25,18 @@ export default function CouponForm() {
       showToast("입력 내용을 확인해 주세요.");
       return;
     }
-    showToast("쿠폰을 저장했습니다.");
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      showToast("쿠폰을 저장했습니다.");
+    }, 500);
   }
 
   return (
     <Layout area="admin" page="coupon-form">
       <section className="py-10">
         <div className="container-page">
-          <Link to="/admin/coupons" className="mb-7 inline-flex min-h-11 items-center gap-2 underline underline-offset-4">
-            ← 쿠폰 목록
-          </Link>
+          <BackLink to="/admin/coupons">쿠폰 목록</BackLink>
           <Eyebrow>관리자 · 쿠폰 등록</Eyebrow>
           <h1 className="mt-2">쿠폰 만들기</h1>
         </div>
@@ -118,8 +120,13 @@ export default function CouponForm() {
             </div>
 
             <div className="flex gap-3">
-              <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626]">
-                쿠폰 저장
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] disabled:cursor-wait disabled:opacity-70"
+              >
+                {submitting ? <span className="h-4 w-4 flex-none animate-spin rounded-full border-2 border-paper/30 border-t-paper" aria-hidden="true" /> : null}
+                {submitting ? "저장하는 중" : "쿠폰 저장"}
               </button>
               <LinkButton to="/admin/coupons" variant="secondary">취소</LinkButton>
             </div>

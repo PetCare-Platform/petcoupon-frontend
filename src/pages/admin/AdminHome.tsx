@@ -1,3 +1,4 @@
+import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { Card, ColorBlock, Eyebrow, LinkButton, MetricGrid, MetricTile } from "../../components/ui";
 
@@ -61,7 +62,10 @@ export default function AdminHome() {
                 <span className="text-xs font-semibold uppercase tracking-wide text-ink/60">{item.tag}</span>
                 <div>
                   <strong className="block text-lg">{item.title}</strong>
-                  <span className="text-ink/60">{item.desc} →</span>
+                  <span className="inline-flex items-center gap-1 text-ink/60">
+                    {item.desc}
+                    <ArrowRight weight="bold" className="h-3 w-3 flex-none" aria-hidden="true" />
+                  </span>
                 </div>
               </Card>
             ))}

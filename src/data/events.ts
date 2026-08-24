@@ -5,6 +5,8 @@ export interface EventCoupon {
   name: string;
   detail: string;
   value: string;
+  stock: number;
+  total: number;
 }
 
 export interface EventMetric {
@@ -46,8 +48,8 @@ export const EVENTS: EventRecord[] = [
       { label: "사용 기한", value: "7일", hint: "발급 후 7일" },
     ],
     coupons: [
-      { id: "rate", name: "여름 정률 쿠폰", detail: "3만원 이상 구매 · 최대 1만원 할인", value: "20%" },
-      { id: "amount", name: "첫 만남 정액 쿠폰", detail: "2만원 이상 구매 · 첫 구매 전용", value: "5,000원" },
+      { id: "rate", name: "여름 정률 쿠폰", detail: "3만원 이상 구매 · 최대 1만원 할인", value: "20%", stock: 156, total: 300 },
+      { id: "amount", name: "첫 만남 정액 쿠폰", detail: "2만원 이상 구매 · 첫 구매 전용", value: "5,000원", stock: 128, total: 200 },
     ],
     guide: [
       "다른 쿠폰과 중복 적용할 수 없습니다.",
@@ -72,7 +74,7 @@ export const EVENTS: EventRecord[] = [
       { label: "사용 기한", value: "14일", hint: "발급 후 14일" },
     ],
     coupons: [
-      { id: "checkup", name: "기본 검진 정률 쿠폰", detail: "5만원 이상 구매 · 최대 1만 5천원 할인", value: "15%" },
+      { id: "checkup", name: "기본 검진 정률 쿠폰", detail: "5만원 이상 구매 · 최대 1만 5천원 할인", value: "15%", stock: 300, total: 300 },
     ],
     guide: [
       "제휴 동물병원에서만 사용할 수 있습니다.",
@@ -96,7 +98,7 @@ export const EVENTS: EventRecord[] = [
       { label: "발급 종료", value: "D-3", hint: "8월 25일 23:59" },
       { label: "사용 기한", value: "5일", hint: "발급 후 5일" },
     ],
-    coupons: [{ id: "walk", name: "산책용품 할인 쿠폰", detail: "2만원 이상 산책용품 구매", value: "7,000원" }],
+    coupons: [{ id: "walk", name: "산책용품 할인 쿠폰", detail: "2만원 이상 산책용품 구매", value: "7,000원", stock: 128, total: 1000 }],
     guide: [
       "산책용품 카테고리에서만 사용할 수 있습니다.",
       "사료·간식 구매에는 적용되지 않습니다.",
@@ -119,7 +121,7 @@ export const EVENTS: EventRecord[] = [
       { label: "발급 종료", value: "종료", hint: "7월 31일 23:59" },
       { label: "사용 기한", value: "7일", hint: "발급 후 7일" },
     ],
-    coupons: [{ id: "welcome", name: "웰컴 정액 쿠폰", detail: "첫 구매 전용 · 발급 종료", value: "5,000원" }],
+    coupons: [{ id: "welcome", name: "웰컴 정액 쿠폰", detail: "첫 구매 전용 · 발급 종료", value: "5,000원", stock: 0, total: 200 }],
     guide: ["이벤트가 종료되어 더 이상 발급되지 않습니다.", "이미 발급받은 쿠폰은 사용 기한까지 사용할 수 있습니다."],
   },
 ];

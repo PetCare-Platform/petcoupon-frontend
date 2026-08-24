@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { Eyebrow, FilterBar, LinkButton, MetricTile } from "../../components/ui";
 
@@ -71,7 +72,7 @@ export default function MyCoupons() {
 
           <div className="mt-8 grid items-start gap-3 sm:grid-cols-2">
             {visible.map((coupon) => (
-              <article key={coupon.issue} className="rounded-control border border-hairline p-3.5">
+              <article key={coupon.issue} className="overflow-visible rounded-control border border-hairline bg-paper p-3.5 shadow-[0_1px_2px_rgba(29,29,27,0.06)]">
                 <div className="mb-2 flex items-center justify-between">
                   {coupon.badge ? (
                     <span className="inline-flex min-h-6 items-center rounded-full border border-clay/30 bg-clay/10 px-2 text-[11px] font-semibold uppercase tracking-wide text-clay-ink">{coupon.badge}</span>
@@ -84,10 +85,13 @@ export default function MyCoupons() {
                 <h3 className="mt-0.5 text-base font-semibold">{coupon.name}</h3>
                 <p className="mt-1 text-xl font-semibold">{coupon.value}</p>
                 <p className="mt-0.5 text-xs text-ink/60">{coupon.condition}</p>
-                <div className="mt-3 flex items-center justify-between border-t border-hairline-soft pt-3 text-xs">
+                <div className="relative -mx-3.5 mt-3 flex items-center justify-between border-t border-dashed border-hairline px-3.5 pt-3 text-xs">
+                  <span className="absolute -left-2 top-0 h-4 w-4 -translate-y-1/2 rounded-full bg-canvas" aria-hidden="true" />
+                  <span className="absolute -right-2 top-0 h-4 w-4 -translate-y-1/2 rounded-full bg-canvas" aria-hidden="true" />
                   <span className={coupon.badge === "곧 만료" ? "font-semibold text-clay-ink" : "text-ink/60"}>{coupon.deadline}</span>
-                  <Link to="/user/coupon-detail" className="font-medium underline underline-offset-4">
-                    상세 보기 →
+                  <Link to="/user/coupon-detail" className="group inline-flex items-center gap-1 font-medium underline underline-offset-4">
+                    상세 보기
+                    <ArrowRight weight="bold" className="h-3 w-3 flex-none transition-transform duration-200 ease-fluid group-hover:translate-x-0.5" aria-hidden="true" />
                   </Link>
                 </div>
               </article>

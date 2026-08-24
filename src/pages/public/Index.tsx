@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowRight, PawPrint } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { ColorBlock, Eyebrow, FilterBar, ImageCrossfade, LinkButton, PET_SHOWCASE_IMAGES_HOME, TextLink } from "../../components/ui";
 import { EVENTS, type EventStatus } from "../../data/events";
@@ -29,7 +30,10 @@ export default function Index() {
       <section className="py-10 md:py-16">
         <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
           <div className="animate-reveal-up">
-            <Eyebrow>반려동물 혜택</Eyebrow>
+            <Eyebrow>
+              <PawPrint weight="fill" className="h-3.5 w-3.5" aria-hidden="true" />
+              반려동물 혜택
+            </Eyebrow>
             <h1 className="mt-2">
               미용비도 병원비도,
               <br />
@@ -132,9 +136,10 @@ export default function Index() {
                 </dl>
                 <Link
                   to={`/event-detail/${event.id}`}
-                  className="mt-auto inline-flex items-center justify-between gap-2 text-[18px] font-medium underline underline-offset-4 transition-all hover:gap-3"
+                  className="group mt-auto inline-flex items-center justify-between gap-2 text-[18px] font-medium underline underline-offset-4 transition-all"
                 >
-                  {event.cta} <span aria-hidden="true">→</span>
+                  {event.cta}
+                  <ArrowRight weight="bold" className="h-4 w-4 flex-none transition-transform duration-200 ease-fluid group-hover:translate-x-1" aria-hidden="true" />
                 </Link>
               </article>
             ))}

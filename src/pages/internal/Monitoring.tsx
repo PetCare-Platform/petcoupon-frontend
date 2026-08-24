@@ -1,3 +1,4 @@
+import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { BarChart, Card, Eyebrow, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
@@ -132,7 +133,10 @@ export default function Monitoring() {
               <Card key={item.to} href={item.to}>
                 <span className="block text-xs font-semibold uppercase tracking-wide text-ink/60 dark:text-ops-muted">{item.tag}</span>
                 <strong className="mt-1 block text-lg">{item.title}</strong>
-                <span className="text-ink/60 dark:text-ops-muted">{item.desc} →</span>
+                <span className="inline-flex items-center gap-1 text-ink/60 dark:text-ops-muted">
+                  {item.desc}
+                  <ArrowRight weight="bold" className="h-3 w-3 flex-none" aria-hidden="true" />
+                </span>
               </Card>
             ))}
           </nav>

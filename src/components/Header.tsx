@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { CaretDown } from "@phosphor-icons/react";
 import { AREA_ROUTES, type AreaKey } from "../routes";
 
 export function Header({ area, page }: { area: AreaKey; page: string }) {
@@ -39,9 +40,11 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
                       className="flex min-h-11 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[15px] font-medium transition-colors duration-300 ease-fluid hover:bg-surface-soft group-focus-within:bg-surface-soft dark:hover:bg-ops-bg dark:group-focus-within:bg-ops-bg"
                     >
                       <span className={isCurrentArea ? "underline decoration-accent/70 underline-offset-[5px]" : ""}>{cfg.label}</span>
-                      <span aria-hidden="true" className="text-[10px] text-ink/50 transition-transform duration-300 ease-fluid group-hover:rotate-180 group-focus-within:rotate-180 dark:text-ops-muted">
-                        ▾
-                      </span>
+                      <CaretDown
+                        weight="bold"
+                        aria-hidden="true"
+                        className="h-3 w-3 flex-none text-ink/50 transition-transform duration-300 ease-fluid group-hover:rotate-180 group-focus-within:rotate-180 dark:text-ops-muted"
+                      />
                     </Link>
                     <div className="absolute left-0 top-full z-20 hidden pt-1.5 group-hover:block group-focus-within:block">
                       <div className="min-w-[172px] rounded-2xl border border-hairline bg-paper/95 p-1.5 shadow-[0_16px_32px_-16px_rgba(32,29,24,0.3)] backdrop-blur-xl dark:border-ops-border dark:bg-ops-surface/95">

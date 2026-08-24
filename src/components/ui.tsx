@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import { ArrowLeft, ArrowRight, PawPrint } from "@phosphor-icons/react";
+
+export { PawPrint };
 
 type Variant = "primary" | "secondary" | "text" | "danger";
 
@@ -48,8 +51,18 @@ export function TextLink({ to, children }: { to: string; children: ReactNode }) 
   return (
     <Link
       to={to}
-      className="inline-flex min-h-11 items-center gap-2 text-[18px] font-medium underline underline-offset-4 transition-all duration-150 ease-fluid hover:underline-offset-[6px] dark:text-ops-ink"
+      className="group inline-flex min-h-11 items-center gap-1.5 text-[18px] font-medium underline underline-offset-4 transition-all duration-150 ease-fluid hover:underline-offset-[6px] dark:text-ops-ink"
     >
+      {children}
+      <ArrowRight weight="bold" className="h-[0.85em] w-[0.85em] flex-none transition-transform duration-200 ease-fluid group-hover:translate-x-0.5" aria-hidden="true" />
+    </Link>
+  );
+}
+
+export function BackLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <Link to={to} className="mb-7 inline-flex min-h-11 items-center gap-1.5 underline underline-offset-4">
+      <ArrowLeft weight="bold" className="h-[0.85em] w-[0.85em] flex-none" aria-hidden="true" />
       {children}
     </Link>
   );
@@ -91,7 +104,7 @@ export function Card({ href, children, className = "" }: { href?: string; childr
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="flex w-fit items-center rounded-full border border-accent/20 bg-accent/[0.07] px-3 py-1 text-xs font-semibold tracking-wide text-accent-ink dark:border-ops-border-soft dark:bg-transparent dark:text-ops-muted">
+    <p className="flex w-fit items-center gap-1 rounded-full border border-accent/20 bg-accent/[0.07] px-3 py-1 text-xs font-semibold tracking-wide text-accent-ink dark:border-ops-border-soft dark:bg-transparent dark:text-ops-muted">
       {children}
     </p>
   );
@@ -178,7 +191,7 @@ export function MetricTile({
       }`}
     >
       <dt className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
-      <dd className={`flex flex-wrap items-baseline gap-x-2 font-bold leading-none tracking-tight ${metricToneClass[tone]} ${compact ? "text-[30px]" : "text-[40px]"}`}>
+      <dd className={`flex flex-wrap items-baseline gap-x-2 font-bold leading-none tracking-tight tabular-nums ${metricToneClass[tone]} ${compact ? "text-[30px]" : "text-[40px]"}`}>
         <span className="inline-flex items-baseline gap-1.5">
           {trend ? <span className={`text-[0.4em] ${metricToneClass[tone]}`} aria-hidden="true">{trendGlyph[trend]}</span> : null}
           {value}
