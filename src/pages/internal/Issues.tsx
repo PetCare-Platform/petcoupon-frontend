@@ -47,7 +47,7 @@ export default function Issues() {
           <div>
             <Eyebrow>내부 운영 · 발급 흐름</Eyebrow>
             <h1 className="mt-2">발급 처리 흐름</h1>
-            <p className="mt-2 text-ink/70 dark:text-ops-muted">하나의 요청이 받은 순간부터 저장과 알림까지 이동한 경로를 살펴보세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">하나의 요청이 받은 순간부터 저장과 알림까지 이동한 경로를 살펴보세요.</p>
           </div>
           <form onSubmit={handleSearch} noValidate className="flex flex-col gap-3 rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface sm:flex-row sm:items-end">
             <div className="flex-1">

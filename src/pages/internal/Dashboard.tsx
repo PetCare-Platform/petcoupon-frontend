@@ -45,7 +45,7 @@ export default function Dashboard() {
           <div>
             <Eyebrow>내부 운영 · 대시보드</Eyebrow>
             <h1 className="mt-2">내부 운영 대시보드</h1>
-            <p className="mt-2 text-ink/70 dark:text-ops-muted">시스템 현황과 발급 처리 흐름, 실패 처리를 한 화면에서 점검하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">시스템 현황과 발급 처리 흐름, 실패 처리를 한 화면에서 점검하세요.</p>
           </div>
           <button
             type="button"

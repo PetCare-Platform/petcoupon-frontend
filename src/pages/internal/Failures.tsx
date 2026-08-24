@@ -28,7 +28,7 @@ export default function Failures() {
           <div>
             <Eyebrow>내부 운영 · 실패 처리</Eyebrow>
             <h1 className="mt-2">FAILED · Retry · DLQ</h1>
-            <p className="mt-2 text-ink/70 dark:text-ops-muted">실패 원인을 분류하고 안전하게 재시도하거나 격리 큐로 이동하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">실패 원인을 분류하고 안전하게 재시도하거나 격리 큐로 이동하세요.</p>
           </div>
         </div>
       </section>
@@ -60,7 +60,7 @@ export default function Failures() {
             <div>
               <Eyebrow>실패 기록</Eyebrow>
               <h2 className="mt-2">실패 메시지</h2>
-              <p className="mt-1 text-ink/70 dark:text-ops-muted">{visible.length}개의 항목</p>
+              <p className="mt-1 text-[17px] text-ink/70 dark:text-ops-muted">{visible.length}개의 항목</p>
             </div>
             <FilterBar
               value={filter}

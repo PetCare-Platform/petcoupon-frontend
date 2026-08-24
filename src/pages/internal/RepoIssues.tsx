@@ -85,7 +85,7 @@ export default function RepoIssues() {
           <div>
             <Eyebrow>내부 운영 · GitHub 이슈</Eyebrow>
             <h1 className="mt-2">저장소 이슈</h1>
-            <p className="mt-2 text-ink/70 dark:text-ops-muted">
+            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">
               <a href={`https://github.com/${GITHUB_REPO}`} target="_blank" rel="noreferrer" className="underline underline-offset-4">
                 {GITHUB_REPO}
               </a>

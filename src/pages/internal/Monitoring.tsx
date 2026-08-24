@@ -31,7 +31,7 @@ export default function Monitoring() {
           <div>
             <Eyebrow>내부 운영 · 시스템 현황</Eyebrow>
             <h1 className="mt-2">시스템 현황</h1>
-            <p className="mt-2 text-ink/70 dark:text-ops-muted">쿠폰 발급 흐름의 가용성, 처리량과 지연을 한 화면에서 점검하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">쿠폰 발급 흐름의 가용성, 처리량과 지연을 한 화면에서 점검하세요.</p>
           </div>
           <button
             type="button"
@@ -111,7 +111,7 @@ export default function Monitoring() {
           <div>
             <Eyebrow>처리량</Eyebrow>
             <h2 className="mt-2">최근 발급 처리량</h2>
-            <p className="mt-2 text-ink/70 dark:text-ops-muted">한 시간 동안의 분당 발급 요청과 실패 비율입니다.</p>
+            <p className="mt-2 text-[17px] text-ink/70 dark:text-ops-muted">한 시간 동안의 분당 발급 요청과 실패 비율입니다.</p>
           </div>
           <figure className="rounded-block border border-hairline p-6 dark:border-white/[0.14] dark:bg-ops-surface">
             <BarChart points={THROUGHPUT} />

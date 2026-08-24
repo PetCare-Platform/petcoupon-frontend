@@ -32,7 +32,7 @@ export default function Events() {
           <div>
             <Eyebrow>관리자 · 이벤트</Eyebrow>
             <h1 className="mt-2">이벤트 목록</h1>
-            <p className="mt-2 text-ink/70">공개 일정과 상태, 연결된 쿠폰을 확인하고 필요한 항목을 관리하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70">공개 일정과 상태, 연결된 쿠폰을 확인하고 필요한 항목을 관리하세요.</p>
           </div>
           <LinkButton to="/admin/event-form">새 이벤트</LinkButton>
         </div>
@@ -53,7 +53,7 @@ export default function Events() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2>등록 이벤트</h2>
-              <p className="mt-1 text-ink/70">{visible.length}개의 이벤트</p>
+              <p className="mt-1 text-[17px] text-ink/70">{visible.length}개의 이벤트</p>
             </div>
             <FilterBar
               value={filter}

@@ -32,7 +32,7 @@ export default function Coupons() {
           <div>
             <Eyebrow>관리자 · 쿠폰</Eyebrow>
             <h1 className="mt-2">쿠폰 목록</h1>
-            <p className="mt-2 text-ink/70">할인 조건과 발급 기간, 남은 재고를 빠르게 확인하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70">할인 조건과 발급 기간, 남은 재고를 빠르게 확인하세요.</p>
           </div>
           <LinkButton to="/admin/coupon-form">새 쿠폰</LinkButton>
         </div>
@@ -53,7 +53,7 @@ export default function Coupons() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2>등록 쿠폰</h2>
-              <p className="mt-1 text-ink/70">{visible.length}개의 쿠폰</p>
+              <p className="mt-1 text-[17px] text-ink/70">{visible.length}개의 쿠폰</p>
             </div>
             <FilterBar
               value={filter}

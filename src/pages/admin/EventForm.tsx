@@ -37,7 +37,7 @@ export default function EventForm() {
           </Link>
           <Eyebrow>관리자 · 이벤트 등록</Eyebrow>
           <h1 className="mt-2">이벤트 만들기</h1>
-          <p className="mt-2 text-ink/70">고객에게 보여줄 이름과 설명, 정확한 공개 일정을 입력하세요.</p>
+          <p className="mt-2 text-[18px] text-ink/70">고객에게 보여줄 이름과 설명, 정확한 공개 일정을 입력하세요.</p>
         </div>
       </section>
 

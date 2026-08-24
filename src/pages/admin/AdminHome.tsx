@@ -13,7 +13,7 @@ export default function AdminHome() {
               <br />
               한 곳에서 관리하세요.
             </h1>
-            <p className="mt-3 text-ink/70">이벤트 일정과 쿠폰 재고, 최근 변경 사항을 한 흐름으로 관리하세요.</p>
+            <p className="mt-3 text-[18px] text-ink/70">이벤트 일정과 쿠폰 재고, 최근 변경 사항을 한 흐름으로 관리하세요.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <LinkButton to="/admin/event-form">이벤트 만들기</LinkButton>
               <LinkButton to="/admin/coupon-form" variant="secondary">쿠폰 만들기</LinkButton>

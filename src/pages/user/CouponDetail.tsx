@@ -28,7 +28,7 @@ export default function CouponDetail() {
           </Link>
           <Eyebrow>쿠폰 발급 · 1042</Eyebrow>
           <h1 className="mt-2">여름 정률 쿠폰</h1>
-          <p className="mt-2 text-ink/70">반려동물 여름 케어 위크 · 미용과 목욕 서비스에 사용할 수 있어요.</p>
+          <p className="mt-2 text-[18px] text-ink/70">반려동물 여름 케어 위크 · 미용과 목욕 서비스에 사용할 수 있어요.</p>
         </div>
       </section>
 

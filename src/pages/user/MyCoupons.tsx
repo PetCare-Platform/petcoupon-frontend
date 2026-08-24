@@ -29,7 +29,7 @@ export default function MyCoupons() {
             <br />
             한곳에.
           </h1>
-          <p className="mt-2 text-ink/70">김하늘 님이 받은 혜택의 상태와 사용 기한을 확인하세요.</p>
+          <p className="mt-2 text-[18px] text-ink/70">김하늘 님이 받은 혜택의 상태와 사용 기한을 확인하세요.</p>
           <div className="mt-6 max-w-xs">
             <MetricTile label="지금 사용 가능" value={availableCount} hint="지금 사용할 수 있는 쿠폰" />
           </div>
@@ -55,7 +55,7 @@ export default function MyCoupons() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2>보유 쿠폰</h2>
-              <p className="mt-1 text-ink/70">{COUPONS.length}개의 쿠폰이 있어요.</p>
+              <p className="mt-1 text-[17px] text-ink/70">{COUPONS.length}개의 쿠폰이 있어요.</p>
             </div>
             <FilterBar
               value={filter}

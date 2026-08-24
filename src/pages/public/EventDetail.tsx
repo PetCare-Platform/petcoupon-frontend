@@ -48,7 +48,7 @@ export default function EventDetail() {
               {event.label} / {statusLabel[event.status].toUpperCase()}
             </Eyebrow>
             <h1 className="mt-2">{event.title}</h1>
-            <p className="mt-4 max-w-[56ch] text-ink/70">{event.detailDesc}</p>
+            <p className="mt-4 max-w-[56ch] text-[18px] text-ink/70">{event.detailDesc}</p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
               <LinkButton to="#coupon-choice">쿠폰 고르기</LinkButton>
               <a href="#event-guide" className="inline-flex min-h-11 items-center gap-2 text-[18px] font-medium underline underline-offset-4 hover:underline-offset-[6px]">
@@ -110,7 +110,7 @@ export default function EventDetail() {
         <div className="container-page max-w-2xl">
           <Eyebrow>쿠폰 선택</Eyebrow>
           <h2 className="mt-2">받을 혜택을 골라주세요.</h2>
-          <p className="mt-2 text-ink/70">쿠폰별로 한 사람당 한 장만 받을 수 있어요.</p>
+          <p className="mt-2 text-[17px] text-ink/70">쿠폰별로 한 사람당 한 장만 받을 수 있어요.</p>
 
           <form onSubmit={handleIssue} className="mt-6 rounded-block border border-hairline p-6">
             <h3 className="mb-4 text-lg font-semibold">발급할 쿠폰</h3>
