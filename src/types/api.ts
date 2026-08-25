@@ -6,7 +6,7 @@
 // coupon/entity/enums
 export type CouponStatus = "READY" | "ACTIVE" | "SOLD_OUT" | "ENDED";
 export type DiscountType = "FIXED_AMOUNT" | "RATE";
-export type IssueStatus = "ISSUED" | "USED" | "CANCELED" | "EXPIRED";
+export type IssueStatus = "ISSUED" | "USED" | "EXPIRED";
 
 // event/entity/enums
 export type EventStatus = "SCHEDULED" | "OPEN" | "CLOSED";
@@ -99,14 +99,16 @@ export interface CouponIssueCreateRequest {
 }
 
 /**
- * 백엔드 주석("Redis mock 단계") 확인: couponId, userId 뿐이다.
- * 명세의 status:"WAITING" 은 실제 응답에 없다 — couponIssueId 도 없다.
- * 폴링 시작 지점을 이 응답만으로는 찾을 수 없어, 신청 성공 후 보유 쿠폰
- * 목록에서 couponId 로 매칭하는 방식으로 우회한다 (EventDetail.tsx 참고).
+ * 2026-08-25 오후 백엔드 확인: status:"WAITING" 이 응답에 추가됐다(Stream 발행까지만
+ * 성공한 시점이라 항상 고정값 "WAITING"). couponIssueId는 아직 없다 — Consumer가
+ * 비동기로 CouponIssue를 저장하기 전이라서다. 폴링 시작 지점을 이 응답만으로는
+ * 찾을 수 없어, 신청 성공 후 보유 쿠폰 목록에서 couponId로 매칭하는 방식으로
+ * 우회한다 (EventDetail.tsx 참고).
  */
 export interface CouponIssueCreateResponse {
   couponId: number;
   userId: number;
+  status: "WAITING";
 }
 
 export interface CouponIssueUseRequest {
@@ -141,7 +143,6 @@ export interface CouponIssueRequestResponse {
   status: IssueStatus;
   issuedAt: string;
   usedAt: string | null;
-  canceledAt: string | null;
   expiresAt: string;
 }
 

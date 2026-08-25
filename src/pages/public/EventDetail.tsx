@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Layout } from "../../components/Layout";
 import {
   BackLink,
@@ -14,6 +14,12 @@ import {
 } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 import { EVENTS, getEvent, type EventStatus } from "../../data/events";
+import { applyForCoupon, listUserCouponIssues } from "../../api/couponIssues";
+import { getEventDetail } from "../../api/events";
+import { getCurrentUserId } from "../../api/currentUser";
+import { clearIdempotencyKey, getOrCreateIdempotencyKey } from "../../api/idempotency";
+import { ApiError, NetworkError } from "../../api/http";
+import type { EventDetailResponse } from "../../types/api";
 import NotFound from "./NotFound";
 
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
@@ -22,6 +28,7 @@ const statusDotClass: Record<EventStatus, string> = {
   scheduled: "bg-ink/30",
   closed: "bg-ink/20",
 };
+const realStatusLabel: Record<EventDetailResponse["status"], string> = { SCHEDULED: "오픈 예정", OPEN: "진행 중", CLOSED: "종료" };
 
 function deadlineTone(label: string, value: string): "warning" | undefined {
   if (!label.includes("종료")) return undefined;
@@ -49,6 +56,26 @@ function formatCountdown(ms: number): string {
  */
 const DEMO_SIMULATION_ENABLED = false;
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+/**
+ * POST /coupons/{id}/issues 응답에는 couponIssueId가 없다(Stream 발행까지만 성공한
+ * 시점이라 아직 저장 전 — src/types/api.ts 참고). Consumer가 비동기로 저장을 끝낼
+ * 때까지 보유 쿠폰 목록에서 couponId로 매칭해 찾는다. 목록은 최신순이라 첫 매칭이
+ * 이번 신청 건이다.
+ */
+async function pollForIssuedCoupon(couponId: number, userId: number) {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const list = await listUserCouponIssues(userId);
+    const match = list.find((issue) => issue.couponId === couponId);
+    if (match) return match;
+    await sleep(700);
+  }
+  return undefined;
+}
+
 const PAW_BURST = [
   { x: -46, y: -54, rot: -24 },
   { x: 0, y: -68, rot: 4 },
@@ -60,7 +87,26 @@ const PAW_BURST = [
 
 export default function EventDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const event = getEvent(Number(id));
+
+  // CouponForm(관리자)이 쿠폰 생성 직후 만들어주는 신청 링크(?couponId=...)로 들어온
+  // 경우에만 실제 백엔드 발급 API를 태운다. 이벤트별 쿠폰 목록 조회 API가 없어서
+  // 목데이터 화면(위 다중 선택 UI)과는 별개로, 이 값이 있으면 그 쿠폰 한 장만 신청 대상이다.
+  const realCouponIdParam = searchParams.get("couponId");
+  const realCouponId = realCouponIdParam ? Number(realCouponIdParam) : null;
+  const realCouponName = searchParams.get("couponName") ?? "쿠폰";
+  const realDiscountType = searchParams.get("discountType");
+  const realDiscountValue = searchParams.get("discountValue");
+  const realDiscountLabel = realDiscountValue
+    ? realDiscountType === "FIXED_AMOUNT"
+      ? `${Number(realDiscountValue).toLocaleString()}원`
+      : `${realDiscountValue}%`
+    : null;
+  const [realSubmitting, setRealSubmitting] = useState(false);
+  const [realEvent, setRealEvent] = useState<EventDetailResponse | null>(null);
+  const [realEventError, setRealEventError] = useState("");
   const [selected, setSelected] = useState(event?.coupons[0]?.id ?? "");
   const [stockById, setStockById] = useState<Record<string, number>>(() =>
     Object.fromEntries((event?.coupons ?? []).map((c) => [c.id, c.stock]))
@@ -116,6 +162,94 @@ export default function EventDetail() {
     return () => window.clearTimeout(t);
   }, [justIssuedId]);
 
+  // 목데이터(data/events.ts)에는 없는, 실제로 관리자가 방금 만든 이벤트일 수 있어(예: eventId 596)
+  // 실 모드에서는 mock event 조회에 기대지 않고 실제 이벤트 상세 API로 따로 불러온다.
+  useEffect(() => {
+    if (realCouponId === null || !id) return;
+    const controller = new AbortController();
+    getEventDetail(Number(id), controller.signal)
+      .then((data) => setRealEvent(data))
+      .catch((err) => {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setRealEventError(err instanceof ApiError || err instanceof NetworkError ? err.message : "이벤트를 불러오지 못했습니다.");
+      });
+    return () => controller.abort();
+  }, [id, realCouponId]);
+
+  if (realCouponId !== null) {
+    return (
+      <Layout area="public" page="event-detail">
+        {realEventError ? (
+          <section className="py-10">
+            <div className="container-page">
+              <BackLink to="/">이벤트 목록</BackLink>
+              <h1 className="mt-2">{realEventError}</h1>
+            </div>
+          </section>
+        ) : !realEvent ? (
+          <section className="py-10">
+            <div className="container-page">
+              <div className="h-8 w-40 animate-pulse rounded-full bg-surface-2" />
+              <div className="mt-4 h-[220px] animate-pulse rounded-block bg-surface-2" />
+            </div>
+          </section>
+        ) : (
+          <>
+            <section className="py-10">
+              <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
+                <div>
+                  <BackLink to="/">이벤트 목록</BackLink>
+                  <Eyebrow>{realStatusLabel[realEvent.status].toUpperCase()}</Eyebrow>
+                  <h1 className="mt-2">{realEvent.name}</h1>
+                  {realEvent.description ? <p className="mt-4 max-w-[56ch] text-[18px] text-ink/70">{realEvent.description}</p> : null}
+                  <div className="mt-8">
+                    <LinkButton to="#coupon-choice">쿠폰 받기</LinkButton>
+                  </div>
+                </div>
+                <div>
+                  <BrandIllustration aspect="aspect-[4/3]" />
+                </div>
+              </div>
+            </section>
+
+            <section id="coupon-choice" className="py-14">
+              <div className="container-page max-w-2xl">
+                <Eyebrow>
+                  <PawPrint weight="fill" className="h-3.5 w-3.5" aria-hidden="true" />
+                  바로 받기
+                </Eyebrow>
+                <h2 className="mt-2">이 혜택을 놓치지 마세요.</h2>
+                <p className="mt-2 text-[17px] text-ink/70">한 사람당 한 장만 받을 수 있어요.</p>
+
+                <form onSubmit={handleRealApply} className="mt-6 rounded-block border border-hairline p-6">
+                  <h3 className="text-lg font-semibold">발급할 쿠폰</h3>
+                  <div className="mt-4 flex min-h-[92px] items-center justify-between gap-4 rounded-control border border-ink bg-paper p-4 shadow-[0_1px_2px_rgba(29,29,27,0.06)]">
+                    <strong className="text-base">{realCouponName}</strong>
+                    {realDiscountLabel ? <span className="text-2xl font-semibold">{realDiscountLabel}</span> : null}
+                  </div>
+
+                  <div className="mt-6 rounded-control border border-hairline bg-surface-2 p-4 text-sm">
+                    <strong className="block">발급 전 확인</strong>
+                    <p className="mt-1 text-ink/80">선택한 쿠폰은 사용자 계정에 바로 보관되며, 발급 후에는 다른 쿠폰으로 바꿀 수 없습니다.</p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={realSubmitting}
+                    className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] disabled:cursor-wait disabled:opacity-70"
+                  >
+                    {realSubmitting ? <span className="h-4 w-4 flex-none animate-spin rounded-full border-2 border-paper/30 border-t-paper" aria-hidden="true" /> : null}
+                    {realSubmitting ? "발급하는 중" : "지금 받기"}
+                  </button>
+                </form>
+              </div>
+            </section>
+          </>
+        )}
+      </Layout>
+    );
+  }
+
   if (!event) return <NotFound />;
 
   const isClosed = event.status === "closed";
@@ -155,6 +289,29 @@ export default function EventDetail() {
       setCelebrateKey((k) => k + 1);
       showToast(`${orderNumber}번째로 받으셨어요! ${selectedCoupon.name} · 남은 재고 ${next}장`);
     }, 450 + Math.random() * 150);
+  }
+
+  async function handleRealApply(formEvent: FormEvent) {
+    formEvent.preventDefault();
+    if (realCouponId === null || realSubmitting) return;
+    const userId = getCurrentUserId();
+    const idempotencyKey = getOrCreateIdempotencyKey(realCouponId, userId);
+    setRealSubmitting(true);
+    try {
+      await applyForCoupon(realCouponId, userId, idempotencyKey);
+      const issued = await pollForIssuedCoupon(realCouponId, userId);
+      clearIdempotencyKey(realCouponId, userId);
+      if (issued) {
+        navigate(`/user/coupon-detail/${issued.couponIssueId}`);
+      } else {
+        showToast("신청은 접수됐어요. 잠시 후 보유 쿠폰에서 확인해 주세요.");
+        navigate("/user/my-coupons");
+      }
+    } catch (err) {
+      showToast(err instanceof ApiError || err instanceof NetworkError ? err.message : "신청하지 못했습니다.");
+    } finally {
+      setRealSubmitting(false);
+    }
   }
 
   return (

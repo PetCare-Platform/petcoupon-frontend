@@ -8,7 +8,7 @@ import type {
   CouponIssueUseRequest,
 } from "../types/api";
 
-/** POST /coupons/{couponId}/issues — 1차, 구현됨 (응답에 status/couponIssueId 없음, 타입 주석 참고) */
+/** POST /coupons/{couponId}/issues — 1차, 구현됨 (응답 status는 항상 "WAITING", couponIssueId는 아직 없음, 타입 주석 참고) */
 export function applyForCoupon(
   couponId: number,
   userId: number,
