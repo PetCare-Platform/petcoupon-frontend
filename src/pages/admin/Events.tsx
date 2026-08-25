@@ -83,7 +83,7 @@ export default function Events() {
                   </p>
                 </div>
                 <div className="flex gap-4 text-sm font-medium">
-                  <LinkButton to="/admin/event-form" variant="text" className="!text-[16px]">
+                  <LinkButton to={`/admin/event-form/${event.id}`} variant="text" className="!text-[16px]">
                     수정
                   </LinkButton>
                   <button

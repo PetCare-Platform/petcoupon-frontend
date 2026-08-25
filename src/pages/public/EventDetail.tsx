@@ -95,7 +95,8 @@ export default function EventDetail() {
   // 경우에만 실제 백엔드 발급 API를 태운다. 이벤트별 쿠폰 목록 조회 API가 없어서
   // 목데이터 화면(위 다중 선택 UI)과는 별개로, 이 값이 있으면 그 쿠폰 한 장만 신청 대상이다.
   const realCouponIdParam = searchParams.get("couponId");
-  const realCouponId = realCouponIdParam ? Number(realCouponIdParam) : null;
+  const parsedRealCouponId = realCouponIdParam ? Number(realCouponIdParam) : NaN;
+  const realCouponId = Number.isFinite(parsedRealCouponId) ? parsedRealCouponId : null;
   const realCouponName = searchParams.get("couponName") ?? "쿠폰";
   const realDiscountType = searchParams.get("discountType");
   const realDiscountValue = searchParams.get("discountValue");
@@ -308,6 +309,13 @@ export default function EventDetail() {
         navigate("/user/my-coupons");
       }
     } catch (err) {
+      // ApiError는 백엔드가 응답까지 끝낸 확정 실패(품절/중복신청 등)라 idempotencyKeyService가
+      // 이미 실패로 기록해뒀다 — 같은 키로 재시도하면 그 실패를 그대로 재현(REPLAY)해버려서
+      // 상황이 바뀌어도 영원히 같은 에러만 받는다. 키를 지워 다음 시도가 새 요청으로 가게 한다.
+      // NetworkError는 요청이 서버에 실제로 도달했는지 알 수 없으니 키를 그대로 남겨 안전하게 재시도한다.
+      if (err instanceof ApiError) {
+        clearIdempotencyKey(realCouponId, userId);
+      }
       showToast(err instanceof ApiError || err instanceof NetworkError ? err.message : "신청하지 못했습니다.");
     } finally {
       setRealSubmitting(false);

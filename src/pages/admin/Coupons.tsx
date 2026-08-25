@@ -83,9 +83,19 @@ export default function Coupons() {
                   </p>
                 </div>
                 <div className="flex gap-4 text-sm font-medium">
-                  <LinkButton to="/admin/coupon-form" variant="text" className="!text-[16px]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 쿠폰 수정 API도, 쿠폰 단건/이벤트별 목록 조회 API도 없다 — 이 화면 자체가
+                      // 아직 목데이터다(CouponForm은 "새 쿠폰 만들기" 전용이라 기존 쿠폰을 불러와
+                      // 편집하는 화면이 아니다). 실제 이벤트로 연결되지 않는 링크를 거는 대신
+                      // 삭제와 동일하게 비활성화해 둔다.
+                      // showToast(`${coupon.name} 수정 화면으로 이동합니다.`);
+                    }}
+                    className="underline underline-offset-4"
+                  >
                     수정
-                  </LinkButton>
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
