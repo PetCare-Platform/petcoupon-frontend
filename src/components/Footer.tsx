@@ -3,7 +3,7 @@ import { AREA_ROUTES } from "../routes";
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-hairline/70 bg-white/70 px-6 py-14 dark:border-ops-border/70 dark:bg-white/70 md:px-10">
+    <footer className="mt-20 border-t border-hairline/70 bg-white/70 px-6 py-14 dark:border-ops-border/70 dark:bg-ops-surface/70 md:px-10">
       <div className="mx-auto flex max-w-[1380px] flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
         <div>
           <Link to="/" className="text-xl font-bold text-ink">PetCoupon</Link>

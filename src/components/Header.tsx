@@ -39,7 +39,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
       </a>
 
       <header className="sticky top-0 z-[100] px-3 pt-3 md:px-5">
-        <div className="mx-auto max-w-[1380px] rounded-[1.75rem] border border-white/80 bg-white/90 text-ink shadow-[0_18px_50px_-30px_rgba(23,36,58,0.35)] backdrop-blur-xl dark:border-ops-border dark:bg-white/90">
+        <div className="mx-auto max-w-[1380px] rounded-[1.75rem] border border-white/80 bg-white/90 text-ink shadow-[0_18px_50px_-30px_rgba(23,36,58,0.35)] backdrop-blur-xl dark:border-ops-border dark:bg-ops-surface/90 dark:text-ops-ink">
           <div className="flex h-14 items-center gap-5 px-4 md:px-6">
             <Link to="/" aria-label="PetCoupon 홈" className="inline-flex flex-none items-center gap-2 text-[20px] font-bold tracking-tight">
               <span className="grid h-9 w-9 place-items-center rounded-2xl bg-accent text-ink">
@@ -75,7 +75,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
                               className={`block rounded-xl px-3 py-2 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
                                 isCurrentPage
                                   ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg"
-                                  : "text-ink hover:bg-surface-soft dark:hover:bg-ops-bg"
+                                  : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-bg"
                               }`}
                             >
                               {route.label}
@@ -96,17 +96,17 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
               aria-expanded={open}
               aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
               onClick={() => setOpen((v) => !v)}
-              className="relative ml-auto flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface-soft transition-colors duration-300 ease-fluid hover:bg-accent/30 dark:bg-surface-soft md:hidden"
+              className="relative ml-auto flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface-soft transition-colors duration-300 ease-fluid hover:bg-accent/30 dark:bg-ops-bg md:hidden"
             >
               <span
                 aria-hidden="true"
-                className={`absolute h-[1.5px] w-4 bg-ink transition-all duration-300 ease-fluid ${
+                className={`absolute h-[1.5px] w-4 bg-ink transition-all duration-300 ease-fluid dark:bg-ops-ink ${
                   open ? "translate-y-0 rotate-45" : "-translate-y-[3px] rotate-0"
                 }`}
               />
               <span
                 aria-hidden="true"
-                className={`absolute h-[1.5px] w-4 bg-ink transition-all duration-300 ease-fluid ${
+                className={`absolute h-[1.5px] w-4 bg-ink transition-all duration-300 ease-fluid dark:bg-ops-ink ${
                   open ? "translate-y-0 -rotate-45" : "translate-y-[3px] rotate-0"
                 }`}
               />
@@ -126,7 +126,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
                   `inline-flex min-h-9 flex-none items-center whitespace-nowrap rounded-full px-3 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
                     isActive
                       ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg"
-                      : "text-ink hover:bg-surface-soft dark:hover:bg-ops-surface"
+                      : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-bg"
                   }`
                 }
               >

@@ -26,13 +26,13 @@ export default {
         lemon: "#fff3af",
         success: "#37b98c",
         danger: "#dc5f54",
-        // Internal ops dark theme
-        "ops-bg": "#eef8f6",
-        "ops-ink": "#17243a",
-        "ops-border": "#cfe1df",
-        "ops-border-soft": "#deecea",
-        "ops-surface": "#ffffff",
-        "ops-muted": "#60726f",
+        // Internal dashboard dark theme
+        "ops-bg": "#071722",
+        "ops-ink": "#f5fbff",
+        "ops-border": "#294553",
+        "ops-border-soft": "#1b3542",
+        "ops-surface": "#102631",
+        "ops-muted": "#9aafba",
         "ops-accent": "#ef7867",
       },
       fontFamily: {
