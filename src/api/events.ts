@@ -2,10 +2,8 @@ import { apiGet, apiPatch, apiPost } from "./http";
 import type {
   EventCreateRequest,
   EventCreateResponse,
-  EventDescriptionUpdateRequest,
   EventDetailResponse,
-  EventNameUpdateRequest,
-  EventPeriodUpdateRequest,
+  EventUpdateRequest,
   EventStatusResponse,
   EventStatusUpdateRequest,
   EventUpdateResponse,
@@ -33,19 +31,8 @@ export function getEventStatus(eventId: number, signal?: AbortSignal): Promise<E
   return apiGet<EventStatusResponse>(`/admin/events/${eventId}/status`, signal);
 }
 
-export function updateEventName(eventId: number, body: EventNameUpdateRequest): Promise<EventUpdateResponse> {
-  return apiPatch<EventUpdateResponse>(`/admin/events/${eventId}/name`, body);
-}
-
-export function updateEventDescription(
-  eventId: number,
-  body: EventDescriptionUpdateRequest,
-): Promise<EventUpdateResponse> {
-  return apiPatch<EventUpdateResponse>(`/admin/events/${eventId}/description`, body);
-}
-
-export function updateEventPeriod(eventId: number, body: EventPeriodUpdateRequest): Promise<EventUpdateResponse> {
-  return apiPatch<EventUpdateResponse>(`/admin/events/${eventId}/period`, body);
+export function updateEvent(eventId: number, body: EventUpdateRequest): Promise<EventUpdateResponse> {
+  return apiPatch<EventUpdateResponse>(`/admin/events/${eventId}`, body);
 }
 
 /** 상태 전이는 SCHEDULED→OPEN, OPEN→CLOSED 만 허용(EventStatus.canTransitionTo) */
