@@ -1,7 +1,10 @@
 import { useMemo, useState } from "react";
 import { Layout } from "../../components/Layout";
-import { Eyebrow, FilterBar, LinkButton } from "../../components/ui";
+import { Eyebrow, FieldGroup, FilterBar, LinkButton, inputClass } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
+import { getCouponRealtimeStatus, updateCoupon } from "../../api/coupons";
+import { ApiError, NetworkError } from "../../api/http";
+import type { CouponRealtimeStatusResponse } from "../../types/api";
 
 type Status = "active" | "scheduled" | "closed";
 
@@ -24,6 +27,65 @@ export default function Coupons() {
   const [filter, setFilter] = useState<"all" | Status>("all");
   const { showToast } = useToast();
   const visible = useMemo(() => (filter === "all" ? COUPONS : COUPONS.filter((c) => c.status === filter)), [filter]);
+  const [eventId, setEventId] = useState("");
+  const [couponId, setCouponId] = useState("");
+  const [couponName, setCouponName] = useState("");
+  const [totalQuantity, setTotalQuantity] = useState("");
+  const [realtime, setRealtime] = useState<CouponRealtimeStatusResponse | null>(null);
+  const [apiBusy, setApiBusy] = useState(false);
+
+  function messageFrom(error: unknown): string {
+    return error instanceof ApiError || error instanceof NetworkError ? error.message : "요청을 처리하지 못했습니다.";
+  }
+
+  async function loadRealtimeStatus() {
+    const parsedCouponId = Number(couponId);
+    if (!Number.isInteger(parsedCouponId) || parsedCouponId < 1) {
+      showToast("유효한 쿠폰 ID를 입력해 주세요.");
+      return;
+    }
+    setApiBusy(true);
+    try {
+      setRealtime(await getCouponRealtimeStatus(parsedCouponId));
+    } catch (error) {
+      showToast(messageFrom(error));
+    } finally {
+      setApiBusy(false);
+    }
+  }
+
+  async function patchCoupon() {
+    const parsedEventId = Number(eventId);
+    const parsedCouponId = Number(couponId);
+    const parsedQuantity = totalQuantity === "" ? undefined : Number(totalQuantity);
+    if (!Number.isInteger(parsedEventId) || parsedEventId < 1 || !Number.isInteger(parsedCouponId) || parsedCouponId < 1) {
+      showToast("유효한 이벤트 ID와 쿠폰 ID를 입력해 주세요.");
+      return;
+    }
+    if (!couponName.trim() && parsedQuantity === undefined) {
+      showToast("변경할 쿠폰 이름이나 총 재고를 입력해 주세요.");
+      return;
+    }
+    if (parsedQuantity !== undefined && (!Number.isInteger(parsedQuantity) || parsedQuantity < 1)) {
+      showToast("총 재고는 1 이상의 정수여야 합니다.");
+      return;
+    }
+    setApiBusy(true);
+    try {
+      const updated = await updateCoupon(parsedEventId, parsedCouponId, {
+        ...(couponName.trim() ? { name: couponName.trim() } : {}),
+        ...(parsedQuantity === undefined ? {} : { totalQuantity: parsedQuantity }),
+      });
+      showToast(`${updated.name} 쿠폰을 수정했습니다.`);
+      setCouponName("");
+      setTotalQuantity("");
+      setRealtime(await getCouponRealtimeStatus(parsedCouponId));
+    } catch (error) {
+      showToast(messageFrom(error));
+    } finally {
+      setApiBusy(false);
+    }
+  }
 
   return (
     <Layout area="admin" page="coupons">
@@ -44,6 +106,39 @@ export default function Coupons() {
             <span className="text-xs font-semibold uppercase tracking-wide">재고 알림</span>
             <h2 className="mt-1">산책용품 할인 쿠폰, 재고 128장.</h2>
             <p className="mt-2">발급 종료까지 남았습니다 · 소진 속도와 이벤트 총 수량을 함께 확인하세요.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-6">
+        <div className="container-page grid gap-4 lg:grid-cols-2">
+          <div className="rounded-block border border-hairline p-6">
+            <Eyebrow>실제 API · 쿠폰 조회</Eyebrow>
+            <div className="mt-4 grid gap-4">
+              <FieldGroup label="쿠폰 ID" htmlFor="coupon-api-id">
+                <input id="coupon-api-id" type="number" min={1} className={inputClass} value={couponId} onChange={(event) => setCouponId(event.target.value)} />
+              </FieldGroup>
+              <button type="button" disabled={apiBusy} onClick={loadRealtimeStatus} className="rounded-full bg-ink px-5 py-3 text-paper disabled:opacity-50">실시간 재고 조회</button>
+              {realtime ? <p className="text-sm text-ink/70">총 {realtime.totalQuantity} · 잔여 {realtime.remainingQuantity} · 발급 {realtime.issuedQuantity} · Redis {realtime.initialized ? "초기화됨" : "미초기화"}</p> : null}
+            </div>
+          </div>
+          <div className="rounded-block border border-hairline p-6">
+            <Eyebrow>실제 API · 발급 전 부분 수정</Eyebrow>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <FieldGroup label="이벤트 ID" htmlFor="coupon-api-event-id">
+                <input id="coupon-api-event-id" type="number" min={1} className={inputClass} value={eventId} onChange={(event) => setEventId(event.target.value)} />
+              </FieldGroup>
+              <FieldGroup label="쿠폰 ID" htmlFor="coupon-api-edit-id">
+                <input id="coupon-api-edit-id" type="number" min={1} className={inputClass} value={couponId} onChange={(event) => setCouponId(event.target.value)} />
+              </FieldGroup>
+              <FieldGroup label="새 이름" htmlFor="coupon-api-name">
+                <input id="coupon-api-name" className={inputClass} value={couponName} onChange={(event) => setCouponName(event.target.value)} />
+              </FieldGroup>
+              <FieldGroup label="새 총 재고" htmlFor="coupon-api-quantity">
+                <input id="coupon-api-quantity" type="number" min={1} className={inputClass} value={totalQuantity} onChange={(event) => setTotalQuantity(event.target.value)} />
+              </FieldGroup>
+            </div>
+            <button type="button" disabled={apiBusy} onClick={patchCoupon} className="mt-4 rounded-full bg-ink px-5 py-3 text-paper disabled:opacity-50">입력한 항목만 수정</button>
           </div>
         </div>
       </section>

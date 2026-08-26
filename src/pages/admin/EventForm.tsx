@@ -4,7 +4,7 @@ import { Layout } from "../../components/Layout";
 import { BackLink, Eyebrow, FieldGroup, LinkButton, inputClass } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 import { ApiError, NetworkError } from "../../api/http";
-import { createEvent, getEventDetail, updateEvent } from "../../api/events";
+import { createEvent, getEventDetail, getEventStatus, updateEvent, updateEventStatus } from "../../api/events";
 import type { EventDetailResponse, EventStatus } from "../../types/api";
 
 const STATUS_LABEL: Record<EventStatus, string> = { SCHEDULED: "오픈 예정", OPEN: "진행 중", CLOSED: "종료" };
@@ -34,6 +34,7 @@ export default function EventForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [createdCouponLink, setCreatedCouponLink] = useState<string | null>(null);
+  const [statusBusy, setStatusBusy] = useState(false);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -46,6 +47,10 @@ export default function EventForm() {
         setDesc(data.description ?? "");
         setStart(toDateTimeLocal(data.openAt));
         setEnd(toDateTimeLocal(data.closeAt));
+        return getEventStatus(data.eventId, controller.signal);
+      })
+      .then((status) => {
+        setEvent((current) => current ? { ...current, status: status.status } : current);
       })
       .catch((err) => {
         if (err instanceof DOMException && err.name === "AbortError") return;
@@ -54,6 +59,24 @@ export default function EventForm() {
       .finally(() => setLoadingEvent(false));
     return () => controller.abort();
   }, [eventId, isEdit]);
+
+  async function moveToNextStatus() {
+    if (!event || statusBusy || event.status === "CLOSED") return;
+    const nextStatus: EventStatus = event.status === "SCHEDULED" ? "OPEN" : "CLOSED";
+    setStatusBusy(true);
+    try {
+      const updated = await updateEventStatus(event.eventId, {
+        status: nextStatus,
+        reason: "관리자 화면에서 상태 변경",
+      });
+      setEvent(updated);
+      showToast(`이벤트 상태를 ${STATUS_LABEL[updated.status]}(으)로 변경했습니다.`);
+    } catch (err) {
+      showToast(err instanceof ApiError || err instanceof NetworkError ? err.message : "상태를 변경하지 못했습니다.");
+    } finally {
+      setStatusBusy(false);
+    }
+  }
 
   function validate(): boolean {
     const next: Record<string, string> = {};
@@ -128,7 +151,19 @@ export default function EventForm() {
           <Eyebrow>관리자 · {isEdit ? "이벤트 수정" : "이벤트 등록"}</Eyebrow>
           <h1 className="mt-2">{isEdit ? event?.name ?? "이벤트 수정" : "이벤트 만들기"}</h1>
           {isEdit && event ? (
-            <p className="mt-2 text-[15px] text-ink/60">현재 상태: {STATUS_LABEL[event.status]}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <p className="text-[15px] text-ink/60">현재 상태: {STATUS_LABEL[event.status]}</p>
+              {event.status !== "CLOSED" ? (
+                <button
+                  type="button"
+                  disabled={statusBusy}
+                  onClick={moveToNextStatus}
+                  className="rounded-full border border-ink px-4 py-2 text-sm font-medium disabled:opacity-50"
+                >
+                  {statusBusy ? "변경 중…" : `${STATUS_LABEL[event.status === "SCHEDULED" ? "OPEN" : "CLOSED"]}(으)로 변경`}
+                </button>
+              ) : null}
+            </div>
           ) : (
             <p className="mt-2 text-[18px] text-ink/70">고객에게 보여줄 이름과 설명, 정확한 공개 일정을 입력하세요.</p>
           )}
