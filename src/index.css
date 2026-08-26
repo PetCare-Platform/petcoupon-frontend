@@ -342,26 +342,23 @@ body:has(.theme-geist) {
  * 그림자를 달고 떠 있는 형태는 이 시스템에 없다. 두 줄(영역 전환 / 서브 내비)
  * 구성 자체는 Vercel 대시보드도 쓰는 패턴이라 유지한다.
  * ------------------------------------------------------------------------ */
-.theme-geist header {
-  padding: 0;
-}
+/* 헤더 바깥 여백은 덮어쓰지 않는다 — Header 컴포넌트의 pt-3/px-3(md:px-5)이 그대로
+   적용되어 로고가 공개·사용자 영역과 같은 위치(상단 23px)에 놓인다. */
 .theme-geist header > div {
-  max-width: none;
+  /* 너비 상한은 공개·사용자와 같은 1380px를 유지한다. none으로 두면 넓은 화면에서
+     바가 계속 늘어나 로고가 공개 영역보다 왼쪽으로 크게 벌어진다(1800px에서 183px). */
   border-radius: 0;
-  border-width: 0 0 1px 0;
-  border-color: rgb(var(--c-hairline));
+  /* 공개 카드는 사방 1px 테두리가 있어 안쪽 콘텐츠가 1px씩 밀린다. 같은 두께를
+     두되 아래쪽만 보이게 해서, 납작한 형태를 유지하면서 로고 좌표를 정확히 맞춘다. */
+  border-width: 1px;
+  border-color: transparent transparent rgb(var(--c-hairline)) transparent;
   background-color: rgb(var(--c-canvas));
   backdrop-filter: none;
   box-shadow: none;
 }
-/* 헤더 안쪽 두 줄도 본문과 같은 1200px 기준선에 맞춘다. */
-.theme-geist header > div > div,
-.theme-geist header > div > nav {
-  margin-inline: auto;
-  width: 100%;
-  max-width: 1200px;
-  padding-inline: 24px;
-}
+/* 헤더 안쪽 두 줄도 여백을 덮어쓰지 않는다. 1200px 기준선으로 가운데 정렬하면
+   로고가 공개 영역보다 20px 오른쪽으로 밀려서, 영역을 옮길 때 로고가 튄다.
+   Header 컴포넌트의 px-4(md:px-6)를 그대로 두어 좌표를 맞춘다. */
 /* 서브 내비 구분선은 헤더 하단 헤어라인과 겹쳐 두 줄로 보이므로 지운다. */
 .theme-geist header > div > nav {
   border-top-width: 0;
