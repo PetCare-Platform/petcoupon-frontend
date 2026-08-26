@@ -14,7 +14,8 @@ import {
 } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 import { EVENTS, getEvent, type EventStatus } from "../../data/events";
-import { applyForCoupon, listUserCouponIssues } from "../../api/couponIssues";
+import { applyForCoupon, getCouponIssueRequestStatus } from "../../api/couponIssues";
+import { getCouponRealtimeStatus } from "../../api/coupons";
 import { getEventDetail } from "../../api/events";
 import { getCurrentUserId } from "../../api/currentUser";
 import { clearIdempotencyKey, getOrCreateIdempotencyKey } from "../../api/idempotency";
@@ -61,16 +62,13 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * POST /coupons/{id}/issues 응답에는 couponIssueId가 없다(Stream 발행까지만 성공한
- * 시점이라 아직 저장 전 — src/types/api.ts 참고). Consumer가 비동기로 저장을 끝낼
- * 때까지 보유 쿠폰 목록에서 couponId로 매칭해 찾는다. 목록은 최신순이라 첫 매칭이
- * 이번 신청 건이다.
+ * 신청 직후에는 비동기 처리가 끝나지 않아 couponIssueId가 null이다. 같은
+ * Idempotency-Key로 상태 조회 API를 폴링하고, 최종 응답의 couponIssueId로 이동한다.
  */
-async function pollForIssuedCoupon(couponId: number, userId: number) {
+async function pollForIssuedCoupon(userId: number, idempotencyKey: string) {
   for (let attempt = 0; attempt < 8; attempt += 1) {
-    const list = await listUserCouponIssues(userId);
-    const match = list.find((issue) => issue.couponId === couponId);
-    if (match) return match;
+    const status = await getCouponIssueRequestStatus(userId, idempotencyKey);
+    if (status.status !== "IN_PROGRESS") return status;
     await sleep(700);
   }
   return undefined;
@@ -108,6 +106,7 @@ export default function EventDetail() {
   const [realSubmitting, setRealSubmitting] = useState(false);
   const [realEvent, setRealEvent] = useState<EventDetailResponse | null>(null);
   const [realEventError, setRealEventError] = useState("");
+  const [realStock, setRealStock] = useState<{ remainingQuantity: number; issuedQuantity: number } | null>(null);
   const [selected, setSelected] = useState(event?.coupons[0]?.id ?? "");
   const [stockById, setStockById] = useState<Record<string, number>>(() =>
     Object.fromEntries((event?.coupons ?? []).map((c) => [c.id, c.stock]))
@@ -177,6 +176,15 @@ export default function EventDetail() {
     return () => controller.abort();
   }, [id, realCouponId]);
 
+  useEffect(() => {
+    if (realCouponId === null) return;
+    const controller = new AbortController();
+    const load = () => getCouponRealtimeStatus(realCouponId, controller.signal).then((data) => setRealStock(data)).catch(() => undefined);
+    void load();
+    const timer = window.setInterval(load, 3000);
+    return () => { controller.abort(); window.clearInterval(timer); };
+  }, [realCouponId]);
+
   if (realCouponId !== null) {
     return (
       <Layout area="public" page="event-detail">
@@ -225,7 +233,7 @@ export default function EventDetail() {
                 <form onSubmit={handleRealApply} className="mt-6 rounded-block border border-hairline p-6">
                   <h3 className="text-lg font-semibold">발급할 쿠폰</h3>
                   <div className="mt-4 flex min-h-[92px] items-center justify-between gap-4 rounded-control border border-ink bg-paper p-4 shadow-[0_1px_2px_rgba(29,29,27,0.06)]">
-                    <strong className="text-base">{realCouponName}</strong>
+                    <div><strong className="text-base">{realCouponName}</strong>{realStock ? <p className="mt-1 text-sm text-ink-muted">남은 재고 {realStock.remainingQuantity.toLocaleString()}장 · 발급 {realStock.issuedQuantity.toLocaleString()}건</p> : null}</div>
                     {realDiscountLabel ? <span className="text-2xl font-semibold">{realDiscountLabel}</span> : null}
                   </div>
 
@@ -300,9 +308,9 @@ export default function EventDetail() {
     setRealSubmitting(true);
     try {
       await applyForCoupon(realCouponId, userId, idempotencyKey);
-      const issued = await pollForIssuedCoupon(realCouponId, userId);
+      const issued = await pollForIssuedCoupon(userId, idempotencyKey);
       clearIdempotencyKey(realCouponId, userId);
-      if (issued) {
+      if (issued?.couponIssueId) {
         navigate(`/user/coupon-detail/${issued.couponIssueId}`);
       } else {
         showToast("신청은 접수됐어요. 잠시 후 보유 쿠폰에서 확인해 주세요.");

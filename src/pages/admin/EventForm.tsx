@@ -4,13 +4,7 @@ import { Layout } from "../../components/Layout";
 import { BackLink, Eyebrow, FieldGroup, LinkButton, inputClass } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
 import { ApiError, NetworkError } from "../../api/http";
-import {
-  createEvent,
-  getEventDetail,
-  updateEventDescription,
-  updateEventName,
-  updateEventPeriod,
-} from "../../api/events";
+import { createEvent, getEventDetail, updateEvent } from "../../api/events";
 import type { EventDetailResponse, EventStatus } from "../../types/api";
 
 const STATUS_LABEL: Record<EventStatus, string> = { SCHEDULED: "오픈 예정", OPEN: "진행 중", CLOSED: "종료" };
@@ -83,11 +77,7 @@ export default function EventForm() {
       if (isEdit && event) {
         const openAt = toLocalDateTime(start);
         const closeAt = toLocalDateTime(end);
-        if (name !== event.name) await updateEventName(event.eventId, { name });
-        if (desc !== (event.description ?? "")) await updateEventDescription(event.eventId, { description: desc });
-        if (openAt !== event.openAt || closeAt !== event.closeAt) {
-          await updateEventPeriod(event.eventId, { openAt, closeAt });
-        }
+        await updateEvent(event.eventId, { name, description: desc, openAt, closeAt });
         showToast("이벤트를 수정했습니다.");
         navigate("/admin/events");
       } else {

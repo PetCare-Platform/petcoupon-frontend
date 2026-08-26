@@ -32,7 +32,7 @@ export default function Coupons() {
           <div>
             <Eyebrow>관리자 · 쿠폰 · 데모 목록</Eyebrow>
             <h1 className="mt-2">쿠폰 목록</h1>
-            <p className="mt-2 text-[18px] text-ink/70">쿠폰 목록·재고 조회 API가 없어 예시 데이터를 표시합니다. 쿠폰 생성은 실제 API에 연결됩니다.</p>
+            <p className="mt-2 text-[18px] text-ink/70">쿠폰 목록·단건 조회 API가 없어 예시 데이터를 표시합니다. 생성·수정 API는 구현됐지만 수정 화면의 초기값을 불러올 조회 API가 필요합니다.</p>
           </div>
           <LinkButton to="/admin/coupon-form">새 쿠폰</LinkButton>
         </div>
@@ -86,10 +86,8 @@ export default function Coupons() {
                   <button
                     type="button"
                     onClick={() => {
-                      // 쿠폰 수정 API도, 쿠폰 단건/이벤트별 목록 조회 API도 없다 — 이 화면 자체가
-                      // 아직 목데이터다(CouponForm은 "새 쿠폰 만들기" 전용이라 기존 쿠폰을 불러와
-                      // 편집하는 화면이 아니다). 실제 이벤트로 연결되지 않는 링크를 거는 대신
-                      // 삭제와 동일하게 비활성화해 둔다.
+                      // 수정 API는 구현됐지만 쿠폰 단건/이벤트별 목록 조회 API가 없어 이 예시 행의
+                      // 실제 값을 편집 폼에 안전하게 채울 수 없다. 조회 API가 추가될 때까지 비활성화한다.
                       // showToast(`${coupon.name} 수정 화면으로 이동합니다.`);
                     }}
                     className="underline underline-offset-4"

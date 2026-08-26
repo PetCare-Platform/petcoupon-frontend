@@ -38,6 +38,7 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
     label: "관리자",
     home: "/admin",
     routes: [
+      { page: "auth", label: "관리자 인증", path: "/admin/auth" },
       { page: "admin", label: "관리자 홈", path: "/admin" },
       { page: "events", label: "이벤트 목록", path: "/admin/events" },
       { page: "event-form", label: "이벤트 만들기", path: "/admin/event-form" },
