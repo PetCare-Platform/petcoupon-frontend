@@ -30,12 +30,13 @@ export default function Monitoring() {
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>내부 운영 · 시스템 현황</Eyebrow>
+            <Eyebrow>내부 운영 · 시스템 현황 · 샘플 데이터</Eyebrow>
             <h1 className="mt-2">시스템 현황</h1>
             <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">쿠폰 발급 흐름의 가용성, 처리량과 지연을 한 화면에서 점검하세요.</p>
           </div>
           <button
             type="button"
+            disabled
             onClick={() => {
               // 관련 API가 제외/2차 범위라 실제로 아무 것도 갱신되지 않는다. 갱신된
               // 것처럼 보이지 않도록 비활성화한다.
@@ -43,7 +44,7 @@ export default function Monitoring() {
             }}
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg"
           >
-            현황 새로고침
+            모니터링 API 미지원
           </button>
         </div>
       </section>
@@ -53,7 +54,7 @@ export default function Monitoring() {
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wide">실시간 현황</span>
+                <span className="text-xs font-semibold uppercase tracking-wide">발표용 샘플 현황</span>
                 <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
               </div>
               <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">

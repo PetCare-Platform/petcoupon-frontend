@@ -21,6 +21,7 @@ import Issues from "./pages/internal/Issues";
 import Failures from "./pages/internal/Failures";
 import Verification from "./pages/internal/Verification";
 import RepoIssues from "./pages/internal/RepoIssues";
+import LoadTestReset from "./pages/internal/LoadTestReset";
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/internal/failures" element={<Failures />} />
         <Route path="/internal/verification" element={<Verification />} />
         <Route path="/internal/repo-issues" element={<RepoIssues />} />
+        <Route path="/internal/load-test-reset" element={<LoadTestReset />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

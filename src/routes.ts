@@ -55,6 +55,7 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
       { page: "failures", label: "실패 처리", path: "/internal/failures" },
       { page: "verification", label: "정합성 검증", path: "/internal/verification" },
       { page: "repo-issues", label: "GitHub 이슈", path: "/internal/repo-issues" },
+      { page: "load-test-reset", label: "부하 테스트 초기화", path: "/internal/load-test-reset" },
     ],
   },
 };

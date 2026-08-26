@@ -26,7 +26,7 @@ export default function Failures() {
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>내부 운영 · 실패 처리</Eyebrow>
+          <Eyebrow>내부 운영 · 실패 처리 · 예시 데이터</Eyebrow>
             <h1 className="mt-2">FAILED · Retry · DLQ</h1>
             <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">실패 원인을 분류하고 안전하게 재시도하거나 격리 큐로 이동하세요.</p>
           </div>
