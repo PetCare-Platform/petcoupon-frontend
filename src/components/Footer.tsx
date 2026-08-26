@@ -6,8 +6,8 @@ export function Footer() {
     <footer className="mt-20 border-t border-hairline/70 bg-white/70 px-6 py-14 dark:border-ops-border/70 dark:bg-ops-surface/70 md:px-10">
       <div className="mx-auto flex max-w-[1380px] flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <Link to="/" className="text-xl font-bold text-ink">PetCoupon</Link>
-          <p className="mt-1 text-sm text-ink-muted">우리 아이와 보내는 하루에 꼭 맞는 혜택</p>
+          <Link to="/" className="text-xl font-bold text-ink dark:text-ops-ink">PetCoupon</Link>
+          <p className="mt-1 text-sm text-ink-muted dark:text-ops-muted">우리 아이와 보내는 하루에 꼭 맞는 혜택</p>
         </div>
         <nav aria-label="푸터 영역" className="flex flex-wrap gap-4">
           {Object.entries(AREA_ROUTES).map(([key, cfg]) => (

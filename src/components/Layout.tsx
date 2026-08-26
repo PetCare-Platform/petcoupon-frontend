@@ -6,7 +6,7 @@ import { Footer } from "./Footer";
 import type { AreaKey } from "../routes";
 
 export function Layout({ area, page, children }: { area: AreaKey; page: string; children: ReactNode }) {
-  const dark = area === "internal" && page === "dashboard";
+  const dark = area === "internal";
   const location = useLocation();
 
   useEffect(() => {
