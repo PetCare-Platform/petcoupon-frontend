@@ -6,7 +6,7 @@ export default function UserHome() {
     <Layout area="user" page="user">
       <section className="py-10">
         <div className="container-page">
-          <Eyebrow>사용자 정보</Eyebrow>
+          <Eyebrow>사용자 정보 · 데모 프로필</Eyebrow>
           <h1 className="mt-2">
             사용자 정보를
             <br />
@@ -18,7 +18,7 @@ export default function UserHome() {
       <section className="py-6">
         <div className="container-page">
           <ColorBlock tone="surface">
-            <span className="inline-flex min-h-8 items-center rounded-full bg-paper px-2.5 text-xs font-semibold uppercase tracking-wide">활성 회원</span>
+            <span className="inline-flex min-h-8 items-center rounded-full bg-paper px-2.5 text-xs font-semibold uppercase tracking-wide">인증 API 미구현 · 데모 사용자</span>
             <div className="mt-4 flex items-center gap-4">
               <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-ink text-xl font-bold text-white">김</span>
               <div>
@@ -53,7 +53,7 @@ export default function UserHome() {
 
       <section className="py-14">
         <div className="container-page">
-          <h2>쿠폰 활동 요약</h2>
+          <h2>쿠폰 활동 예시</h2>
           <div className="mt-6">
             <MetricGrid cols={3}>
               <MetricTile label="사용 가능" value="2장" hint="이번 주 만료 1장" />

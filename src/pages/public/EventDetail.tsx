@@ -328,9 +328,7 @@ export default function EventDetail() {
         <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
           <div>
             <BackLink to="/">이벤트 목록</BackLink>
-            <Eyebrow>
-              {event.label} / {statusLabel[event.status].toUpperCase()}
-            </Eyebrow>
+            <Eyebrow>데모 이벤트 · {statusLabel[event.status]}</Eyebrow>
             <h1 className="mt-2">{event.title}</h1>
             <p className="mt-4 max-w-[56ch] text-[18px] text-ink/70">{event.detailDesc}</p>
             <div className="mt-8 flex flex-wrap items-center gap-6">

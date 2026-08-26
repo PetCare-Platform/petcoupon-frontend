@@ -30,9 +30,9 @@ export default function Events() {
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>관리자 · 이벤트</Eyebrow>
+            <Eyebrow>관리자 · 이벤트 · 데모 목록</Eyebrow>
             <h1 className="mt-2">이벤트 목록</h1>
-            <p className="mt-2 text-[18px] text-ink/70">공개 일정과 상태, 연결된 쿠폰을 확인하고 필요한 항목을 관리하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70">목록 조회 API가 없어 예시 데이터를 표시합니다. 이벤트 생성과 개별 수정은 실제 API에 연결됩니다.</p>
           </div>
           <LinkButton to="/admin/event-form">새 이벤트</LinkButton>
         </div>

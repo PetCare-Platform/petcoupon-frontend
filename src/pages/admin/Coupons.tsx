@@ -30,9 +30,9 @@ export default function Coupons() {
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>관리자 · 쿠폰</Eyebrow>
+            <Eyebrow>관리자 · 쿠폰 · 데모 목록</Eyebrow>
             <h1 className="mt-2">쿠폰 목록</h1>
-            <p className="mt-2 text-[18px] text-ink/70">할인 조건과 발급 기간, 남은 재고를 빠르게 확인하세요.</p>
+            <p className="mt-2 text-[18px] text-ink/70">쿠폰 목록·재고 조회 API가 없어 예시 데이터를 표시합니다. 쿠폰 생성은 실제 API에 연결됩니다.</p>
           </div>
           <LinkButton to="/admin/coupon-form">새 쿠폰</LinkButton>
         </div>

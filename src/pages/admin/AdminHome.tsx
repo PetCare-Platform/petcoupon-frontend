@@ -15,7 +15,7 @@ export default function AdminHome() {
       <section className="py-10">
         <div className="container-page grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-start">
           <div>
-            <Eyebrow>관리자 홈</Eyebrow>
+            <Eyebrow>관리자 홈 · 샘플 요약</Eyebrow>
             <h1 className="mt-2">
               이벤트와 쿠폰을
               <br />
@@ -39,7 +39,7 @@ export default function AdminHome() {
         <div className="container-page">
           <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
             <div className="flex items-center justify-between">
-              <h2>운영 요약</h2>
+              <h2>운영 요약 예시</h2>
               <span className="text-sm text-ink-muted">{todayLabel}</span>
             </div>
             <div className="mt-6">
