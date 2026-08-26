@@ -55,7 +55,7 @@ export default function Dashboard() {
               // 갱신된 것처럼 보이지 않도록 비활성화한다.
               // showToast("대시보드를 최신 상태로 갱신했습니다.");
             }}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] dark:border-ops-ink dark:bg-ops-ink dark:text-ops-bg dark:hover:bg-white"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-white px-5 text-[18px] font-medium text-ink transition-colors hover:bg-surface-soft"
           >
             집계 API 미지원
           </button>
