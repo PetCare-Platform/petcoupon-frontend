@@ -13,7 +13,6 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
 const statusClass: Record<EventStatus, string> = { open: "bg-accent", scheduled: "bg-sky", closed: "bg-white/80 text-ink-muted" };
-const spanClass = ["md:col-span-8", "md:col-span-4", "md:col-span-4", "md:col-span-8"];
 const toneClass = ["bg-[#dff7ef]", "bg-[#fff0ed]", "bg-[#e5f4ff]", "bg-[#fff7cf]"];
 
 export default function Index() {
@@ -44,11 +43,11 @@ export default function Index() {
           </div>
         </section>
 
-        <section id="event-list" className="py-24 md:py-36">
+        <section id="event-list" className="py-20 md:py-24">
           <div className="container-page">
             <div className="mb-10 flex flex-wrap items-end justify-between gap-6"><div><p className="mb-3 text-sm font-bold text-accent-ink">지금 받을 수 있는 혜택</p><h2 className="max-w-4xl text-balance">필요한 쿠폰을 골라보세요.</h2><p className="mt-3 text-[17px] text-ink-muted"><span aria-live="polite">{visible.length}개</span>의 이벤트를 보여드려요.</p></div><FilterBar value={filter} onChange={setFilter} options={[{ value: "all", label: `전체 ${EVENTS.length}` }, { value: "open", label: `진행 중 ${EVENTS.filter((event) => event.status === "open").length}` }, { value: "scheduled", label: `오픈 예정 ${EVENTS.filter((event) => event.status === "scheduled").length}` }, { value: "closed", label: `종료 ${EVENTS.filter((event) => event.status === "closed").length}` }]} /></div>
-            <div className="grid grid-flow-dense gap-4 md:grid-cols-12">
-              {visible.map((event, index) => <article key={event.id} data-event-card className={`group min-h-[310px] overflow-hidden rounded-[2rem] border border-white/70 p-6 shadow-[0_24px_60px_-42px_rgba(23,36,58,0.38)] ${spanClass[index % 4]} ${toneClass[index % 4]}`}><div className="flex h-full flex-col"><div className="flex items-center justify-between gap-3"><span className={`inline-flex min-h-8 items-center rounded-full px-3 text-xs font-bold ${statusClass[event.status]}`}>{statusLabel[event.status]}</span><span className="text-sm font-semibold text-ink-muted">{event.period}</span></div><div className="mt-auto pt-16"><h3 className="max-w-2xl text-[clamp(1.75rem,3vw,3.4rem)] font-bold leading-tight tracking-[-0.035em]">{event.title}</h3><p className="mt-3 max-w-xl text-[17px] text-ink-muted">{event.desc}</p><div className="mt-6 flex items-end justify-between gap-4"><strong className="text-2xl">{event.benefit}</strong><Link to={`/event-detail/${event.id}`} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-5 font-semibold text-white transition-transform duration-300 hover:-translate-y-1">{event.cta}<ArrowRight weight="bold" aria-hidden="true" /></Link></div></div></div></article>)}
+            <div className="grid gap-3 md:grid-cols-2">
+              {visible.map((event, index) => <article key={event.id} data-event-card className={`group min-h-[250px] overflow-hidden rounded-[2rem] border border-white/70 p-5 shadow-[0_24px_60px_-42px_rgba(23,36,58,0.38)] md:h-[290px] ${toneClass[index % 4]}`}><div className="flex h-full flex-col"><div className="flex items-center justify-between gap-3"><span className={`inline-flex min-h-8 items-center rounded-full px-3 text-xs font-bold ${statusClass[event.status]}`}>{statusLabel[event.status]}</span><span className="text-sm font-semibold text-ink-muted">{event.period}</span></div><div className="mt-auto pt-7"><h3 className="max-w-2xl text-[clamp(1.75rem,3vw,3.4rem)] font-bold leading-tight tracking-[-0.035em]">{event.title}</h3><p className="mt-3 max-w-xl text-[17px] text-ink-muted">{event.desc}</p><div className="mt-5 flex items-end justify-between gap-4"><strong className="text-2xl">{event.benefit}</strong><Link to={`/event-detail/${event.id}`} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-5 font-semibold text-white transition-transform duration-300 hover:-translate-y-1">{event.cta}<ArrowRight weight="bold" aria-hidden="true" /></Link></div></div></div></article>)}
               {visible.length === 0 ? <div className="col-span-full rounded-[2rem] border border-dashed border-hairline bg-white p-12 text-center"><h3>조건에 맞는 이벤트가 없어요.</h3><p className="mt-2 text-ink-muted">다른 상태를 선택해 보세요.</p></div> : null}
             </div>
           </div>
