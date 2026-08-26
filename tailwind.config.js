@@ -56,10 +56,6 @@ export default {
         fluid: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
-        marquee: {
-          from: { transform: "translateX(0)" },
-          to: { transform: "translateX(-50%)" },
-        },
         "reveal-up": {
           from: { opacity: "0", transform: "translateY(12px)" },
           to: { opacity: "1", transform: "translateY(0)" },

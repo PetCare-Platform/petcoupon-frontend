@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Cat, Dog, FirstAid, PawPrint, Scissors, ShoppingBagOpen } from "@phosphor-icons/react";
+import { ArrowRight, PawPrint } from "@phosphor-icons/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -41,12 +41,6 @@ export default function Index() {
               <div className="mt-9 flex flex-wrap gap-3"><LinkButton to="#event-list">이벤트 둘러보기</LinkButton><LinkButton to="/user/my-coupons" variant="secondary">내 쿠폰 보기</LinkButton></div>
             </div>
             <div data-pet-visual className="relative"><PetVisual /><div className="absolute -bottom-5 left-6 rounded-[1.4rem] border border-white bg-white px-5 py-4 shadow-[0_18px_40px_-24px_rgba(23,36,58,0.45)]"><strong className="block text-lg">오늘도 함께라서 좋아요</strong><span className="text-sm text-ink-muted">산책 · 건강 · 미용 혜택</span></div></div>
-          </div>
-        </section>
-
-        <section className="overflow-hidden border-y border-hairline bg-white/70 py-5" aria-label="PetCoupon 혜택 분야">
-          <div className="flex min-w-max animate-[marquee_24s_linear_infinite] items-center gap-10 px-6 text-lg font-bold text-ink-muted motion-reduce:animate-none">
-            {[Dog, Scissors, Cat, FirstAid, PawPrint, ShoppingBagOpen, Dog, Scissors, Cat, FirstAid, PawPrint, ShoppingBagOpen].map((Icon, index) => <span key={index} className="flex items-center gap-2"><Icon weight="fill" className="h-6 w-6 text-accent-ink" aria-hidden="true" />{["산책", "미용", "고양이 케어", "건강검진", "반려생활", "용품 할인"][index % 6]}</span>)}
           </div>
         </section>
 
