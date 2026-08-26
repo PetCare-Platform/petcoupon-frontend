@@ -15,7 +15,7 @@ const COUPONS: { id: number; status: Status; event: string; name: string; value:
 
 const statusLabel: Record<Status, string> = { active: "발급 중", scheduled: "발급 예정", closed: "종료" };
 const statusClass: Record<Status, string> = {
-  active: "bg-success/10 text-[#0a8f3c]",
+  active: "bg-success/10 text-accent-ink",
   scheduled: "bg-surface-2 text-ink-muted",
   closed: "bg-hairline-soft text-ink-muted",
 };

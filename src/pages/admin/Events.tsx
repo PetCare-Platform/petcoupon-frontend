@@ -15,7 +15,7 @@ const EVENTS: { id: number; status: Status; title: string; period: string; coupo
 
 const statusLabel: Record<Status, string> = { open: "진행 중", scheduled: "예정", closed: "종료" };
 const statusClass: Record<Status, string> = {
-  open: "bg-success/10 text-[#0a8f3c]",
+  open: "bg-success/10 text-accent-ink",
   scheduled: "bg-surface-2 text-ink-muted",
   closed: "bg-hairline-soft text-ink-muted",
 };

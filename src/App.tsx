@@ -16,6 +16,7 @@ import Coupons from "./pages/admin/Coupons";
 import CouponForm from "./pages/admin/CouponForm";
 
 import Dashboard from "./pages/internal/Dashboard";
+import Health from "./pages/internal/Health";
 import Monitoring from "./pages/internal/Monitoring";
 import Issues from "./pages/internal/Issues";
 import Failures from "./pages/internal/Failures";
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/admin/coupon-form/:eventId" element={<CouponForm />} />
 
         <Route path="/internal/dashboard" element={<Dashboard />} />
+        <Route path="/internal/health" element={<Health />} />
         <Route path="/internal/monitoring" element={<Monitoring />} />
         <Route path="/internal/issues" element={<Issues />} />
         <Route path="/internal/failures" element={<Failures />} />

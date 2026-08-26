@@ -3,6 +3,32 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * 공개·사용자 영역의 기본 토큰. 여기 값은 Geist 도입 전과 동일하며,
+   * 관리자/내부 운영만 아래 `.theme-geist` 에서 덮어쓴다.
+   */
+  :root {
+    --c-canvas: 247 251 255;
+    --c-paper: 255 255 255;
+    --c-surface-2: 237 248 245;
+    --c-surface-soft: 237 248 245;
+    --c-ink: 23 36 58;
+    --c-ink-muted: 86 100 122;
+    --c-ink-subtle: 116 128 150;
+    --c-hairline: 216 228 235;
+    --c-hairline-soft: 234 241 245;
+    --c-accent: 117 214 187;
+    --c-accent-ink: 23 111 97;
+    --c-clay: 255 159 141;
+    --c-clay-ink: 168 62 49;
+    --c-success: 55 185 140;
+    --c-danger: 220 95 84;
+
+    --r-control: 14px;
+    --r-block: 22px;
+    --r-panel: 30px;
+  }
+
   html {
     scroll-behavior: smooth;
     background: #f7fbff;
@@ -74,4 +100,353 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* =========================================================================
+ * Geist 테마 — 관리자(/admin) · 내부 운영(/internal) 전용
+ *
+ * Vercel Geist 디자인 언어: 근백색 시트(#fafafa) 위의 근검정 잉크(#171717),
+ * 1px 헤어라인으로만 구분되는 흰 카드, 6/12/16px 라디우스, 타이트한 음수 자간.
+ * 색은 링크 블루 하나로 제한한다.
+ *
+ * 이 블록은 @tailwind utilities 뒤에 와야 유틸리티 클래스를 덮어쓸 수 있다.
+ * 공개·사용자 영역은 이 클래스가 붙지 않으므로 영향을 받지 않는다.
+ * ========================================================================= */
+.theme-geist {
+  /* 표면 3단: 캔버스(#fafafa) < 들린 면(#fff) < 눌린 웰(#f2f2f2).
+     surface-2는 강조 패널이라 흰 면 쪽이다 — 캔버스와 같은 값이면 패널이 사라진다. */
+  --c-canvas: 250 250 250;
+  --c-paper: 255 255 255;
+  --c-surface-2: 255 255 255;
+  --c-surface-soft: 242 242 242;
+  --c-ink: 23 23 23;
+  --c-ink-muted: 77 77 77;
+  --c-ink-soft: 102 102 102;
+  --c-ink-subtle: 143 143 143;
+  /* Vercel 원본은 #ebebeb/#f2f2f2지만, 그건 흰 배경 마케팅 페이지 기준이다.
+     #fafafa 캔버스에 표·패널이 촘촘한 운영 화면에서는 구분선이 사라져 보여서
+     한 단계씩 내렸다. 여전히 1px 헤어라인이지 테두리는 아니다. */
+  --c-hairline: 208 208 208;
+  --c-hairline-soft: 222 222 222;
+  /* 유일하게 허용되는 색 — 링크/포커스/활성 신호. 성공 상태도 이 파랑을 쓴다. */
+  --c-accent: 0 112 243;
+  --c-accent-ink: 7 97 209;
+  --c-clay: 245 166 35;
+  --c-clay-ink: 171 87 10;
+  --c-success: 0 112 243;
+  --c-danger: 238 0 0;
+
+  /* bimodal radius: 기능 크롬은 6px, 콘텐츠 카드는 12px, 큰 패널은 16px */
+  --r-control: 6px;
+  --r-block: 12px;
+  --r-panel: 16px;
+
+  /* 한글은 Geist에 없어서 Pretendard로 떨어진다. */
+  --font-geist: "Geist", "Pretendard Variable", "Pretendard", Arial, sans-serif;
+  --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  font-family: var(--font-geist);
+  color: rgb(var(--c-ink));
+  background-color: rgb(var(--c-canvas));
+}
+
+/* body/html에 깔린 민트·하늘색 방사형 글로우는 Geist 영역에서 걷어낸다. */
+html:has(.theme-geist) { background: #fafafa; }
+body:has(.theme-geist) {
+  background-image: none;
+  background-color: #fafafa;
+}
+
+/* 한글에는 uppercase가 효과 없이 tracking만 벌어져 라벨이 성글어 보인다.
+   이 코드베이스의 라틴 코드(FAILED·DLQ·ISSUED·SENT)는 소스에서 이미 대문자라
+   변환을 걷어도 표기가 그대로다. */
+.theme-geist .uppercase {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* --- 회색 사다리 ---------------------------------------------------------
+ * 페이지들이 회색 단계 대신 잉크 투명도(text-ink/50~/80)를 쓰고 있는데, 그러면
+ * #54~#8c 사이에 구분 안 되는 탁한 회색이 뭉치고 반투명이라 카드 위/캔버스 위에서
+ * 색이 달라진다. Geist의 명시적 사다리로 눌러 불투명하게 고정한다.
+ *   #171717 ink → #4d4d4d body → #666666 → #8f8f8f mute
+ * 가장 옅은 단계(#8f8f8f)는 대비 3:1이라 메타데이터에만 쓰이는 12px 텍스트용이다.
+ * ------------------------------------------------------------------------ */
+.theme-geist .text-ink\/90,
+.theme-geist .text-ink\/80,
+.theme-geist .text-ink\/70 { color: rgb(var(--c-ink-muted)); }
+.theme-geist .text-ink\/60,
+.theme-geist .text-ink\/50 { color: rgb(var(--c-ink-soft)); }
+
+/* 가장 옅은 --c-ink-subtle(#8f8f8f, 3.1:1)은 본문에 쓰지 않는다.
+   플레이스홀더·비활성 라벨처럼 읽히지 않아도 되는 곳 전용이다. */
+
+/* --- 타이포그래피: 클수록 자간을 조인다 (-2.4px → -1.28px → -0.4px) --- */
+/* display-xl(48px)은 마케팅 히어로용이다. 운영·관리 화면의 페이지 제목은
+   heading-lg(32px/40px/-1.28px), 섹션 제목은 heading-md(20px/28px/-0.4px)를 쓴다. */
+.theme-geist h1 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+  letter-spacing: -1.28px;
+}
+.theme-geist h2 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.4px;
+}
+.theme-geist h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.2px;
+}
+
+/* 본문 스케일 2단으로 수렴 — 페이지마다 15/16/17/18px이 임의로 흩어져 있었다.
+   body-lg(16/24)는 리드 문단, body-md(14/20)는 그 외 전부. */
+.theme-geist .text-\[18px\] { font-size: 16px; line-height: 24px; }
+.theme-geist .text-\[17px\],
+.theme-geist .text-\[16px\],
+.theme-geist .text-\[15px\] { font-size: 14px; line-height: 20px; }
+/* text-lg(18px)·text-[11px]도 스케일 밖이라 각각 heading-md·body-sm으로 붙인다. */
+.theme-geist .text-lg { font-size: 20px; line-height: 28px; letter-spacing: -0.4px; }
+.theme-geist .text-\[11px\] { font-size: 12px; line-height: 16px; }
+.theme-geist { font-size: 14px; }
+.theme-geist :focus-visible {
+  outline: 2px solid rgb(var(--c-accent));
+  outline-offset: 2px;
+}
+
+/* --- Eyebrow: 알약 배지 대신 납작한 스펙 시트 머리글 ---
+ * 원본 스펙은 대문자 Geist Mono지만 여기 라벨은 한글이다. Geist Mono에 한글이
+ * 없어서 한글만 Pretendard로 떨어지고 영문·숫자만 모노로 나와 한 줄에서 글꼴이
+ * 갈리고, uppercase는 한글에 효과가 없이 자간만 벌어진다. 본문 서체를 유지하고
+ * 크기·굵기·색으로만 위계를 만든다. */
+.theme-geist [data-ui="eyebrow"] {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: rgb(var(--c-ink-soft));
+}
+
+/* --- 버튼: 마케팅 알약이 아니라 6px 각진 앱 크롬 --- */
+.theme-geist [data-ui="btn"] {
+  min-height: 2.25rem;
+  border-radius: var(--r-control);
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.theme-geist [data-ui="btn"][data-variant="primary"] {
+  background-color: rgb(var(--c-ink));
+  border-color: rgb(var(--c-ink));
+  color: #fff;
+}
+.theme-geist [data-ui="btn"][data-variant="primary"]:hover {
+  background-color: #383838;
+  border-color: #383838;
+  color: #fff;
+}
+.theme-geist [data-ui="btn"][data-variant="secondary"],
+.theme-geist [data-ui="btn"][data-variant="danger"] {
+  background-color: rgb(var(--c-paper));
+  border-color: rgb(var(--c-hairline));
+  color: rgb(var(--c-ink));
+}
+.theme-geist [data-ui="btn"][data-variant="secondary"]:hover,
+.theme-geist [data-ui="btn"][data-variant="danger"]:hover {
+  background-color: rgb(var(--c-surface-soft));
+  border-color: rgb(var(--c-ink-subtle));
+  color: rgb(var(--c-ink));
+}
+.theme-geist [data-ui="btn"][data-variant="text"] {
+  color: rgb(var(--c-ink-muted));
+  text-decoration: none;
+  padding: 0;
+}
+.theme-geist [data-ui="btn"][data-variant="text"]:hover { color: rgb(var(--c-ink)); }
+
+/* --- 카드: 그림자 대신 1px 헤어라인. 들뜨는 호버 제거 --- */
+.theme-geist [data-ui="card"] {
+  border-color: rgb(var(--c-hairline));
+  background-color: rgb(var(--c-paper));
+  box-shadow: none;
+  border-radius: var(--r-block);
+}
+.theme-geist a[data-ui="card"]:hover {
+  transform: none;
+  border-color: rgb(var(--c-ink-subtle));
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.04);
+}
+
+/* --- 상태 배지: 채색 알약 대신 헤어라인 + 잉크 --- */
+.theme-geist [data-ui="pill"] {
+  border-radius: var(--r-control);
+  min-height: 1.5rem;
+  border-color: rgb(var(--c-hairline));
+  background-color: rgb(var(--c-paper));
+  color: rgb(var(--c-ink-muted));
+  font-weight: 500;
+  /* 내용이 한글("정상")일 수도, 라틴 코드("FAILED")일 수도 있다.
+     라틴 코드는 소스에서 이미 대문자라 uppercase를 걷어도 그대로다. */
+  text-transform: none;
+  letter-spacing: 0;
+}
+.theme-geist [data-ui="pill"][data-tone="open"] { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / 0.3); }
+.theme-geist [data-ui="pill"][data-tone="warning"] { color: rgb(var(--c-clay-ink)); border-color: rgb(var(--c-clay) / 0.4); }
+.theme-geist [data-ui="pill"][data-tone="danger"] { color: rgb(var(--c-danger)); border-color: rgb(var(--c-danger) / 0.3); }
+
+/* --- 수치: 값만 탭룰러 모노. 라벨은 한글이라 본문 서체를 유지한다 --- */
+.theme-geist [data-ui="metric"] dd {
+  font-family: var(--font-geist-mono);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+/* 값에 붙는 보조 설명(hint)은 한글이라 모노에서 제외 */
+.theme-geist [data-ui="metric"] dd small {
+  font-family: var(--font-geist);
+  letter-spacing: 0;
+}
+.theme-geist [data-ui="metric"] dt {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgb(var(--c-ink-soft));
+}
+
+/* 페이지에 인라인으로 박힌 알약 버튼들(공용 Button을 안 쓴 곳)도 6px 각으로.
+   span으로 만든 스피너·진행바·장식 원은 선택자에 걸리지 않는다. */
+.theme-geist button.rounded-full,
+.theme-geist a.rounded-full {
+  border-radius: var(--r-control);
+}
+
+/* --- 입력: 6px 각진 필드 --- */
+.theme-geist input,
+.theme-geist textarea,
+.theme-geist select {
+  border-radius: var(--r-control);
+  border-color: rgb(var(--c-hairline));
+  font-size: 14px;
+  min-height: 2.25rem;
+}
+
+/* --- 헤더: 떠 있는 알약 카드가 아니라 납작한 상단 바 ---------------------
+ * 스펙의 nav-bar는 캔버스 배경 + 아래 1px 헤어라인 + 전폭이다. 둥근 카드가
+ * 그림자를 달고 떠 있는 형태는 이 시스템에 없다. 두 줄(영역 전환 / 서브 내비)
+ * 구성 자체는 Vercel 대시보드도 쓰는 패턴이라 유지한다.
+ * ------------------------------------------------------------------------ */
+.theme-geist header {
+  padding: 0;
+}
+.theme-geist header > div {
+  max-width: none;
+  border-radius: 0;
+  border-width: 0 0 1px 0;
+  border-color: rgb(var(--c-hairline));
+  background-color: rgb(var(--c-canvas));
+  backdrop-filter: none;
+  box-shadow: none;
+}
+/* 헤더 안쪽 두 줄도 본문과 같은 1200px 기준선에 맞춘다. */
+.theme-geist header > div > div,
+.theme-geist header > div > nav {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: 24px;
+}
+/* 서브 내비 구분선은 헤더 하단 헤어라인과 겹쳐 두 줄로 보이므로 지운다. */
+.theme-geist header > div > nav {
+  border-top-width: 0;
+}
+.theme-geist nav a[aria-current="page"] {
+  background-color: rgb(var(--c-ink));
+  color: #fff;
+  border-radius: var(--r-control);
+}
+/* 헤더 드롭다운·모바일 메뉴의 현재 항목은 aria-current 없이 `bg-accent text-ink`로
+   표시된다. geist에서 accent는 링크 블루라 그대로 두면 파랑 위 검정(3.9:1)이 된다.
+   투명도 수식자(bg-accent/10 등)는 클래스명이 달라 여기 걸리지 않는다. */
+.theme-geist .bg-accent {
+  background-color: rgb(var(--c-ink));
+  color: #fff;
+}
+.theme-geist nav a { border-radius: var(--r-control); }
+
+/* --- 테이블: 헤더도 한글이라 모노·대문자를 쓰지 않는다 --- */
+.theme-geist th {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: rgb(var(--c-ink-soft));
+}
+.theme-geist td { font-size: 14px; }
+
+/* --- 푸터 --- */
+.theme-geist footer {
+  background-color: rgb(var(--c-canvas));
+  border-color: rgb(var(--c-hairline));
+  padding: 64px 24px; /* spacing.3xl spacing.lg */
+  margin-top: 64px;
+}
+
+/* =========================================================================
+ * 간격 — 4px 스케일 (4·8·12·16·24·32·40·64·96·128)
+ *
+ * 원본 스펙의 96~128px 섹션 밴드는 마케팅 페이지용이다. 스펙도 "폼과 표는
+ * 시네마틱 간격이 아니라 실용 간격을 쓴다"고 못박고 있어서, 운영·관리 화면은
+ * 24px 리듬으로 조인다. 페이지마다 py-10/py-8/py-4가 뒤섞여 있던 것도 여기서
+ * 한 번에 정리된다(요소 선택자를 끼워 유틸리티보다 우선순위를 높였다).
+ * ========================================================================= */
+.theme-geist main > section {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.theme-geist main > section:first-child { padding-top: 40px; }
+.theme-geist main > section:last-child { padding-bottom: 64px; }
+
+/* 컨테이너: 원본은 ~1200px 중앙 정렬. 1380px는 표가 과하게 늘어져 읽기 나쁘다. */
+.theme-geist .container-page {
+  max-width: 1200px;
+  padding-inline: 24px;
+}
+
+/* 스케일에서 벗어난 패딩만 보정한다(14px·20px → 16px·24px).
+   p-4·p-6·p-8(16·24·32)은 이미 스케일 위라 그대로 둔다. */
+.theme-geist .p-3\.5 { padding: 16px; }
+.theme-geist .p-5 { padding: 24px; }
+
+/* 카드 내부: spacing.lg */
+.theme-geist [data-ui="card"] { padding: 24px; }
+
+/* 표: 세로는 조이고 가로는 유지.
+   끝 셀의 패딩을 지우면 표가 테두리 박스 안에 바로 들어간 화면(Monitoring 등)에서
+   글자가 테두리에 붙어버려서, 균일 패딩으로 둔다. */
+.theme-geist th { padding: 8px 16px; }
+.theme-geist td { padding: 12px 16px; }
+
+/* 입력: spacing.xs spacing.sm */
+.theme-geist input,
+.theme-geist textarea,
+.theme-geist select {
+  padding: 8px 12px;
+}
+.theme-geist textarea { min-height: auto; }
+
+/* 공용 Button을 안 쓰고 페이지에 직접 박힌 알약 버튼들도 같은 규격으로.
+   높이 44px(min-h-11)는 마케팅 CTA 기준이라 앱 크롬에서는 36px로 낮춘다. */
+.theme-geist button.rounded-full,
+.theme-geist a.rounded-full {
+  border-radius: var(--r-control);
+  min-height: 2.25rem;
+  padding-inline: 12px;
+  font-size: 14px;
+  font-weight: 500;
 }
