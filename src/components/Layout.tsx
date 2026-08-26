@@ -19,9 +19,9 @@ export function Layout({ area, page, children }: { area: AreaKey; page: string; 
 
   return (
     <div className={dark ? "dark" : undefined}>
-      <div className="min-h-screen bg-canvas text-ink dark:bg-ops-bg dark:text-ops-ink dark:font-ops-sans">
+      <div className="min-h-screen overflow-x-hidden bg-canvas text-ink dark:bg-ops-bg dark:text-ops-ink dark:font-ops-sans">
         <Header area={area} page={page} />
-        <main key={location.pathname} id="main-content" tabIndex={-1} className="animate-reveal-up">
+        <main key={location.pathname} id="main-content" tabIndex={-1} className="w-full max-w-full animate-reveal-up overflow-x-hidden">
           {children}
         </main>
         <Footer />

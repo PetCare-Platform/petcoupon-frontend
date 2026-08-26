@@ -1,15 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown, PawPrint } from "@phosphor-icons/react";
 import { AREA_ROUTES, type AreaKey } from "../routes";
 
 export function Header({ area, page }: { area: AreaKey; page: string }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setOpen(false);
   }, [location.pathname, location.hash]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
 
   return (
     <>
@@ -21,14 +39,14 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
       </a>
 
       <header className="sticky top-0 z-[100] px-3 pt-3 md:px-5">
-        <div className="mx-auto max-w-[1280px] rounded-[1.5rem] border border-hairline/70 bg-paper/80 shadow-[0_8px_32px_-16px_rgba(32,29,24,0.25)] backdrop-blur-xl dark:border-white/10 dark:bg-ops-surface/70">
+        <div className="mx-auto max-w-[1380px] rounded-[1.75rem] border border-white/80 bg-white/90 shadow-[0_18px_50px_-30px_rgba(23,36,58,0.35)] backdrop-blur-xl dark:border-ops-border dark:bg-white/90">
           <div className="flex h-14 items-center gap-5 px-4 md:px-6">
-            <Link to="/" aria-label="PetCoupon 홈" className="inline-flex flex-none items-center text-[20px] font-bold tracking-tight">
-              PetCoupon
+            <Link to="/" aria-label="PetCoupon 홈" className="inline-flex flex-none items-center gap-2 text-[20px] font-bold tracking-tight">
+              <span className="grid h-9 w-9 place-items-center rounded-2xl bg-accent text-ink">
+                <PawPrint weight="fill" className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span>PetCoupon</span>
             </Link>
-            <span className="inline-flex min-h-6 flex-none items-center rounded-full border border-hairline bg-surface-2 px-2.5 font-mono text-[10px] tracking-wide text-ink-muted dark:border-ops-border-soft dark:bg-ops-border-soft dark:text-ops-muted">
-              PROTOTYPE
-            </span>
 
             <nav aria-label="전체 영역" className="ml-2 hidden min-w-0 items-center gap-1 md:flex">
               {Object.entries(AREA_ROUTES).map(([key, cfg]) => {
@@ -72,12 +90,13 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
             </nav>
 
             <button
+              ref={menuButtonRef}
               type="button"
               aria-controls="site-navigation"
               aria-expanded={open}
               aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
               onClick={() => setOpen((v) => !v)}
-              className="relative ml-auto flex h-11 w-11 flex-none items-center justify-center rounded-full bg-surface-soft transition-colors duration-300 ease-fluid dark:bg-ops-bg md:hidden"
+              className="relative ml-auto flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface-soft transition-colors duration-300 ease-fluid hover:bg-accent/30 dark:bg-surface-soft md:hidden"
             >
               <span
                 aria-hidden="true"
@@ -120,6 +139,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
 
       <div
         id="site-navigation"
+        aria-hidden={!open}
         className={`fixed inset-0 z-[90] bg-canvas/95 backdrop-blur-2xl transition-opacity duration-500 ease-fluid dark:bg-ops-bg/95 md:hidden ${
           open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}

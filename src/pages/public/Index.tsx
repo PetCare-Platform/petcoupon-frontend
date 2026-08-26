@@ -1,180 +1,67 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, PawPrint } from "@phosphor-icons/react";
+import { ArrowRight, Cat, Dog, FirstAid, PawPrint, Scissors, ShoppingBagOpen } from "@phosphor-icons/react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Layout } from "../../components/Layout";
-import { BrandIllustration, ColorBlock, Eyebrow, FilterBar, LinkButton, TextLink } from "../../components/ui";
+import { PetVisual } from "../../components/PetVisual";
+import { FilterBar, LinkButton } from "../../components/ui";
 import { EVENTS, type EventStatus } from "../../data/events";
 
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
 const statusLabel: Record<EventStatus, string> = { open: "진행 중", scheduled: "오픈 예정", closed: "종료" };
-const statusClass: Record<EventStatus, string> = {
-  open: "bg-accent/15 text-accent-ink",
-  scheduled: "bg-surface-2 text-ink-muted",
-  closed: "bg-hairline-soft text-ink-muted",
-};
-
-const FEATURED_EVENT = EVENTS[0];
-
-function isClosingSoon(event: (typeof EVENTS)[number]) {
-  if (event.status !== "open") return false;
-  const closeMetric = event.metrics.find((m) => m.label === "발급 종료");
-  const match = closeMetric ? /^D-(\d+)$/.exec(closeMetric.value) : null;
-  return !!match && Number(match[1]) <= 3;
-}
+const statusClass: Record<EventStatus, string> = { open: "bg-accent", scheduled: "bg-sky", closed: "bg-white/80 text-ink-muted" };
+const spanClass = ["md:col-span-8", "md:col-span-4", "md:col-span-4", "md:col-span-8"];
+const toneClass = ["bg-[#dff7ef]", "bg-[#fff0ed]", "bg-[#e5f4ff]", "bg-[#fff7cf]"];
 
 export default function Index() {
   const [filter, setFilter] = useState<"all" | EventStatus>("all");
-  const visible = useMemo(() => (filter === "all" ? EVENTS : EVENTS.filter((e) => e.status === filter)), [filter]);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const visible = useMemo(() => (filter === "all" ? EVENTS : EVENTS.filter((event) => event.status === filter)), [filter]);
+
+  useGSAP(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.fromTo("[data-pet-visual]", { scale: 0.86, opacity: 0.45, rotate: 2 }, { scale: 1, opacity: 1, rotate: 0, duration: 1.1, ease: "power3.out" });
+    gsap.utils.toArray<HTMLElement>("[data-event-card]").forEach((card) => {
+      gsap.fromTo(card, { y: 48, opacity: 0.35 }, { y: 0, opacity: 1, ease: "none", scrollTrigger: { trigger: card, start: "top 92%", end: "top 58%", scrub: true } });
+    });
+  }, { scope: rootRef });
 
   return (
     <Layout area="public" page="index">
-      <section className="py-10 md:py-16">
-        <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
-          <div className="animate-reveal-up">
-            <Eyebrow>
-              <PawPrint weight="fill" className="h-3.5 w-3.5" aria-hidden="true" />
-              반려동물 혜택
-            </Eyebrow>
-            <h1 className="mt-2">
-              미용비도 병원비도,
-              <br />
-              쿠폰으로 <span className="text-accent">아끼세요</span>.
-            </h1>
-            <p className="mt-4 max-w-[52ch] text-[18px] text-ink-muted">
-              미용부터 건강검진, 산책용품까지. 지금 진행 중인 이벤트에서 필요한 쿠폰을 받아보세요.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-6">
-              <LinkButton to="#event-list">이벤트 둘러보기</LinkButton>
-              <TextLink to="/user/my-coupons">내 쿠폰 보기</TextLink>
+      <div ref={rootRef}>
+        <section className="pb-24 pt-12 md:pb-36 md:pt-20">
+          <div className="container-page grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
+            <div className="relative z-10">
+              <p className="mb-5 flex items-center gap-2 text-sm font-bold text-accent-ink"><PawPrint weight="fill" className="h-5 w-5" aria-hidden="true" />반려생활을 더 가볍게</p>
+              <h1 className="w-full max-w-6xl text-balance text-[clamp(3rem,6vw,6.5rem)] leading-[0.98]">우리 아이가 좋아할 혜택만 모았어요.</h1>
+              <p className="mt-7 max-w-2xl text-[19px] leading-relaxed text-ink-muted md:text-[21px]">미용부터 건강검진, 산책용품까지. 필요한 순간 바로 꺼내 쓰는 반려생활 쿠폰을 만나보세요.</p>
+              <div className="mt-9 flex flex-wrap gap-3"><LinkButton to="#event-list">이벤트 둘러보기</LinkButton><LinkButton to="/user/my-coupons" variant="secondary">내 쿠폰 보기</LinkButton></div>
+            </div>
+            <div data-pet-visual className="relative"><PetVisual /><div className="absolute -bottom-5 left-6 rounded-[1.4rem] border border-white bg-white px-5 py-4 shadow-[0_18px_40px_-24px_rgba(23,36,58,0.45)]"><strong className="block text-lg">오늘도 함께라서 좋아요</strong><span className="text-sm text-ink-muted">산책 · 건강 · 미용 혜택</span></div></div>
+          </div>
+        </section>
+
+        <section className="overflow-hidden border-y border-hairline bg-white/70 py-5" aria-label="PetCoupon 혜택 분야">
+          <div className="flex min-w-max animate-[marquee_24s_linear_infinite] items-center gap-10 px-6 text-lg font-bold text-ink-muted motion-reduce:animate-none">
+            {[Dog, Scissors, Cat, FirstAid, PawPrint, ShoppingBagOpen, Dog, Scissors, Cat, FirstAid, PawPrint, ShoppingBagOpen].map((Icon, index) => <span key={index} className="flex items-center gap-2"><Icon weight="fill" className="h-6 w-6 text-accent-ink" aria-hidden="true" />{["산책", "미용", "고양이 케어", "건강검진", "반려생활", "용품 할인"][index % 6]}</span>)}
+          </div>
+        </section>
+
+        <section id="event-list" className="py-24 md:py-36">
+          <div className="container-page">
+            <div className="mb-10 flex flex-wrap items-end justify-between gap-6"><div><p className="mb-3 text-sm font-bold text-accent-ink">지금 받을 수 있는 혜택</p><h2 className="max-w-4xl text-balance">필요한 쿠폰을 골라보세요.</h2><p className="mt-3 text-[17px] text-ink-muted"><span aria-live="polite">{visible.length}개</span>의 이벤트를 보여드려요.</p></div><FilterBar value={filter} onChange={setFilter} options={[{ value: "all", label: `전체 ${EVENTS.length}` }, { value: "open", label: `진행 중 ${EVENTS.filter((event) => event.status === "open").length}` }, { value: "scheduled", label: `오픈 예정 ${EVENTS.filter((event) => event.status === "scheduled").length}` }, { value: "closed", label: `종료 ${EVENTS.filter((event) => event.status === "closed").length}` }]} /></div>
+            <div className="grid grid-flow-dense gap-4 md:grid-cols-12">
+              {visible.map((event, index) => <article key={event.id} data-event-card className={`group min-h-[310px] overflow-hidden rounded-[2rem] border border-white/70 p-6 shadow-[0_24px_60px_-42px_rgba(23,36,58,0.38)] ${spanClass[index % 4]} ${toneClass[index % 4]}`}><div className="flex h-full flex-col"><div className="flex items-center justify-between gap-3"><span className={`inline-flex min-h-8 items-center rounded-full px-3 text-xs font-bold ${statusClass[event.status]}`}>{statusLabel[event.status]}</span><span className="text-sm font-semibold text-ink-muted">{event.period}</span></div><div className="mt-auto pt-16"><h3 className="max-w-2xl text-[clamp(1.75rem,3vw,3.4rem)] font-bold leading-tight tracking-[-0.035em]">{event.title}</h3><p className="mt-3 max-w-xl text-[17px] text-ink-muted">{event.desc}</p><div className="mt-6 flex items-end justify-between gap-4"><strong className="text-2xl">{event.benefit}</strong><Link to={`/event-detail/${event.id}`} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-5 font-semibold text-white transition-transform duration-300 hover:-translate-y-1">{event.cta}<ArrowRight weight="bold" aria-hidden="true" /></Link></div></div></div></article>)}
+              {visible.length === 0 ? <div className="col-span-full rounded-[2rem] border border-dashed border-hairline bg-white p-12 text-center"><h3>조건에 맞는 이벤트가 없어요.</h3><p className="mt-2 text-ink-muted">다른 상태를 선택해 보세요.</p></div> : null}
             </div>
           </div>
-          <div className="animate-reveal-up" style={{ animationDelay: "160ms" }}>
-            <BrandIllustration />
-            <p className="mt-3 text-sm text-ink/60">강아지든 고양이든 토끼든 새든, 우리 아이를 위한 혜택이 늘 열려 있어요.</p>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="py-10">
-        <div className="container-page">
-          <ColorBlock tone="accent">
-            <Eyebrow>지금 가장 주목받는 이벤트</Eyebrow>
-            <h2 className="mt-2">
-              이번 여름,
-              <br />
-              <span className="text-accent">목욕·미용비</span> 아끼는 법.
-            </h2>
-            <p className="mt-4 max-w-[56ch]">
-              {FEATURED_EVENT.title}에서 미용·목욕 결제에 쓸 수 있는 {FEATURED_EVENT.benefit}{" "}
-              <strong className="font-semibold text-accent-ink">할인</strong> 쿠폰을 받아보세요.
-            </p>
-            <dl className="mt-6 grid max-w-md grid-cols-2 gap-4 border-t border-hairline pt-4">
-              <div>
-                <dt className="text-sm text-ink-muted">발급 마감</dt>
-                <dd className={`font-semibold ${isClosingSoon(FEATURED_EVENT) ? "text-clay-ink" : ""}`}>{FEATURED_EVENT.metrics.find((m) => m.label === "발급 종료")?.hint}</dd>
-              </div>
-              <div>
-                <dt className="text-sm text-ink-muted">남은 수량</dt>
-                <dd className="font-semibold">{FEATURED_EVENT.metrics.find((m) => m.label === "현재 잔여")?.value}장</dd>
-              </div>
-            </dl>
-            <LinkButton to={`/event-detail/${FEATURED_EVENT.id}`} className="mt-6">
-              혜택 자세히 보기
-            </LinkButton>
-          </ColorBlock>
-        </div>
-      </section>
-
-      <section id="event-list" className="py-10">
-        <div className="container-page">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2>진행 중인 이벤트 전체</h2>
-              <p className="mt-1 text-[17px] text-ink-muted">
-                <span aria-live="polite">{visible.length}개</span>의 이벤트를 보여드려요. 각 이벤트를 눌러 전용 쿠폰을 확인하세요.
-              </p>
-            </div>
-            <FilterBar
-              value={filter}
-              onChange={setFilter}
-              options={[
-                { value: "all", label: `전체 ${EVENTS.length}` },
-                { value: "open", label: `진행 중 ${EVENTS.filter((e) => e.status === "open").length}` },
-                { value: "scheduled", label: `오픈 예정 ${EVENTS.filter((e) => e.status === "scheduled").length}` },
-                { value: "closed", label: `종료 ${EVENTS.filter((e) => e.status === "closed").length}` },
-              ]}
-            />
-          </div>
-
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
-            {visible.map((event, i) => (
-              <article
-                key={event.id}
-                className="animate-reveal-up flex min-h-full flex-col rounded-control border border-hairline bg-paper p-4 shadow-[0_1px_2px_rgba(29,29,27,0.06)] transition-all duration-200 ease-fluid hover:-translate-y-0.5 hover:border-ink hover:shadow-[0_8px_20px_-8px_rgba(29,29,27,0.18)]"
-                style={{ animationDelay: `${Math.min(i, 4) * 60}ms` }}
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <span className={`inline-flex min-h-7 items-center rounded-full px-2 text-xs font-semibold uppercase tracking-wide ${statusClass[event.status]}`}>
-                    {statusLabel[event.status]}
-                  </span>
-                  <span className="text-xs uppercase tracking-wide text-ink/60">{event.label}</span>
-                </div>
-                <h3 className="mb-1.5 text-lg font-semibold">{event.title}</h3>
-                <p className="text-[16px] text-ink-muted">{event.desc}</p>
-                <dl className="my-3 space-y-1.5">
-                  <div className="flex justify-between border-b border-hairline-soft pb-2 text-sm">
-                    <dt className="text-ink/60">기간</dt>
-                    <dd className={`font-medium ${isClosingSoon(event) ? "text-clay-ink" : ""}`}>{event.period}</dd>
-                  </div>
-                  <div className="flex justify-between border-b border-hairline-soft pb-2 text-sm">
-                    <dt className="text-ink/60">대표 혜택</dt>
-                    <dd className="font-medium">{event.benefit}</dd>
-                  </div>
-                  <div className="flex justify-between pb-2 text-sm">
-                    <dt className="text-ink/60">{event.metrics[1].label}</dt>
-                    <dd className={`font-medium ${event.status === "open" ? "text-accent-ink" : ""}`}>{event.metrics[1].value}장</dd>
-                  </div>
-                </dl>
-                <Link
-                  to={`/event-detail/${event.id}`}
-                  className="group mt-auto inline-flex items-center justify-between gap-2 text-[18px] font-medium underline underline-offset-4 transition-all"
-                >
-                  {event.cta}
-                  <ArrowRight weight="bold" className="h-4 w-4 flex-none transition-transform duration-200 ease-fluid group-hover:translate-x-1" aria-hidden="true" />
-                </Link>
-              </article>
-            ))}
-            {visible.length === 0 ? (
-              <div className="col-span-full rounded-block border border-dashed border-hairline p-10 text-center">
-                <h3 className="text-xl font-semibold">조건에 맞는 이벤트가 없어요.</h3>
-                <p className="mt-2 text-ink-muted">다른 상태를 선택해 보세요.</p>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10">
-        <div className="container-page">
-          <h2>
-            이벤트에서 받고, 마이페이지에 모아두고, 필요할 때 꺼내 쓰세요.
-          </h2>
-          <ul className="mt-6 grid gap-6 border-t border-hairline pt-6 sm:grid-cols-3">
-            {[
-              ["이벤트에서 고르기", "공개 이벤트에서 필요한 쿠폰을 고릅니다."],
-              ["마이페이지에 보관", "발급한 쿠폰의 코드와 기한을 확인합니다."],
-              ["필요할 때 사용", "상세 화면에서 사용 상태와 이력을 관리합니다."],
-            ].map(([title, desc]) => (
-              <li key={title}>
-                <strong className="block">{title}</strong>
-                <span className="text-ink-muted">{desc}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex justify-center">
-            <LinkButton to="/user/my-coupons">내 쿠폰 보기</LinkButton>
-          </div>
-        </div>
-      </section>
+        <section className="pb-24 md:pb-36"><div className="container-page"><div className="rounded-[2.5rem] bg-ink px-6 py-16 text-white md:px-14 md:py-20"><div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end"><div><p className="text-sm font-bold text-accent">쿠폰 사용은 간단하게</p><h2 className="mt-3 max-w-xl text-balance">받고, 모아두고, 필요할 때 바로 쓰세요.</h2></div><ol className="grid gap-3 sm:grid-cols-3">{["이벤트에서 고르기", "내 쿠폰함에 보관", "필요할 때 사용"].map((label, index) => <li key={label} className="rounded-[1.5rem] bg-white/10 p-5"><span className="text-sm text-accent">0{index + 1}</span><strong className="mt-8 block text-lg">{label}</strong></li>)}</ol></div><LinkButton to="/user/my-coupons" className="mt-10 bg-white text-ink hover:bg-accent">내 쿠폰 확인하기</LinkButton></div></div></section>
+      </div>
     </Layout>
   );
 }

@@ -5,6 +5,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    background: #f7fbff;
   }
 
   body {
@@ -13,10 +14,15 @@
     font-weight: 400;
     line-height: 1.5;
     letter-spacing: -0.01em;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 8% 6%, rgba(117, 214, 187, 0.18), transparent 28rem),
+      radial-gradient(circle at 92% 18%, rgba(191, 229, 255, 0.24), transparent 30rem);
+    background-attachment: fixed;
   }
 
   h1 {
-    font-size: clamp(40px, 6vw, 76px);
+    font-size: clamp(42px, 6vw, 84px);
     font-weight: 750;
     line-height: 1.02;
     letter-spacing: -0.04em;
@@ -38,10 +44,34 @@
   a {
     color: inherit;
   }
+
+  :focus-visible {
+    outline: 3px solid #17243a;
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: #75d6bb;
+    color: #17243a;
+  }
 }
 
 @layer utilities {
   .container-page {
-    @apply mx-auto w-full max-w-[1280px] px-6 md:px-10;
+    @apply mx-auto w-full max-w-[1380px] px-5 md:px-10;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
