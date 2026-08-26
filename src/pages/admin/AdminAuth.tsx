@@ -26,9 +26,9 @@ export default function AdminAuth() {
 
   async function handleLogout() {
     setSubmitting(true); setError("");
-    try { await deleteAdminSession(); setActive(false); setExpiresAt(""); }
-    catch (err) { setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "세션을 종료하지 못했습니다."); }
-    finally { setSubmitting(false); }
+    try { await deleteAdminSession(); }
+    catch (err) { setError(err instanceof ApiError || err instanceof NetworkError ? `${err.message} 로컬 세션은 종료했습니다.` : "서버 세션 폐기를 확인하지 못했지만 로컬 세션은 종료했습니다."); }
+    finally { setActive(false); setExpiresAt(""); setSubmitting(false); }
   }
 
   return <Layout area="admin" page="auth"><section className="py-10"><div className="container-page max-w-xl">

@@ -26,6 +26,15 @@ const checks = [
 
 const missing = checks.filter(([file, snippet]) => !readFileSync(file, "utf8").includes(snippet));
 
+const adminAuthApi = readFileSync("src/api/adminAuth.ts", "utf8");
+const adminAuthPage = readFileSync("src/pages/admin/AdminAuth.tsx", "utf8");
+if (!/try\s*\{[\s\S]*apiDelete[\s\S]*finally\s*\{[\s\S]*clearAdminSessionToken/.test(adminAuthApi)) {
+  missing.push(["src/api/adminAuth.ts", "clear local token in finally"]);
+}
+if (!adminAuthPage.includes('finally { setActive(false); setExpiresAt(""); setSubmitting(false); }')) {
+  missing.push(["src/pages/admin/AdminAuth.tsx", "clear active UI in finally"]);
+}
+
 if (missing.length > 0) {
   for (const [file, snippet] of missing) console.error(`MISSING ${file}: ${snippet}`);
   process.exit(1);

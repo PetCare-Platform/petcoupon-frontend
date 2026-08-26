@@ -9,6 +9,10 @@ export async function createAdminSession(authCode: string): Promise<AdminSession
 }
 
 export async function deleteAdminSession(): Promise<void> {
-  await apiDelete<null>("/admin/auth/sessions");
-  clearAdminSessionToken();
+  try {
+    await apiDelete<null>("/admin/auth/sessions");
+  } finally {
+    // 만료·폐기된 서버 토큰이 401을 반환해도 현재 브라우저의 세션은 반드시 끝낸다.
+    clearAdminSessionToken();
+  }
 }
