@@ -20,7 +20,7 @@ Keep all existing routes and API adapters unchanged. Preserve the four existing 
 - Public: bright pet-commerce discovery and coupon issuance.
 - User: friendly coupon wallet with strong expiry and availability hierarchy.
 - Admin: bright, structured content-management workspace.
-- Internal: lighter operational console with high-contrast metrics; retain a distinct operational identity without switching the entire area to near-black.
+- Internal: mandatory bright operational workspace containing dashboard, system status, issuance flow, failure handling, consistency verification, GitHub issues, and the implemented load-test stock reset tool.
 
 The global header continues to derive navigation from `AREA_ROUTES`. Visual changes must not duplicate route configuration inside components.
 
@@ -65,7 +65,6 @@ Rebuild `src/pages/public/Index.tsx` with:
 - Inline pet image inside editorial typography where it remains readable.
 - Gapless event bento using existing `EVENTS` data.
 - Horizontal accordion treatment for event categories or benefits.
-- A restrained infinite marquee using existing pet icons and real service categories, not partner logos.
 - Final coupon-wallet CTA.
 
 ### Supporting pages
@@ -89,6 +88,28 @@ Add `gsap` and `@gsap/react` for the public home only.
 - Preserve `ApiError`, `NetworkError`, toast announcements, polling, idempotency handling, and abort behavior.
 - The redesign must not change public pages to call additional admin endpoints.
 
+## API-Supported Screen Model
+
+- Public event detail may display only fields available from `EventDetailResponse`. Until a dedicated public event list API exists, local event records must be labeled as demo content rather than live backend data.
+- Coupon application must expose `WAITING` as an asynchronous processing state and retain the existing polling and idempotency behavior.
+- The coupon wallet is driven by `GET /users/{userId}/coupon-issue-requests`; detail, use, and cancel actions remain bound to the implemented coupon-issue endpoints.
+- Admin event creation, detail, name/description/period/status updates, and coupon creation remain first-class workflows because matching backend endpoints exist.
+- Screens for coupon stock lookup, live request statistics, Redis initialization, or operational aggregates must not imply live API support when controllers are absent.
+
+## Mandatory Internal Operations Area
+
+All existing `/internal/*` routes remain present and navigable.
+
+- Dashboard: presentation overview with a persistent `샘플 데이터` marker on every aggregate block until a real aggregation API exists.
+- System status: capability/status board that separates browser reachability from unverified Application, MySQL, Redis, and Kafka telemetry.
+- Issuance flow: explanatory request lifecycle and request lookup UI; static example records are labeled as examples.
+- Failure handling: FAILED, retry, and DLQ operational model; actions without backend endpoints remain visibly disabled or demonstration-only.
+- Consistency verification: verification model and expected comparisons; no claim of a live verification run without a backend endpoint.
+- GitHub issues: retain the existing repository issue integration and its loading/error states.
+- Load-test reset: expose the implemented `POST /internal/coupons/{couponId}/reset` operation as the only currently confirmed mutable internal tool.
+
+Internal operations uses the same bright brand system with stronger navy text, denser information layout, larger tabular KPIs, and restrained status colors. It must not revert to a black dashboard theme.
+
 ## Accessibility
 
 - Preserve the skip link and semantic elements.
@@ -109,12 +130,13 @@ Add `gsap` and `@gsap/react` for the public home only.
 - `src/components/ui.tsx`
 - Existing files under `src/pages/public`, `src/pages/user`, `src/pages/admin`, and `src/pages/internal` as required for visual propagation
 - New presentation-only components under `src/components`
+- `src/routes.ts` and `src/App.tsx` only when needed to surface the confirmed internal load-test reset tool without removing existing internal routes
 
 ## Explicitly Out of Scope
 
 - Backend code or API contract changes
 - Authentication implementation
-- New event, coupon, user, or operational data
+- New event, coupon, user, or operational data presented as real backend data
 - Changes to coupon issuance, use, cancellation, retry, polling, or idempotency behavior
 - Dependency vulnerability upgrades unrelated to GSAP installation
 - The separate `petcoupon-frontend-pr7` worktree
@@ -135,4 +157,5 @@ Add `gsap` and `@gsap/react` for the public home only.
 - The home has a two-line desktop hero and a mathematically complete event bento.
 - Shared components no longer look like repeated generic pill-card templates.
 - Operational metrics are presentation-ready and sample data is explicitly identified.
+- Every existing internal route remains present, bright, and honest about whether its information is live, sample, or unavailable.
 - Existing behavior passes lint, build, responsive, accessibility, and critical-flow verification.
