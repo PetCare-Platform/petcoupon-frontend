@@ -3,6 +3,7 @@ import type {
   EventCreateRequest,
   EventCreateResponse,
   EventDetailResponse,
+  EventPageResponse,
   EventUpdateRequest,
   EventStatusResponse,
   EventStatusUpdateRequest,
@@ -13,6 +14,16 @@ import type {
 export function createEvent(body: EventCreateRequest): Promise<EventCreateResponse> {
   return apiPost<EventCreateResponse>("/admin/events", body);
 }
+
+/** GET /admin/events — 관리자용 전체 이벤트 목록(상태 무관). page는 0부터, size는 10/20/50/100만 허용. */
+export function getAllEvents(page = 0, size = 20, signal?: AbortSignal): Promise<EventPageResponse> {
+  return apiGet<EventPageResponse>(`/admin/events?page=${page}&size=${size}`, signal);
+}
+
+// GET /events — 비로그인 공개 목록(OPEN 상태만). 공개 홈(Index.tsx)이 아직 이 응답
+// 모양(name/description/openAt/closeAt/status)이 아니라 benefit·metrics·guide 같은
+// 프로모션 필드를 쓰는 목데이터 그대로라, 붙일 화면이 없어 함수를 두지 않는다.
+// 카드 디자인을 다시 짤 때 getAllEvents와 같은 형태로 추가하면 된다.
 
 /**
  * GET /events/{eventId} — 팀 노션 원 URL은 공개 경로지만 비고에 "공개 API는
