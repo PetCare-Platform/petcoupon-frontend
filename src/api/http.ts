@@ -1,4 +1,5 @@
 import type { CustomResponse } from "../types/api";
+import { getAdminSessionToken } from "./adminSession";
 
 /**
  * 백엔드 CustomResponse 봉투({isSuccess,code,message,result})를 벗기는 공통 fetch 래퍼.
@@ -37,7 +38,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   try {
     response = await fetch(`/api${path}`, {
       method: options.method ?? "GET",
-      headers: { "Content-Type": "application/json", ...options.headers },
+      headers: {
+        "Content-Type": "application/json",
+        ...(path.startsWith("/admin/") && getAdminSessionToken() ? { "X-ADMIN-KEY": getAdminSessionToken()! } : {}),
+        ...options.headers,
+      },
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
       signal: options.signal,
     });
@@ -73,4 +78,8 @@ export function apiPost<T>(path: string, body?: unknown, headers?: Record<string
 
 export function apiPatch<T>(path: string, body?: unknown): Promise<T> {
   return request<T>(path, { method: "PATCH", body });
+}
+
+export function apiDelete<T>(path: string): Promise<T> {
+  return request<T>(path, { method: "DELETE" });
 }

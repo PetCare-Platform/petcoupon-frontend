@@ -29,7 +29,7 @@ export default function LoadTestReset() {
     setError("");
     setResult(null);
     try {
-      const response = await resetLoadTestStock(parsedCouponId, parsedQuantity === undefined ? {} : { totalQuantity: parsedQuantity });
+      const response = await resetLoadTestStock(parsedCouponId, parsedQuantity === undefined ? { force: false } : { totalQuantity: parsedQuantity, force: false });
       setResult(response);
     } catch (err) {
       setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "초기화 요청을 처리하지 못했습니다.");
@@ -66,7 +66,7 @@ export default function LoadTestReset() {
           <div className="rounded-[2rem] bg-sky/45 p-6 text-ink md:p-8">
             <p className="text-sm font-bold text-accent-ink">API 응답</p>
             <h2 className="mt-2">초기화 결과</h2>
-            {result ? <div className="mt-7"><MetricGrid cols={3}><MetricTile label="남은 재고" value={result.remainingQuantity} tone="success" /><MetricTile label="삭제된 발급" value={result.deletedIssues} /><MetricTile label="삭제된 메시지" value={result.deletedMessages} /><MetricTile label="삭제된 이력" value={result.deletedHistories} /><MetricTile label="멱등키" value={result.deletedIdempotencyKeys} /><MetricTile label="알림" value={result.deletedNotifications} /></MetricGrid></div> : <div className="mt-8 rounded-[1.5rem] border border-dashed border-ink/20 bg-white/60 p-8 text-center text-ink-muted">초기화를 실행하면 삭제 건수와 새 재고가 여기에 표시됩니다.</div>}
+            {result ? <div className="mt-7"><MetricGrid cols={3}><MetricTile label="DB 남은 재고" value={result.remainingQuantity} tone="success" /><MetricTile label="Redis 재고" value={result.redisStock ?? "확인 실패"} tone={result.redisStock === result.remainingQuantity ? "success" : "danger"} /><MetricTile label="삭제된 발급" value={result.deletedIssues} /><MetricTile label="삭제된 메시지" value={result.deletedMessages} /><MetricTile label="삭제된 이력" value={result.deletedHistories} /><MetricTile label="멱등키" value={result.deletedIdempotencyKeys} /></MetricGrid></div> : <div className="mt-8 rounded-[1.5rem] border border-dashed border-ink/20 bg-white/60 p-8 text-center text-ink-muted">초기화를 실행하면 삭제 건수와 DB·Redis 재고가 여기에 표시됩니다.</div>}
           </div>
         </div>
       </section>

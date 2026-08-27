@@ -1,83 +1,25 @@
-import { useMemo, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Layout } from "../../components/Layout";
-import { Eyebrow, FilterBar, MetricGrid, MetricTile, StatusPill } from "../../components/ui";
-
-type Status = "match" | "mismatch";
-
-const CHECKS: { id: string; label: string; source: string; expected: string; actual: string; status: Status }[] = [
-  { id: "coupon-10", label: "COUPON 10 / STOCK", source: "Redis ↔ 발급 원장", expected: "284", actual: "284", status: "match" },
-  { id: "issue-1042", label: "ISSUE 1042 / STATUS", source: "CouponIssue ↔ History", expected: "ISSUED", actual: "ISSUED", status: "match" },
-  { id: "coupon-11", label: "COUPON 11 / STOCK", source: "Redis ↔ 발급 원장", expected: "128", actual: "127", status: "mismatch" },
-  { id: "message-88231", label: "MESSAGE 88231 / DELIVERY", source: "Kafka ↔ NotificationLog", expected: "SENT", actual: "PENDING", status: "mismatch" },
-];
-
-const countByStatus = (status: Status) => CHECKS.filter((c) => c.status === status).length;
-const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
+import { Eyebrow, FieldGroup, MetricGrid, MetricTile, inputClass } from "../../components/ui";
+import { triggerReconciliation } from "../../api/adminOperations";
+import { ApiError, NetworkError } from "../../api/http";
+import type { ReconciliationTriggerResponse } from "../../types/api";
 
 export default function Verification() {
-  const [filter, setFilter] = useState<"all" | Status>("all");
-  const visible = useMemo(() => (filter === "all" ? CHECKS : CHECKS.filter((c) => c.status === filter)), [filter]);
-
-  return (
-    <Layout area="internal" page="verification">
-      <section className="py-8">
-        <div className="container-page">
-          <Eyebrow>내부 운영 · 정합성 검증 · 예시 데이터</Eyebrow>
-          <h1 className="mt-2">정합성 검증</h1>
-          <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">쿠폰 재고와 발급 원장, 메시지 처리 결과의 정합성을 검증합니다.</p>
-        </div>
-      </section>
-
-      <section className="py-4 animate-reveal-up" style={reveal(1)}>
-        <div className="container-page">
-          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <StatusPill tone="warning">2건 확인 필요</StatusPill>
-            <h2 className="mt-3">대부분의 원장이 일치합니다.</h2>
-            <div className="mt-6">
-              <MetricGrid cols={4}>
-                <MetricTile label="검사 대상" value="1,248" hint="쿠폰·발급·메시지" />
-                <MetricTile label="일치" value="1,246" hint="99.84%" tone="success" />
-                <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" tone="danger" />
-                <MetricTile label="검증 시간" value="2.8s" hint="직전 대비 -0.4s" tone="success" trend="down" />
-              </MetricGrid>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10 pb-16 animate-reveal-up" style={reveal(2)}>
-        <div className="container-page">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2>검증 결과</h2>
-            </div>
-            <FilterBar
-              value={filter}
-              onChange={setFilter}
-              options={[
-                { value: "all", label: `전체 ${CHECKS.length}` },
-                { value: "match", label: `일치 ${countByStatus("match")}` },
-                { value: "mismatch", label: `불일치 ${countByStatus("mismatch")}` },
-              ]}
-            />
-          </div>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            {visible.map((check) => (
-              <article key={check.id} className="rounded-control border border-hairline p-3.5 dark:border-white/[0.14] dark:bg-ops-surface">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="font-mono text-xs uppercase tracking-wide text-ink/60 dark:text-ops-muted">{check.label}</span>
-                  <StatusPill tone={check.status === "match" ? "open" : "danger"}>{check.status === "match" ? "일치" : "불일치"}</StatusPill>
-                </div>
-                <p className="text-base font-semibold">
-                  기대 {check.expected} · 실제 {check.actual}
-                </p>
-                <p className="mt-0.5 text-sm text-ink/60 dark:text-ops-muted">{check.source}</p>
-                {check.status === "mismatch" ? <button className="mt-2 text-sm font-medium underline underline-offset-4">재검증</button> : <span className="mt-2 block text-sm underline underline-offset-4 opacity-0">상세</span>}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    </Layout>
-  );
+  const [couponId, setCouponId] = useState("");
+  const [result, setResult] = useState<ReconciliationTriggerResponse | null>(null);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault(); const id=Number(couponId);
+    if (!Number.isInteger(id) || id<=0) { setError("쿠폰 ID는 1 이상의 정수로 입력해 주세요."); return; }
+    setSubmitting(true); setError(""); setResult(null);
+    try { setResult(await triggerReconciliation(id)); }
+    catch (err) { setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "정합성 검증을 실행하지 못했습니다."); }
+    finally { setSubmitting(false); }
+  }
+  return <Layout area="internal" page="verification"><section className="py-8"><div className="container-page"><Eyebrow>내부 운영 · 실제 정합성 API</Eyebrow><h1 className="mt-2">정합성 검증</h1><p className="mt-2 text-ops-muted">쿠폰 단위로 원장 정합성 검증을 즉시 실행합니다.</p></div></section>
+    <section className="pb-16 pt-4"><div className="container-page grid gap-6 lg:grid-cols-[4fr_8fr]"><form onSubmit={handleSubmit} className="rounded-block border border-ops-border bg-ops-surface p-6"><FieldGroup label="쿠폰 ID" htmlFor="reconcile-coupon-id" error={error || undefined}><input id="reconcile-coupon-id" type="number" min={1} className={inputClass} value={couponId} onChange={(event)=>setCouponId(event.target.value)} /></FieldGroup><button type="submit" disabled={submitting} className="mt-5 w-full rounded-full bg-ops-ink px-5 py-3 text-ops-bg disabled:opacity-50">{submitting ? "검증 중…" : "정합성 검증 실행"}</button></form>
+      <div className="rounded-block border border-ops-border bg-ops-surface p-6">{result ? <><div className="mb-5"><Eyebrow>REPORT #{result.reportId}</Eyebrow><h2 className="mt-2">결과 {result.result}</h2><p className="text-ops-muted">기준 시각 {result.asOfAt}</p></div><MetricGrid cols={3}><MetricTile label="전체" value={result.totalCount}/><MetricTile label="정상" value={result.successCount} tone="success"/><MetricTile label="오류" value={result.errorCount} tone={result.errorCount ? "danger" : "success"}/></MetricGrid></> : <p className="text-ops-muted">실행 결과가 여기에 표시됩니다. 관리자 세션이 필요합니다.</p>}</div>
+    </div></section></Layout>;
 }

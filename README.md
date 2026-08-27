@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-http://localhost:5173 에서 열립니다.
+http://localhost:5174 에서 열립니다.
 
 백엔드 API 서버([petcoupon-backend](https://github.com/PetCare-Platform/petcoupon-backend))가 `http://localhost:8080`에서 떠 있어야 합니다. dev 서버는 `/api/*` 요청을 `vite.config.ts`의 프록시를 통해 백엔드로 그대로 넘겨줍니다(브라우저 입장에서는 같은 출처라 CORS 제약이 없습니다).
 
@@ -42,13 +42,15 @@ npm run lint
 `src/types/api.ts`가 팀 API 명세와 실제 `petcoupon-backend` 코드를 함께 확인해서 만든 타입 정의고, `src/api/*.ts`가 그걸 쓰는 얇은 클라이언트 레이어입니다(`http.ts`가 `CustomResponse` 봉투를 벗기고 `ApiError`/`NetworkError`로 구분해서 던집니다).
 
 **실제 백엔드에 연동된 것:**
-- 이벤트 생성/조회/수정(이름·기간·설명·상태), 쿠폰 생성 — 관리자 폼
-- 쿠폰 신청(`POST /coupons/{id}/issues`, Idempotency-Key 포함), 보유 쿠폰 목록/상세 조회, 사용/사용취소 — 사용자 흐름
-- 부하 테스트용 재고 초기화(`POST /internal/coupons/{id}/reset`)
+- 관리자 세션 발급·폐기와 `X-ADMIN-KEY` 자동 적용
+- 이벤트 생성·상세·수정·상태 조회·상태 변경
+- 쿠폰 생성·부분 수정·실시간 재고 조회
+- 쿠폰 신청(`POST /coupons/{id}/issues`, Idempotency-Key 포함), 신청 결과 폴링, 보유 쿠폰 목록·상세·상태 조회, 사용·사용 취소
+- DLQ 목록·재처리, 재고 정합성 검증, 부하 테스트용 재고 초기화
 
 **아직 실제 API가 없어서 목데이터로 남아있는 것:**
 - 공개 이벤트 목록/상세(`/`, `/event-detail/:id`)의 기본 화면 — `src/data/events.ts`의 목데이터를 그대로 씀. 관리자가 쿠폰을 만들면 나오는 신청 링크(`?couponId=...`)로 들어왔을 때만 그 쿠폰 한 장에 한해 실제 API로 신청을 태웁니다.
-- 이벤트별 쿠폰 목록 조회, 쿠폰 재고/실시간 신청 현황 조회, 내부 운영 대시보드 전반 — 백엔드에 해당 API가 없어서 데모/시뮬레이션 상태입니다.
+- 이벤트 목록, 이벤트별 쿠폰 목록, 쿠폰 단건 조회, 내부 운영 집계·모니터링 — 백엔드에 해당 API가 없어 데모/샘플 상태입니다.
 
 이런 이유로 실제 연동 코드에는 "왜 이 화면이 아직 목데이터인지"를 설명하는 주석이 붙어 있습니다. 백엔드에 새 API가 생기면 그 주석을 따라가면 됩니다.
 

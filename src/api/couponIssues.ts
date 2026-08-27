@@ -4,6 +4,7 @@ import type {
   CouponIssueCreateResponse,
   CouponIssueDetailResponse,
   CouponIssueRequestResponse,
+  CouponIssueRequestStatusResponse,
   CouponIssueStatusResponse,
   CouponIssueUseRequest,
 } from "../types/api";
@@ -19,6 +20,10 @@ export function applyForCoupon(
     { userId },
     { "Idempotency-Key": idempotencyKey },
   );
+}
+
+export function getCouponIssueRequestStatus(userId: number, idempotencyKey: string, signal?: AbortSignal): Promise<CouponIssueRequestStatusResponse> {
+  return apiGet<CouponIssueRequestStatusResponse>(`/users/${userId}/coupon-issue-requests/status?idempotencyKey=${encodeURIComponent(idempotencyKey)}`, signal);
 }
 
 /** GET /users/{userId}/coupon-issue-requests — 1차, 구현됨. status 쿼리 필터는 백엔드 미구현이라 보내지 않는다 */

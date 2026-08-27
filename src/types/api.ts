@@ -32,6 +32,13 @@ export interface EventNameUpdateRequest {
   name: string;
 }
 
+export interface EventUpdateRequest {
+  name?: string;
+  description?: string;
+  openAt?: string;
+  closeAt?: string;
+}
+
 export interface EventDescriptionUpdateRequest {
   description?: string;
 }
@@ -92,6 +99,21 @@ export interface CouponCreateResponse {
   status: CouponStatus;
 }
 
+export interface CouponUpdateRequest {
+  name?: string;
+  discountType?: DiscountType;
+  discountValue?: number;
+  minOrderAmount?: number;
+  maxDiscountAmount?: number;
+  issueStartAt?: string;
+  issueEndAt?: string;
+  validDays?: number;
+  totalQuantity?: number;
+}
+
+export interface CouponUpdateResponse extends CouponCreateResponse { updatedAt: string; }
+export interface CouponRealtimeStatusResponse { couponId: number; totalQuantity: number; remainingQuantity: number; issuedQuantity: number; initialized: boolean; }
+
 // ---- Coupon Issue ----
 
 export interface CouponIssueCreateRequest {
@@ -99,17 +121,23 @@ export interface CouponIssueCreateRequest {
 }
 
 /**
- * 2026-08-25 오후 백엔드 확인: status:"WAITING" 이 응답에 추가됐다(Stream 발행까지만
- * 성공한 시점이라 항상 고정값 "WAITING"). couponIssueId는 아직 없다 — Consumer가
- * 비동기로 CouponIssue를 저장하기 전이라서다. 폴링 시작 지점을 이 응답만으로는
- * 찾을 수 없어, 신청 성공 후 보유 쿠폰 목록에서 couponId로 매칭하는 방식으로
- * 우회한다 (EventDetail.tsx 참고).
+ * 접수 응답은 status:"WAITING"이며 couponIssueId와 sequenceNo는 null일 수 있다.
+ * 같은 Idempotency-Key를 상태 조회 API에 보내 비동기 최종 결과를 확인한다.
  */
 export interface CouponIssueCreateResponse {
+  couponIssueId: number | null;
   couponId: number;
   userId: number;
-  status: "WAITING";
+  sequenceNo: number | null;
+  status: string;
 }
+
+export interface CouponIssueRequestStatusResponse { status: "IN_PROGRESS" | string; couponIssueId?: number | null; couponId?: number; userId?: number; sequenceNo?: number | null; }
+
+export interface CouponIssueDlqResponse { messageId: number; couponId: number; userId: number; requestId: string; retryCount: number; lastError: string; createdAt: string; }
+export interface CouponIssueDlqReprocessResponse { messageId: number; requestId: string; }
+export interface ReconciliationTriggerResponse { reportId: number; couponId: number; asOfAt: string; result: string; totalCount: number; successCount: number; errorCount: number; }
+export interface AdminSessionCreateResponse { token: string; expiresAt: string; }
 
 export interface CouponIssueUseRequest {
   userId: number;
@@ -150,6 +178,7 @@ export interface CouponIssueRequestResponse {
 
 export interface CouponResetRequest {
   totalQuantity?: number;
+  force?: boolean;
 }
 
 export interface CouponResetResponse {
@@ -162,4 +191,5 @@ export interface CouponResetResponse {
   deletedReports: number;
   totalQuantity: number;
   remainingQuantity: number;
+  redisStock: number | null;
 }

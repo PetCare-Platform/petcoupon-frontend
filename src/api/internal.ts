@@ -9,8 +9,4 @@ export function resetLoadTestStock(couponId: number, body: CouponResetRequest = 
   return apiPost<CouponResetResponse>(`/internal/coupons/${couponId}/reset`, body);
 }
 
-/**
- * Redis 쿠폰 재고 초기화(POST /internal/coupons/{id}/redis/init)는 1차 범위지만
- * 백엔드에 컨트롤러·DTO가 전혀 없다(2026-08-25 조사 기준). 없는 API를 있는 것처럼
- * 호출하지 않기 위해 의도적으로 함수를 만들지 않았다.
- */
+// 최신 reset API가 DB 정리와 Redis 발급 상태 초기화를 함께 수행하고 redisStock을 반환한다.
