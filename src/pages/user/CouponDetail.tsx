@@ -54,9 +54,14 @@ export default function CouponDetail() {
 
   async function markUsed() {
     if (!couponIssueId || busy) return;
+    const userId = getCurrentUserId();
+    if (userId === null) {
+      showToast("사용자 ID가 설정되지 않아 쿠폰을 사용 처리할 수 없습니다.");
+      return;
+    }
     setBusy(true);
     try {
-      await useCouponIssue(Number(couponIssueId), { userId: getCurrentUserId() });
+      await useCouponIssue(Number(couponIssueId), { userId });
       showToast("쿠폰을 사용 완료로 표시했습니다.");
       load();
     } catch (err) {
@@ -68,9 +73,14 @@ export default function CouponDetail() {
 
   async function cancelUse() {
     if (!couponIssueId || busy) return;
+    const userId = getCurrentUserId();
+    if (userId === null) {
+      showToast("사용자 ID가 설정되지 않아 쿠폰 사용을 취소할 수 없습니다.");
+      return;
+    }
     setBusy(true);
     try {
-      await cancelCouponIssue(Number(couponIssueId), { userId: getCurrentUserId() });
+      await cancelCouponIssue(Number(couponIssueId), { userId });
       showToast("쿠폰 사용을 취소했습니다.");
       load();
     } catch (err) {

@@ -30,12 +30,12 @@ npm run lint
 
 | 영역 | 경로 | 대상 |
 | --- | --- | --- |
-| 서비스(공개) | `/`, `/event-detail/:id` | 이벤트를 둘러보고 쿠폰을 신청하는 방문자 |
-| 사용자 | `/user`, `/user/my-coupons`, `/user/coupon-detail/:couponIssueId` | 발급받은 쿠폰의 상태를 확인·사용·취소하는 사용자 |
+| 서비스(공개) | `/`, `/event-detail/:id` | 이벤트를 둘러보고 쿠폰을 발급받는 방문자 |
+| 사용자 | `/user`(사용자 ID 설정), `/user/my-coupons`, `/user/coupon-detail/:couponIssueId` | 발급받은 쿠폰의 상태를 확인·사용·취소하는 사용자 |
 | 관리자 | `/admin`, `/admin/events`, `/admin/event-form(/:eventId)`, `/admin/coupons`, `/admin/coupon-form(/:eventId)` | 이벤트/쿠폰을 만들고 관리하는 스태프 |
 | 내부 운영 | `/internal/dashboard`, `/monitoring`, `/issues`, `/failures`, `/verification`, `/repo-issues` | 발급 파이프라인 상태·실패·정합성을 들여다보는 운영팀 (다크 테마로 구분) |
 
-인증 시스템은 아직 없습니다. `src/api/currentUser.ts`가 `localStorage`에 저장한 데모 사용자 ID(`petcoupon.demoUserId`, 기본값 1)를 대신 사용합니다.
+인증 시스템은 아직 없습니다. `src/api/currentUser.ts`가 `localStorage`에 저장한 사용자 ID(`petcoupon.demoUserId`)를 식별값으로 씁니다. 저장된 값이 없으면 `getCurrentUserId()`는 `null`을 반환하고(예전의 "기본값 1 자동 저장" 동작은 제거됨), 각 화면이 미설정 상태를 직접 처리합니다. 사용자 ID는 `/user`(사용자 ID 설정) 화면에서 지정·해제합니다.
 
 ## 백엔드 연동 현황
 
@@ -43,16 +43,17 @@ npm run lint
 
 **실제 백엔드에 연동된 것:**
 - 관리자 세션 발급·폐기와 `X-ADMIN-KEY` 자동 적용
-- 이벤트 생성·상세·수정·상태 조회·상태 변경
+- 공개 이벤트 목록(`GET /events`, OPEN만), 공개 이벤트 상세(`GET /events/{eventId}` — 연결 쿠폰 기본정보 포함)
+- 관리자 이벤트 생성·상세·수정·상태 조회·상태 변경
 - 쿠폰 생성·부분 수정·실시간 재고 조회
 - 쿠폰 신청(`POST /coupons/{id}/issues`, Idempotency-Key 포함), 신청 결과 폴링, 보유 쿠폰 목록·상세·상태 조회, 사용·사용 취소
 - DLQ 목록·재처리, 재고 정합성 검증, 부하 테스트용 재고 초기화
 
-**아직 실제 API가 없어서 목데이터로 남아있는 것:**
-- 공개 이벤트 목록/상세(`/`, `/event-detail/:id`)의 기본 화면 — `src/data/events.ts`의 목데이터를 그대로 씀. 관리자가 쿠폰을 만들면 나오는 신청 링크(`?couponId=...`)로 들어왔을 때만 그 쿠폰 한 장에 한해 실제 API로 신청을 태웁니다.
-- 이벤트 목록, 이벤트별 쿠폰 목록, 쿠폰 단건 조회, 내부 운영 집계·모니터링 — 백엔드에 해당 API가 없어 데모/샘플 상태입니다.
+공개 사용자 흐름(홈 → 이벤트 목록 → 이벤트 상세 → 연결 쿠폰 + 실시간 재고 → 발급 → 발급 결과 → 내 쿠폰)은 위 실제 API로 연결돼 있습니다. 이벤트 상세는 각 쿠폰의 `GET /coupons/{couponId}/status`를 병렬 조회해 기본정보와 병합하며, 일부 재고 조회가 실패해도 상세 전체를 실패로 만들지 않습니다.
 
-이런 이유로 실제 연동 코드에는 "왜 이 화면이 아직 목데이터인지"를 설명하는 주석이 붙어 있습니다. 백엔드에 새 API가 생기면 그 주석을 따라가면 됩니다.
+**아직 실제 API가 없어서 데모/샘플로 남아있는 것:**
+- 이벤트별 쿠폰 목록(관리자), 쿠폰 단건 조회, 내부 운영 집계·모니터링 — 백엔드에 해당 API가 없어 데모/샘플 상태입니다.
+- 관리자 홈·사용자 활동 요약 등 일부 대시보드 숫자.
 
 ## 프로젝트 구조
 
@@ -61,7 +62,6 @@ src/
   api/         API 클라이언트 (도메인별 파일 + http.ts 공통 래퍼)
   components/  공용 UI(Layout, Header, Footer, ui.tsx의 프리미티브)
   context/     ToastContext 등 전역 상태
-  data/        아직 API가 없는 화면을 위한 목데이터
   lib/         날짜 포맷 등 순수 유틸
   pages/       public/user/admin/internal 4개 영역별 페이지
   types/       백엔드 DTO에 대응하는 TypeScript 타입

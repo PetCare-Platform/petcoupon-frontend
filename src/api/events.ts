@@ -3,11 +3,13 @@ import type {
   EventCreateRequest,
   EventCreateResponse,
   EventDetailResponse,
+  EventListResponse,
   EventPageResponse,
   EventUpdateRequest,
   EventStatusResponse,
   EventStatusUpdateRequest,
   EventUpdateResponse,
+  PublicEventDetailResponse,
 } from "../types/api";
 
 /** POST /admin/events — 1차, 구현됨 */
@@ -20,15 +22,29 @@ export function getAllEvents(page = 0, size = 20, signal?: AbortSignal): Promise
   return apiGet<EventPageResponse>(`/admin/events?page=${page}&size=${size}`, signal);
 }
 
-// GET /events — 비로그인 공개 목록(OPEN 상태만). 공개 홈(Index.tsx)이 아직 이 응답
-// 모양(name/description/openAt/closeAt/status)이 아니라 benefit·metrics·guide 같은
-// 프로모션 필드를 쓰는 목데이터 그대로라, 붙일 화면이 없어 함수를 두지 않는다.
-// 카드 디자인을 다시 짤 때 getAllEvents와 같은 형태로 추가하면 된다.
+/**
+ * GET /events — 공개 이벤트 목록. 백엔드가 OPEN 상태만 내려준다(프론트도 방어적으로 한 번 더 거른다).
+ * 응답은 bare 배열이거나 Spring Page 봉투일 수 있어 둘 다 받아 content로 정규화한다.
+ * 공개 홈(Index.tsx)이 쓰는 유일한 이벤트 소스 — 예전 src/data/events.ts 목데이터는 제거됐다.
+ */
+export async function getPublicEvents(signal?: AbortSignal): Promise<EventListResponse[]> {
+  // Page 봉투로 오는 경우 기본 size(20)로 잘리므로 한 번에 넉넉히 가져온다(관리자 목록과 동일).
+  const data = await apiGet<EventListResponse[] | EventPageResponse>("/events?page=0&size=100", signal);
+  const list = Array.isArray(data) ? data : data.content;
+  return list.filter((event) => event.status === "OPEN");
+}
 
 /**
- * GET /events/{eventId} — 팀 노션 원 URL은 공개 경로지만 비고에 "공개 API는
- * 미구현, 동일 DTO 쓰는 GET /admin/events/{eventId}는 구현됨"이라고 명시돼
- * 있어 그 안내를 따라 admin 엔드포인트를 호출한다.
+ * GET /events/{eventId} — 공개 이벤트 상세. 이벤트 정보 + 연결 쿠폰 기본정보 목록을 함께 준다.
+ * 공개 화면은 관리자 API(GET /admin/events/{eventId})를 쓰지 않는다.
+ */
+export function getPublicEventDetail(eventId: number, signal?: AbortSignal): Promise<PublicEventDetailResponse> {
+  return apiGet<PublicEventDetailResponse>(`/events/${eventId}`, signal);
+}
+
+/**
+ * GET /admin/events/{eventId} — 관리자 이벤트 상세. 관리자 이벤트 수정 폼(EventForm)에서만 쓴다.
+ * 공개 이벤트 상세는 getPublicEventDetail 을 사용한다.
  */
 export function getEventDetail(eventId: number, signal?: AbortSignal): Promise<EventDetailResponse> {
   return apiGet<EventDetailResponse>(`/admin/events/${eventId}`, signal);

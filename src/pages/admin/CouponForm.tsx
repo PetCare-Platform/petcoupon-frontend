@@ -91,10 +91,9 @@ export default function CouponForm() {
   }
 
   if (created) {
-    const applyLink =
-      `/event-detail/${created.eventId}?couponId=${created.couponId}` +
-      `&couponName=${encodeURIComponent(created.name)}` +
-      `&discountType=${created.discountType}&discountValue=${created.discountValue}`;
+    // 공개 이벤트 상세(GET /events/{eventId})가 이벤트에 연결된 쿠폰 목록을 함께 내려주므로
+    // 더 이상 ?couponId= 우회 링크가 필요 없다 — 이벤트 상세로 바로 이동한다.
+    const applyLink = `/event-detail/${created.eventId}`;
     return (
       <Layout area="admin" page="coupon-form">
         <section className="py-10">
@@ -111,13 +110,12 @@ export default function CouponForm() {
               </dl>
             </div>
             <div className="mt-6 rounded-block border border-accent/30 bg-accent/[0.07] p-6">
-              <strong className="block">신청 페이지 링크</strong>
+              <strong className="block">공개 이벤트 상세</strong>
               <p className="mt-1 text-ink/80">
-                이벤트 상세에는 이 쿠폰만 연결된 링크로 접속해야 신청할 수 있어요
-                (이벤트별 쿠폰 목록 조회 API는 이번 개발 범위에서 제외됐습니다).
+                이 쿠폰은 이벤트 상세 화면의 쿠폰 목록에 표시되며, 사용자는 그곳에서 바로 발급받을 수 있어요.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
-                <LinkButton to={applyLink}>신청 페이지 보기</LinkButton>
+                <LinkButton to={applyLink}>이벤트 상세 보기</LinkButton>
                 <LinkButton to="/admin/coupons" variant="secondary">쿠폰 목록으로</LinkButton>
               </div>
             </div>

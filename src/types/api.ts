@@ -71,6 +71,34 @@ export interface EventListResponse {
   status: EventStatus;
 }
 
+/**
+ * GET /events/{eventId} — 공개 이벤트 상세. 관리자 상세(EventDetailResponse)와 달리
+ * 이 이벤트에 연결된 쿠폰 기본정보 목록(coupons)을 함께 내려준다.
+ * 실시간 재고는 여기 없다 — couponId별로 GET /coupons/{couponId}/status 를 따로 조회해 병합한다.
+ */
+export interface PublicEventCouponResponse {
+  couponId: number;
+  name: string;
+  discountType: DiscountType;
+  discountValue: number;
+  minOrderAmount: number;
+  maxDiscountAmount: number | null;
+  issueStartAt: string;
+  issueEndAt: string;
+  validDays: number;
+  status: CouponStatus;
+}
+
+export interface PublicEventDetailResponse {
+  eventId: number;
+  name: string;
+  description: string | null;
+  openAt: string;
+  closeAt: string;
+  status: EventStatus;
+  coupons: PublicEventCouponResponse[];
+}
+
 /** Spring Page를 그대로 옮긴 형태 — Coupon 목록(CouponPageResponse)과 필드가 같다. */
 export interface EventPageResponse {
   content: EventListResponse[];
@@ -179,7 +207,8 @@ export interface CouponIssueCreateResponse {
   status: string;
 }
 
-export interface CouponIssueRequestStatusResponse { status: "IN_PROGRESS" | string; couponIssueId?: number | null; couponId?: number; userId?: number; sequenceNo?: number | null; }
+// status: 접수 직후엔 "WAITING"(진행 중), 백엔드 비동기 처리가 끝나면 다른 값(성공/실패)으로 바뀐다.
+export interface CouponIssueRequestStatusResponse { status: "WAITING" | "IN_PROGRESS" | string; couponIssueId?: number | null; couponId?: number; userId?: number; sequenceNo?: number | null; }
 
 export interface CouponIssueDlqResponse { messageId: number; couponId: number; userId: number; requestId: string; retryCount: number; lastError: string; createdAt: string; }
 export interface CouponIssueDlqReprocessResponse { messageId: number; requestId: string; }
