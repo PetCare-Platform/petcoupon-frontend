@@ -293,6 +293,33 @@ export interface IssueStatisticsResponse {
   distribution: IssueStatusDistributionResponse[];
 }
 
+/**
+ * GET /admin/coupons/{couponId}/pipeline-drain-status — 백엔드 #193.
+ *
+ * 정합성 검증·초기화의 사전 조건(쿠폰 ENDED + 파이프라인 소진)을 화면이 판단할 수 있게 한다.
+ * 응답에 판정 결과(blocked)는 없어서 프론트가 isPipelineBlocked()로 계산한다.
+ */
+export interface CouponPipelineDrainStatusResponse {
+  couponStatus: CouponStatus;
+  /** 해당 쿠폰 기준 — Outbox 미소비(PENDING·SENT·FAILED) */
+  outboxUnconsumed: number;
+  /** 전역(공유 Stream) 기준 — 건수가 아니라 0 또는 1 플래그 */
+  streamUndelivered: number;
+  /** 전역(공유 Stream) 기준 — ACK 안 된 pending 실제 건수 */
+  streamActivePending: number;
+  /** true는 "잔여 0건"이 아니라 "확인 불가"다. 안전하게 차단으로 본다. */
+  checkFailed: boolean;
+}
+
+/** GET /admin/coupons/{couponId}/issue-timeseries?windowSeconds=&bucketSeconds= — 백엔드 #198. */
+export interface CouponIssueTimeSeriesResponse {
+  couponId: number;
+  windowSeconds: number;
+  bucketSeconds: number;
+  /** 요청이 0건인 구간도 0으로 채워져 온다(zero-filling). */
+  timeSeries: IssueThroughputBucketResponse[];
+}
+
 export interface DashboardIssueStatusDistributionResponse { status: IssueStatus; count: number; }
 export interface DashboardSummaryResponse {
   totalEvents: number;
