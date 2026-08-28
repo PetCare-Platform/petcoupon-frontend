@@ -1,25 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, PawPrint } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Layout } from "../../components/Layout";
-import { PetVisual } from "../../components/PetVisual";
-import { LinkButton } from "../../components/ui";
 import { getPublicEvents } from "../../api/events";
 import { ApiError, NetworkError } from "../../api/http";
 import { formatDateTime } from "../../lib/date";
 import type { EventListResponse } from "../../types/api";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-
-const toneClass = ["bg-[#dff7ef]", "bg-[#fff0ed]", "bg-[#e5f4ff]", "bg-[#fff7cf]"];
+gsap.registerPlugin(useGSAP);
 
 type LoadState =
   | { phase: "loading" }
   | { phase: "error"; message: string }
   | { phase: "ready"; events: EventListResponse[] };
+
+// 목록은 첫 화면 안에서 끝나야 한다 — 1024px 이상은 한 줄, 그 아래는 두 줄로 깔고
+// 스크롤을 유발하는 히어로·하단 배너는 두지 않는다.
+const gridClass = "grid gap-4 sm:grid-cols-2 lg:grid-cols-4";
 
 export default function Index() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -42,13 +41,16 @@ export default function Index() {
 
   const events = state.phase === "ready" ? state.events : [];
 
+  // 스크롤 연동(ScrollTrigger)은 접힘선 아래를 전제하는데 이제 목록이 전부 첫
+  // 화면에 있다. 진입 시 한 번 스태거로 올려주는 것으로 바꾼다.
   useGSAP(
     () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      gsap.fromTo("[data-pet-visual]", { scale: 0.86, opacity: 0.45, rotate: 2 }, { scale: 1, opacity: 1, rotate: 0, duration: 1.1, ease: "power3.out" });
-      gsap.utils.toArray<HTMLElement>("[data-event-card]").forEach((card) => {
-        gsap.fromTo(card, { y: 48, opacity: 0.35 }, { y: 0, opacity: 1, ease: "none", scrollTrigger: { trigger: card, start: "top 92%", end: "top 58%", scrub: true } });
-      });
+      gsap.fromTo(
+        "[data-event-card]",
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.45, stagger: 0.06, ease: "power2.out" },
+      );
     },
     { scope: rootRef, dependencies: [events.length] },
   );
@@ -56,72 +58,71 @@ export default function Index() {
   return (
     <Layout area="public" page="index">
       <div ref={rootRef}>
-        <section className="pb-24 pt-12 md:pb-36 md:pt-20">
-          <div className="container-page grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
-            <div className="relative z-10">
-              <p className="mb-5 flex items-center gap-2 text-sm font-bold text-accent-ink"><PawPrint weight="fill" className="h-5 w-5" aria-hidden="true" />반려생활을 더 가볍게</p>
-              <h1 className="w-full max-w-6xl text-balance text-[clamp(3rem,6vw,6.5rem)] leading-[0.98]">우리 아이가 좋아할 혜택만 모았어요.</h1>
-              <p className="mt-7 max-w-2xl text-[19px] leading-relaxed text-ink-muted md:text-[21px]">미용부터 건강검진, 산책용품까지. 진행 중인 이벤트에서 필요한 쿠폰을 골라 바로 받아보세요.</p>
-              <div className="mt-9 flex flex-wrap gap-3"><LinkButton to="#event-list">이벤트 둘러보기</LinkButton><LinkButton to="/user/my-coupons" variant="secondary">내 쿠폰 보기</LinkButton></div>
-            </div>
-            <div data-pet-visual className="relative"><PetVisual /><div className="absolute -bottom-5 left-6 rounded-[1.4rem] border border-white bg-white px-5 py-4 shadow-[0_18px_40px_-24px_rgba(23,36,58,0.45)]"><strong className="block text-lg">오늘도 함께라서 좋아요</strong><span className="text-sm text-ink-muted">산책 · 건강 · 미용 혜택</span></div></div>
-          </div>
-        </section>
-
-        <section id="event-list" className="py-20 md:py-24">
+        <section id="event-list" className="py-8 md:py-10">
           <div className="container-page">
-            <div className="mb-10">
-              <p className="mb-3 text-sm font-bold text-accent-ink">지금 받을 수 있는 혜택</p>
-              <h2 className="max-w-4xl text-balance">진행 중인 이벤트를 골라보세요.</h2>
-              <p className="mt-3 text-[17px] text-ink-muted">
-                {state.phase === "ready" ? <span aria-live="polite">{events.length}개의 진행 중인 이벤트</span> : "이벤트를 불러오는 중이에요."}
+            <div className="mb-6">
+              <p className="mb-1.5 text-[13px] font-medium text-accent-ink">지금 받을 수 있는 혜택</p>
+              <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.02em] md:text-[32px]">
+                진행 중인 이벤트를 골라보세요.
+              </h1>
+              <p className="mt-1.5 text-[15px] text-ink-muted">
+                {state.phase === "ready" ? (
+                  <span aria-live="polite">{events.length}개의 진행 중인 이벤트</span>
+                ) : (
+                  "이벤트를 불러오는 중이에요."
+                )}
               </p>
             </div>
 
             {state.phase === "loading" ? (
-              <div className="grid gap-3 md:grid-cols-2">
-                {[0, 1].map((i) => (
-                  <div key={i} className="h-[250px] animate-pulse rounded-[2rem] border border-white/70 bg-white/60 md:h-[290px]" />
+              <div className={gridClass}>
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="h-[190px] animate-pulse rounded-[1.25rem] border border-accent/40 bg-paper/60" />
                 ))}
               </div>
             ) : state.phase === "error" ? (
-              <div className="rounded-[2rem] border border-dashed border-hairline bg-white p-12 text-center">
-                <h3>{state.message}</h3>
-                <p className="mt-2 text-ink-muted">잠시 후 다시 시도해 주세요.</p>
+              <div className="rounded-[1.25rem] border border-dashed border-hairline bg-white p-8 text-center">
+                <h2 className="text-[19px] font-semibold">{state.message}</h2>
+                <p className="mt-1.5 text-[15px] text-ink-muted">잠시 후 다시 시도해 주세요.</p>
               </div>
             ) : events.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-hairline bg-white p-12 text-center">
-                <h3>지금 진행 중인 이벤트가 없어요.</h3>
-                <p className="mt-2 text-ink-muted">새로운 이벤트가 열리면 이곳에서 확인할 수 있어요.</p>
+              <div className="rounded-[1.25rem] border border-dashed border-hairline bg-white p-8 text-center">
+                <h2 className="text-[19px] font-semibold">지금 진행 중인 이벤트가 없어요.</h2>
+                <p className="mt-1.5 text-[15px] text-ink-muted">새로운 이벤트가 열리면 이곳에서 확인할 수 있어요.</p>
               </div>
             ) : (
-              <div className="grid gap-3 md:grid-cols-2">
-                {events.map((event, index) => (
-                  <article key={event.eventId} data-event-card className={`group min-h-[250px] overflow-hidden rounded-[2rem] border border-white/70 p-5 shadow-[0_24px_60px_-42px_rgba(23,36,58,0.38)] md:h-[290px] ${toneClass[index % 4]}`}>
-                    <div className="flex h-full flex-col">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="inline-flex min-h-8 items-center rounded-full bg-accent px-3 text-xs font-bold">진행 중</span>
-                        <span className="text-sm font-semibold text-ink-muted">{formatDateTime(event.openAt)} ~ {formatDateTime(event.closeAt)}</span>
-                      </div>
-                      <div className="mt-auto pt-7">
-                        <h3 className="max-w-2xl text-[clamp(1.75rem,3vw,3.4rem)] font-bold leading-tight tracking-[-0.035em]">{event.name}</h3>
-                        {event.description ? <p className="mt-3 max-w-xl text-[17px] text-ink-muted">{event.description}</p> : null}
-                        <div className="mt-5 flex items-end justify-end">
-                          <Link to={`/event-detail/${event.eventId}`} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-5 font-semibold text-white transition-transform duration-300 hover:-translate-y-1">
-                            이벤트 보기
-                            <ArrowRight weight="bold" aria-hidden="true" />
-                          </Link>
-                        </div>
-                      </div>
+              <div className={gridClass}>
+                {events.map((event) => (
+                  // 카드 전체가 링크다 — 하단 "이벤트 보기" 버튼 줄이 빠지면서
+                  // 카드 높이가 290px에서 190px로 내려간다.
+                  <Link
+                    key={event.eventId}
+                    to={`/event-detail/${event.eventId}`}
+                    data-event-card
+                    className="group flex min-h-[190px] flex-col rounded-[1.25rem] border border-accent bg-paper p-4 shadow-[0_12px_30px_-24px_rgba(23,36,58,0.35)] transition-all duration-200 ease-fluid hover:-translate-y-0.5 hover:border-accent-ink"
+                  >
+                    <span className="inline-flex min-h-6 w-fit items-center rounded-full bg-accent/25 px-2.5 text-[12px] font-medium text-accent-ink">
+                      진행 중
+                    </span>
+                    <h2 className="mt-3 text-[19px] font-semibold leading-snug tracking-[-0.015em]">{event.name}</h2>
+                    {event.description ? (
+                      <p className="mt-1.5 line-clamp-2 text-[14px] leading-relaxed text-ink-muted">{event.description}</p>
+                    ) : null}
+                    <div className="mt-auto pt-3">
+                      <p className="text-[12px] text-ink-muted">
+                        {formatDateTime(event.openAt)} ~ {formatDateTime(event.closeAt)}
+                      </p>
+                      <span className="mt-1.5 inline-flex items-center gap-1 text-[14px] font-medium">
+                        이벤트 보기
+                        <ArrowRight weight="bold" className="h-[0.85em] w-[0.85em] transition-transform duration-200 ease-fluid group-hover:translate-x-0.5" aria-hidden="true" />
+                      </span>
                     </div>
-                  </article>
+                  </Link>
                 ))}
               </div>
             )}
           </div>
         </section>
-
-        <section className="pb-24 md:pb-36"><div className="container-page"><div className="rounded-[2.5rem] bg-ink px-6 py-16 text-white md:px-14 md:py-20"><div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end"><div><p className="text-sm font-bold text-accent">쿠폰 사용은 간단하게</p><h2 className="mt-3 max-w-xl text-balance">받고, 모아두고, 필요할 때 바로 쓰세요.</h2></div><ol className="grid gap-3 sm:grid-cols-3">{["이벤트에서 고르기", "내 쿠폰함에 보관", "필요할 때 사용"].map((label, index) => <li key={label} className="rounded-[1.5rem] bg-white/10 p-5"><span className="text-sm text-accent">0{index + 1}</span><strong className="mt-8 block text-lg">{label}</strong></li>)}</ol></div><LinkButton to="/user/my-coupons" className="mt-10 bg-white text-ink hover:bg-accent">내 쿠폰 확인하기</LinkButton></div></div></section>
       </div>
     </Layout>
   );
