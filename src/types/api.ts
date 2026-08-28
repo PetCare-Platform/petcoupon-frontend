@@ -265,6 +265,15 @@ export interface SystemHealthResponse {
   overallStatus: string;
   components: ComponentHealthResponse[];
 }
+export interface MonitoringSettingsResponse { streamEnabled: boolean; }
+export interface MonitoringEventResponse {
+  id: string;
+  level: "WARN" | "ERROR" | string;
+  source: string;
+  message: string;
+  exception: string | null;
+  occurredAt: string;
+}
 export interface AdminSessionCreateResponse { token: string; expiresAt: string; }
 
 export interface CouponIssueUseRequest {
