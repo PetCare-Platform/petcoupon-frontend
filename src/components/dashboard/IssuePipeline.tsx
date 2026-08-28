@@ -31,6 +31,10 @@ export function IssuePipeline({
   // Kafka 발행은 백엔드가 세어준 published를 그대로 쓴다(#200). sent+consumed로 직접
   // 계산하면 발행된 뒤 소비에서 실패해 DLQ로 간 건이 빠져서, 발행에 실패한 것처럼
   // 손실 위치를 거꾸로 가리킨다.
+  // 처리 중인 요청이 남아 있으면 단계 간 차이는 아직 유실이 아니다 — 컨슈머가 coupon_issue
+  // 저장과 CONSUMED 확정을 다른 트랜잭션으로 처리해서 부하 중에는 정상적으로 벌어져 있다.
+  const inFlight = status.pending + status.sent + status.inProgressIdempotencyKeys > 0;
+
   const rows: { label: string; value: number; note?: string; color: string; danger?: boolean }[] = [
     { label: "접수", value: status.accepted, color: "#B5D4F4" },
     {
@@ -48,7 +52,7 @@ export function IssuePipeline({
       label: "DB 확정",
       value: status.consumed,
       color: "#185FA5",
-      danger: status.consumed !== status.passed,
+      danger: !inFlight && status.consumed !== status.passed,
     },
   ];
 
@@ -95,8 +99,9 @@ export function IssuePipeline({
             {fmt(status.inProgressIdempotencyKeys)}
           </span>
         </span>
-        <span className={`ml-auto ${lost !== 0 ? "text-danger" : "text-ink/50"}`}>
-          단계 간 손실 {fmt(lost)}
+        <span className={`ml-auto ${!inFlight && lost !== 0 ? "text-danger" : "text-ink/50"}`}>
+          {inFlight ? "처리 중 " : "단계 간 손실 "}
+          {fmt(lost)}
         </span>
       </div>
     </article>
