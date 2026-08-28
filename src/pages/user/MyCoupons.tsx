@@ -4,7 +4,7 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { Eyebrow, FilterBar, LinkButton, MetricTile } from "../../components/ui";
 import { listUserCouponIssues } from "../../api/couponIssues";
-import { getCurrentUserId } from "../../api/currentUser";
+import { getCurrentUserId, subscribeCurrentUserId } from "../../api/currentUser";
 import { ApiError, NetworkError } from "../../api/http";
 import { formatDateTime, isWithinHours } from "../../lib/date";
 import type { CouponIssueRequestResponse, IssueStatus } from "../../types/api";
@@ -29,17 +29,28 @@ export default function MyCoupons() {
   const [filter, setFilter] = useState<"all" | Status>("all");
   const [coupons, setCoupons] = useState<CouponIssueRequestResponse[] | null>(null);
   const [loadError, setLoadError] = useState("");
+  const [userId, setUserId] = useState<number | null>(() => getCurrentUserId());
+
+  useEffect(() => subscribeCurrentUserId(() => setUserId(getCurrentUserId())), []);
 
   useEffect(() => {
+    // userId 없음 → 조회 요청을 보내지 않고 미설정 상태만 표시한다.
+    if (userId === null) {
+      setCoupons(null);
+      setLoadError("");
+      return;
+    }
     const controller = new AbortController();
-    listUserCouponIssues(getCurrentUserId(), controller.signal)
+    setCoupons(null);
+    setLoadError("");
+    listUserCouponIssues(userId, controller.signal)
       .then((result) => setCoupons(result))
       .catch((err) => {
         if (err instanceof DOMException && err.name === "AbortError") return;
         setLoadError(err instanceof ApiError || err instanceof NetworkError ? err.message : "보유 쿠폰을 불러오지 못했습니다.");
       });
     return () => controller.abort();
-  }, []);
+  }, [userId]);
 
   const visible = useMemo(
     () => (coupons ?? []).filter((c) => filter === "all" || statusFromIssueStatus[c.status] === filter),
@@ -103,7 +114,15 @@ export default function MyCoupons() {
             />
           </div>
 
-          {loadError ? (
+          {userId === null ? (
+            <div className="mt-8 rounded-block border border-dashed border-hairline p-10 text-center">
+              <h3 className="text-xl font-semibold">사용자 ID가 설정되어 있지 않아요.</h3>
+              <p className="mt-2 text-ink/70">보유 쿠폰은 저장된 사용자 ID로 자동 조회됩니다. 먼저 사용자 ID를 설정해 주세요.</p>
+              <LinkButton to="/user" variant="secondary" className="mt-4">
+                사용자 ID 설정하기
+              </LinkButton>
+            </div>
+          ) : loadError ? (
             <div className="mt-8 rounded-block border border-dashed border-hairline p-10 text-center">
               <h3 className="text-xl font-semibold">{loadError}</h3>
               <p className="mt-2 text-ink/70">잠시 후 다시 시도해 주세요.</p>
