@@ -1,3 +1,13 @@
+/**
+ * 색상·라디우스 토큰은 CSS 변수를 거친다. 기본값(:root)은 공개·사용자 영역의
+ * 기존 값 그대로고, 관리자/내부 운영은 src/index.css 의 `.theme-geist` 에서
+ * 같은 변수를 덮어써서 다른 테마로 보인다. 공용 프리미티브(ui.tsx)를
+ * 영역별로 분기하지 않고 한 벌로 유지하기 위한 구조다.
+ *
+ * <alpha-value> 자리표시자 덕분에 bg-accent/10 같은 투명도 수식자도 그대로 동작한다.
+ */
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
@@ -9,23 +19,23 @@ export default {
         // (no yellow cast) with a forest-green primary accent and a
         // terracotta secondary — pet-native warmth carried by the accents,
         // not by a dingy cream base.
-        canvas: "#f7fbff",
-        paper: "#ffffff",
-        "surface-2": "#edf8f5",
-        ink: "#17243a",
-        "ink-muted": "#56647a",
-        "ink-subtle": "#748096",
-        hairline: "#d8e4eb",
-        "hairline-soft": "#eaf1f5",
-        "surface-soft": "#edf8f5",
-        accent: "#75d6bb",
-        "accent-ink": "#176f61",
-        clay: "#ff9f8d",
-        "clay-ink": "#a83e31",
+        canvas: token("c-canvas"),
+        paper: token("c-paper"),
+        "surface-2": token("c-surface-2"),
+        ink: token("c-ink"),
+        "ink-muted": token("c-ink-muted"),
+        "ink-subtle": token("c-ink-subtle"),
+        hairline: token("c-hairline"),
+        "hairline-soft": token("c-hairline-soft"),
+        "surface-soft": token("c-surface-soft"),
+        accent: token("c-accent"),
+        "accent-ink": token("c-accent-ink"),
+        clay: token("c-clay"),
+        "clay-ink": token("c-clay-ink"),
         sky: "#bfe5ff",
         lemon: "#fff3af",
-        success: "#37b98c",
-        danger: "#dc5f54",
+        success: token("c-success"),
+        danger: token("c-danger"),
         // Internal dashboard dark theme
         "ops-bg": "#071722",
         "ops-ink": "#f5fbff",
@@ -46,11 +56,14 @@ export default {
         mono: ["SFMono-Regular", "SF Mono", "Menlo", "monospace"],
         "ops-sans": ["Fira Sans", "Pretendard Variable", "sans-serif"],
         "ops-mono": ["Fira Code", "SFMono-Regular", "monospace"],
+        // Geist 계열 — 관리자/내부 운영 영역 전용. 한글은 Geist에 없어서 Pretendard로 떨어진다.
+        geist: ["Geist", "Pretendard Variable", "Pretendard", "Arial", "sans-serif"],
+        "geist-mono": ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       borderRadius: {
-        control: "14px",
-        block: "22px",
-        panel: "30px",
+        control: "var(--r-control)",
+        block: "var(--r-block)",
+        panel: "var(--r-panel)",
       },
       transitionTimingFunction: {
         fluid: "cubic-bezier(0.16, 1, 0.3, 1)",

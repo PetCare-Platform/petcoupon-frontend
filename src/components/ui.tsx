@@ -27,7 +27,7 @@ export function Button({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
   return (
-    <button className={`${base} ${variantClass[variant]} ${className}`} {...rest}>
+    <button data-ui="btn" data-variant={variant} className={`${base} ${variantClass[variant]} ${className}`} {...rest}>
       {children}
     </button>
   );
@@ -41,7 +41,7 @@ export function LinkButton({
   ...rest
 }: AnchorHTMLAttributes<HTMLAnchorElement> & { variant?: Variant; to: string }) {
   return (
-    <Link to={to} className={`${base} ${variantClass[variant]} ${className}`} {...rest}>
+    <Link data-ui="btn" data-variant={variant} to={to} className={`${base} ${variantClass[variant]} ${className}`} {...rest}>
       {children}
     </Link>
   );
@@ -83,6 +83,8 @@ const toneClass: Record<StatusTone, string> = {
 export function StatusPill({ tone = "neutral", children }: { tone?: StatusTone; children: ReactNode }) {
   return (
     <span
+      data-ui="pill"
+      data-tone={tone}
       className={`inline-flex min-h-8 items-center whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold uppercase tracking-wide ${toneClass[tone]}`}
     >
       {children}
@@ -94,17 +96,17 @@ export function Card({ href, children, className = "" }: { href?: string; childr
   const cls = `min-w-0 rounded-panel border border-hairline bg-paper p-3.5 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 ease-fluid dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`;
   if (href) {
     return (
-      <Link to={href} className={`${cls} block no-underline hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_20px_40px_-20px_rgba(51,80,63,0.35)] active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30 dark:hover:shadow-none`}>
+      <Link data-ui="card" to={href} className={`${cls} block no-underline hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_20px_40px_-20px_rgba(51,80,63,0.35)] active:translate-y-0 active:scale-[0.99] dark:hover:border-white/30 dark:hover:shadow-none`}>
         {children}
       </Link>
     );
   }
-  return <div className={cls}>{children}</div>;
+  return <div data-ui="card" className={cls}>{children}</div>;
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="flex w-fit items-center gap-1 rounded-full border border-accent/20 bg-accent/[0.07] px-3 py-1 text-xs font-semibold tracking-wide text-accent-ink dark:border-ops-border-soft dark:bg-transparent dark:text-ops-muted">
+    <p data-ui="eyebrow" className="flex w-fit items-center gap-1 rounded-full border border-accent/20 bg-accent/[0.07] px-3 py-1 text-xs font-semibold tracking-wide text-accent-ink dark:border-ops-border-soft dark:bg-transparent dark:text-ops-muted">
       {children}
     </p>
   );
@@ -186,6 +188,7 @@ export function MetricTile({
 }) {
   return (
     <div
+      data-ui="metric"
       className={`min-w-0 bg-paper shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:bg-ops-surface dark:text-ops-ink dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${
         compact ? "px-4 py-3.5" : "rounded-2xl border border-hairline p-4 dark:border-white/[0.14]"
       }`}
@@ -293,7 +296,8 @@ export function BarChart({
   return (
     <div role="img" aria-label={`${points.map((p) => `${p.label} ${p.value}${unit}`).join(", ")}, 평균 ${Math.round(avg)}${unit}`}>
       <div className="mb-2 flex justify-end">
-        <span className="inline-flex items-center gap-1 rounded-full border border-hairline bg-surface-soft px-2 py-0.5 font-mono text-[11px] font-semibold text-ink/70 dark:border-ops-border dark:bg-ops-surface dark:text-ops-muted">
+        {/* "평균"이 한글이라 배지 전체를 모노로 두면 숫자만 글꼴이 갈린다. 숫자는 tabular-nums로 폭만 맞춘다. */}
+        <span className="inline-flex items-center gap-1 rounded-full border border-hairline bg-surface-soft px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink/70 dark:border-ops-border dark:bg-ops-surface dark:text-ops-muted">
           평균 {Math.round(avg)}
           {unit}
         </span>

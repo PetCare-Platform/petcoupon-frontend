@@ -74,7 +74,7 @@ export default function Issues() {
                     <p className="mt-1 text-ink-muted">2026.08.21 09:14:22 · 사용자 #1 · 쿠폰 #10</p>
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex min-h-8 items-center rounded-full border border-success/30 bg-success/10 px-2.5 text-xs font-semibold uppercase tracking-wide text-[#0a8f3c]">처리 완료</span>
+                    <span className="inline-flex min-h-8 items-center rounded-full border border-success/30 bg-success/10 px-2.5 text-xs font-semibold uppercase tracking-wide text-accent-ink">처리 완료</span>
                     <strong className="mt-1 block font-mono text-xl">184ms</strong>
                   </div>
                 </div>
