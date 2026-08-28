@@ -293,6 +293,84 @@ export interface IssueStatisticsResponse {
   distribution: IssueStatusDistributionResponse[];
 }
 
+/**
+ * GET /admin/coupons/{couponId}/pipeline-drain-status — 백엔드 #193.
+ *
+ * 정합성 검증·초기화의 사전 조건(쿠폰 ENDED + 파이프라인 소진)을 화면이 판단할 수 있게 한다.
+ * 응답에 판정 결과(blocked)는 없어서 프론트가 isPipelineBlocked()로 계산한다.
+ */
+export interface CouponPipelineDrainStatusResponse {
+  couponStatus: CouponStatus;
+  /** 해당 쿠폰 기준 — Outbox 미소비(PENDING·SENT·FAILED) */
+  outboxUnconsumed: number;
+  /** 전역(공유 Stream) 기준 — 건수가 아니라 0 또는 1 플래그 */
+  streamUndelivered: number;
+  /** 전역(공유 Stream) 기준 — ACK 안 된 pending 실제 건수 */
+  streamActivePending: number;
+  /** true는 "잔여 0건"이 아니라 "확인 불가"다. 안전하게 차단으로 본다. */
+  checkFailed: boolean;
+}
+
+/**
+ * GET /admin/coupons/{couponId}/load-test-status — 백엔드 #195.
+ *
+ * 대시보드 1줄 카드와 2줄 깔때기가 이 응답 하나로 그려진다.
+ * load-test/sql/verify_issue_result.sql을 서비스로 옮긴 값들이다.
+ */
+export interface CouponLoadTestStatusResponse {
+  /** 접수된 요청 수 — idempotency_key 기준 */
+  accepted: number;
+  /** Redis 재고 차감을 통과한 수 */
+  passed: number;
+  /** 재고 소진 등으로 탈락한 수 */
+  rejected: number;
+
+  // 발급 파이프라인 단계별 잔여·완료
+  pending: number;
+  sent: number;
+  consumed: number;
+  failed: number;
+  dlq: number;
+  /**
+   * Kafka 발행에 성공한 수 (#200). sent+consumed로 계산하면 발행된 뒤 소비에서 실패해
+   * DLQ로 간 건이 빠져서 "발행을 못 했다"처럼 거꾸로 보이므로 백엔드가 직접 세어준다.
+   * = SENT + CONSUMED + (DLQ·ABANDONED 중 사유가 CONSUME_PROCESSING_FAILED인 것)
+   */
+  published: number;
+  inProgressIdempotencyKeys: number;
+
+  /** 발급 수가 재고를 넘었는가 — 선착순의 합격 조건 */
+  overIssued: boolean;
+  /** 2매 이상 받은 회원 수 */
+  duplicateUsers: number;
+  /** 순번이 1..N으로 온전한가 */
+  sequenceIntact: boolean;
+  /** 첫 발급부터 마지막 발급까지 걸린 시간 */
+  elapsedSeconds: number;
+}
+
+/**
+ * GET /admin/coupons/{couponId}/failure-reasons — 백엔드 #195.
+ *
+ * 원안보다 분류가 좁다. EVENT_NOT_OPEN·EVENT_CLOSED는 멱등키 등록 전에 Fail-Fast로
+ * 끝나 저장되지 않고, failures도 실제 코드에 있는 발생 지점 2개만 분류한다.
+ */
+export interface CouponFailureReasonResponse {
+  /** 정상 탈락 — 선착순이 제대로 동작한 결과다. 실패로 표시하면 안 된다. */
+  rejections: { soldOut: number; alreadyIssued: number };
+  /** 이상 실패 — 0이어야 한다. */
+  failures: { kafkaPublishFailed: number; consumeProcessingFailed: number };
+}
+
+/** GET /admin/coupons/{couponId}/issue-timeseries?windowSeconds=&bucketSeconds= — 백엔드 #198. */
+export interface CouponIssueTimeSeriesResponse {
+  couponId: number;
+  windowSeconds: number;
+  bucketSeconds: number;
+  /** 요청이 0건인 구간도 0으로 채워져 온다(zero-filling). */
+  timeSeries: IssueThroughputBucketResponse[];
+}
+
 export interface DashboardIssueStatusDistributionResponse { status: IssueStatus; count: number; }
 export interface DashboardSummaryResponse {
   totalEvents: number;
