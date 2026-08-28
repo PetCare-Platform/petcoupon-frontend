@@ -165,7 +165,10 @@ function SingleResult({ result, elapsedMs }: { result: ReconciliationTriggerResp
                     <td className="py-1.5 font-mono">{detail.userId ?? "—"}</td>
                     <td className="py-1.5 font-mono">{detail.expectedValue ?? "—"}</td>
                     <td className="py-1.5 font-mono">{detail.actualValue ?? "—"}</td>
-                    <td className="max-w-[16rem] truncate py-1.5">{detail.message ?? "—"}</td>
+                    {/* truncate로 잘리므로 전체 내용은 툴팁으로 본다. */}
+                    <td className="max-w-[16rem] truncate py-1.5" title={detail.message ?? undefined}>
+                      {detail.message ?? "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>
