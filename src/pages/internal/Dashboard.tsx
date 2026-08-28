@@ -5,7 +5,7 @@ import { Eyebrow, StatusPill } from "../../components/ui";
 import { ExpectationBar } from "../../components/dashboard/ExpectationBar";
 import { SummaryCards } from "../../components/dashboard/SummaryCards";
 import { IssuePipeline } from "../../components/dashboard/IssuePipeline";
-import { ReconciliationLauncher } from "../../components/dashboard/ReconciliationLauncher";
+import { ReconciliationLauncher, isPipelineBlocked } from "../../components/dashboard/ReconciliationLauncher";
 import { LoadTestChart } from "../../components/dashboard/LoadTestChart";
 import { FailureReasons } from "../../components/dashboard/FailureReasons";
 import { reconciliationErrorMessage, triggerReconciliation } from "../../api/adminOperations";
@@ -28,6 +28,10 @@ import type {
   SystemHealthResponse,
 } from "../../types/api";
 
+// 부하 테스트 중 값이 움직이는 걸 볼 수 있는 최소 간격. 더 짧게 잡으면 50만 건 집계 쿼리가
+// 응답보다 빨리 쌓이고, 더 길면 짧은 부하 구간을 통째로 놓친다.
+const POLL_INTERVAL_MS = 5000;
+
 const message = (error: unknown) =>
   error instanceof ApiError || error instanceof NetworkError ? error.message : "대시보드 데이터를 불러오지 못했습니다.";
 
@@ -39,6 +43,7 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [checkedAt, setCheckedAt] = useState<Date | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   // 화면 전체가 선택한 쿠폰 하나 기준이다.
   const [status, setStatus] = useState<CouponLoadTestStatusResponse | null>(null);
@@ -80,6 +85,25 @@ export default function Dashboard() {
     setReconError("");
   }, [couponId]);
 
+  // silent는 폴링용이다. 5초마다 스피너를 돌리고 값을 비우면 화면이 계속 깜빡여서,
+  // 자동 갱신에서는 응답이 온 값만 조용히 갈아끼운다.
+  const loadCoupon = useCallback(async (id: number, signal: AbortSignal, silent = false) => {
+    if (!silent) setCouponLoading(true);
+    const [s, f, d, t] = await Promise.allSettled([
+      getLoadTestStatus(id, signal),
+      getFailureReasons(id, signal),
+      getPipelineDrainStatus(id, signal),
+      getIssueTimeSeries(id, 90, 5, signal),
+    ]);
+    if (signal.aborted) return;
+    if (!silent || s.status === "fulfilled") setStatus(s.status === "fulfilled" ? s.value : null);
+    if (!silent || f.status === "fulfilled") setReasons(f.status === "fulfilled" ? f.value : null);
+    if (!silent || d.status === "fulfilled") setDrain(d.status === "fulfilled" ? d.value : null);
+    if (!silent || t.status === "fulfilled") setSeries(t.status === "fulfilled" ? t.value : null);
+    setCheckedAt(new Date());
+    if (!silent) setCouponLoading(false);
+  }, []);
+
   useEffect(() => {
     if (couponId === null) {
       setStatus(null);
@@ -89,27 +113,38 @@ export default function Dashboard() {
       return;
     }
     const controller = new AbortController();
-    setCouponLoading(true);
-    Promise.allSettled([
-      getLoadTestStatus(couponId, controller.signal),
-      getFailureReasons(couponId, controller.signal),
-      getPipelineDrainStatus(couponId, controller.signal),
-      getIssueTimeSeries(couponId, 90, 5, controller.signal),
-    ]).then(([s, f, d, t]) => {
-      if (controller.signal.aborted) return;
-      setStatus(s.status === "fulfilled" ? s.value : null);
-      setReasons(f.status === "fulfilled" ? f.value : null);
-      setDrain(d.status === "fulfilled" ? d.value : null);
-      setSeries(t.status === "fulfilled" ? t.value : null);
-      setCouponLoading(false);
-    });
+    void loadCoupon(couponId, controller.signal);
     return () => controller.abort();
-  }, [couponId, refreshKey]);
+  }, [couponId, refreshKey, loadCoupon]);
 
   const selectedCoupon = useMemo(
     () => coupons.find((c) => c.couponId === couponId),
     [coupons, couponId],
   );
+
+  /**
+   * 자동 갱신을 켤 조건. 항상 5초마다 때리면 끝난 쿠폰을 띄워두기만 해도 계속 조회가 나가서,
+   * 실제로 값이 움직일 때만 돈다 — 이벤트가 열려 있거나(발급이 들어올 수 있다),
+   * 파이프라인에 처리 중인 게 남아 있을 때. 부하 테스트가 끝나고 다 소진되면 스스로 멈춘다.
+   */
+  const live =
+    drain != null &&
+    (drain.couponStatus !== "ENDED" ||
+      isPipelineBlocked(drain) ||
+      (status != null && status.pending + status.sent + status.inProgressIdempotencyKeys > 0));
+  const polling = autoRefresh && live && couponId !== null;
+
+  useEffect(() => {
+    if (!polling || couponId === null) return;
+    const controller = new AbortController();
+    const timer = window.setInterval(() => {
+      void loadCoupon(couponId, controller.signal, true);
+    }, POLL_INTERVAL_MS);
+    return () => {
+      window.clearInterval(timer);
+      controller.abort();
+    };
+  }, [polling, couponId, loadCoupon]);
 
   // 이상 실패가 하나라도 있을 때만 4줄을 그린다. 정상 시연에서는 3줄로 끝난다.
   const hasAbnormalFailure =
@@ -158,6 +193,19 @@ export default function Dashboard() {
                 </option>
               ))}
             </select>
+            <button
+              type="button"
+              onClick={() => setAutoRefresh((on) => !on)}
+              aria-pressed={autoRefresh}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline px-3 text-[13px] text-ink/70 hover:border-ink"
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  polling ? "animate-pulse bg-[#087c13]" : "bg-ink/25"
+                }`}
+              />
+              {autoRefresh ? (polling ? "자동 갱신 중 · 5초" : "자동 갱신 대기") : "자동 갱신 꺼짐"}
+            </button>
             {checkedAt ? (
               <span className="text-xs text-ink/50">
                 마지막 확인 {checkedAt.toLocaleTimeString("ko-KR", { hour12: false })}
