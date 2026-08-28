@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "../../components/Layout";
+import { AREA_ROUTES } from "../../routes";
 import { Eyebrow, FieldGroup, inputClass } from "../../components/ui";
 import { createAdminSession, deleteAdminSession } from "../../api/adminAuth";
 import { getAdminSessionToken } from "../../api/adminSession";
 import { ApiError, NetworkError } from "../../api/http";
 
 export default function AdminAuth() {
+  const navigate = useNavigate();
   const [authCode, setAuthCode] = useState("");
   const [active, setActive] = useState(Boolean(getAdminSessionToken()));
   const [expiresAt, setExpiresAt] = useState("");
@@ -19,6 +22,8 @@ export default function AdminAuth() {
     try {
       const response = await createAdminSession(authCode.trim());
       setActive(true); setExpiresAt(response.expiresAt); setAuthCode("");
+      // 인증 직후 곧장 대시보드로 보낸다. 뒤로 가기로 인증 화면에 되돌아올 이유가 없어 replace를 쓴다.
+      navigate(AREA_ROUTES.internal.home, { replace: true });
     } catch (err) {
       setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "관리자 세션을 발급하지 못했습니다.");
     } finally { setSubmitting(false); }

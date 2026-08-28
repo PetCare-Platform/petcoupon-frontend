@@ -131,7 +131,7 @@ export default function Dashboard() {
 
   return (
     <Layout area="internal">
-      <section className="py-6">
+      <section className="section-tight-b py-6">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>
             <Eyebrow>내부 운영 · 실제 운영 API</Eyebrow>
@@ -176,7 +176,7 @@ export default function Dashboard() {
       </section>
 
       {error ? (
-        <section className="pb-3">
+        <section className="section-tight-b pb-3">
           <div className="container-page">
             <div className="rounded-control border border-danger/40 bg-danger/10 p-4 text-danger">
               {error} 관리자 인증 세션과 백엔드 실행 상태를 확인해 주세요.
@@ -185,7 +185,7 @@ export default function Dashboard() {
         </section>
       ) : null}
 
-      <section className="py-2">
+      <section className="section-tight py-2">
         <ExpectationBar coupon={selectedCoupon} status={status} />
       </section>
 

@@ -45,7 +45,7 @@ export function ExpectationBar({
 
   return (
     <div className="container-page">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-block bg-surface-2 px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-block bg-surface-2 px-4 py-1">
         <span className="flex-none text-[12px] text-ink/55">기대</span>
         <span className="text-[13px]">
           재고 <strong className="font-semibold tabular-nums">{fmt(stock)}</strong>장

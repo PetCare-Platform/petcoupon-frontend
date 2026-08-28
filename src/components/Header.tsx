@@ -4,6 +4,7 @@ import { PawPrint, UserCircle } from "@phosphor-icons/react";
 import { getCurrentUserId, subscribeCurrentUserId } from "../api/currentUser";
 import { getAdminSessionToken } from "../api/adminSession";
 import { deleteAdminSession } from "../api/adminAuth";
+import { AREA_ROUTES } from "../routes";
 
 /**
  * 공개 사용자에게 노출하는 주요 메뉴.
@@ -30,7 +31,7 @@ function AdminEntry({
   if (adminActive) {
     return (
       <span className={`inline-flex items-center gap-2 text-[14px] font-medium ${className}`}>
-        <Link to="/admin" className="rounded-full border border-hairline px-3 py-1.5 hover:border-ink">
+        <Link to={AREA_ROUTES.internal.home} className="rounded-full border border-hairline px-3 py-1.5 hover:border-ink">
           관리자 콘솔
         </Link>
         <button type="button" onClick={onSignOut} disabled={busy} className="rounded-full px-2 py-1.5 text-ink/60 underline underline-offset-4 hover:text-ink disabled:opacity-50">
