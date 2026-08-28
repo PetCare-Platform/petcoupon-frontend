@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-http://localhost:5174 에서 열립니다.
+http://localhost:5173 에서 열립니다.
 
 백엔드 API 서버([petcoupon-backend](https://github.com/PetCare-Platform/petcoupon-backend))가 `http://localhost:8080`에서 떠 있어야 합니다. dev 서버는 `/api/*` 요청을 `vite.config.ts`의 프록시를 통해 백엔드로 그대로 넘겨줍니다(브라우저 입장에서는 같은 출처라 CORS 제약이 없습니다).
 
