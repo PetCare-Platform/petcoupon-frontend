@@ -61,7 +61,7 @@ export function TextLink({ to, children }: { to: string; children: ReactNode }) 
 
 export function BackLink({ to, children }: { to: string; children: ReactNode }) {
   return (
-    <Link to={to} className="mb-7 inline-flex min-h-11 items-center gap-1.5 underline underline-offset-4">
+    <Link to={to} className="mb-4 inline-flex min-h-11 items-center gap-1.5 underline underline-offset-4">
       <ArrowLeft weight="bold" className="h-[0.85em] w-[0.85em] flex-none" aria-hidden="true" />
       {children}
     </Link>

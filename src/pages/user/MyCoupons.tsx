@@ -95,6 +95,7 @@ export default function MyCoupons() {
           {expiringSoon ? (
             <Link
               to={`/user/coupon-detail/${expiringSoon.couponIssueId}`}
+              state={{ couponName: expiringSoon.couponName }}
               className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-control border border-clay/40 bg-clay/10 px-3.5 py-2.5 text-[14px] transition-colors duration-200 ease-fluid hover:border-clay"
             >
               <strong className="font-semibold text-clay-ink">곧 만료</strong>
@@ -148,7 +149,7 @@ export default function MyCoupons() {
                       <span className="absolute -left-2 top-0 h-4 w-4 -translate-y-1/2 rounded-full bg-canvas" aria-hidden="true" />
                       <span className="absolute -right-2 top-0 h-4 w-4 -translate-y-1/2 rounded-full bg-canvas" aria-hidden="true" />
                       <span className={soon ? "font-semibold text-clay-ink" : "text-ink/60"}>{deadlineText(coupon, status)}</span>
-                      <Link to={`/user/coupon-detail/${coupon.couponIssueId}`} className="group inline-flex items-center gap-1 font-medium underline underline-offset-4">
+                      <Link to={`/user/coupon-detail/${coupon.couponIssueId}`} state={{ couponName: coupon.couponName }} className="group inline-flex items-center gap-1 font-medium underline underline-offset-4">
                         상세 보기
                         <ArrowRight weight="bold" className="h-3 w-3 flex-none transition-transform duration-200 ease-fluid group-hover:translate-x-0.5" aria-hidden="true" />
                       </Link>
