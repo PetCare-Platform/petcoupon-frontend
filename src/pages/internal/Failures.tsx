@@ -1,154 +1,37 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Layout } from "../../components/Layout";
-import { Eyebrow, FilterBar, MetricGrid, MetricTile, StatusPill } from "../../components/ui";
-import { useToast } from "../../context/ToastContext";
-
-type Status = "failed" | "retry" | "dlq";
-
-const MESSAGES: { id: string; ref: string; status: Status; error: string; retries: string; time: string; action: string }[] = [
-  { id: "#88419", ref: "coupon-12-seq-031", status: "failed", error: "DB_WRITE_TIMEOUT", retries: "2회", time: "11:38:14", action: "재시도" },
-  { id: "#88417", ref: "coupon-10-seq-219", status: "retry", error: "PUSH_RATE_LIMIT", retries: "1회", time: "11:35:02", action: "즉시 재시도" },
-  { id: "#88398", ref: "coupon-11-seq-901", status: "dlq", error: "INVALID_PAYLOAD", retries: "5회", time: "10:52:47", action: "검토" },
-];
-
-const statusTone: Record<Status, "danger" | "warning" | "neutral"> = { failed: "danger", retry: "warning", dlq: "neutral" };
-const statusLabel: Record<Status, string> = { failed: "FAILED", retry: "RETRY", dlq: "DLQ" };
-const countByStatus = (status: Status) => MESSAGES.filter((m) => m.status === status).length;
-const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
+import { Eyebrow, StatusPill } from "../../components/ui";
+import { listDlqMessages, reprocessDlqMessage } from "../../api/adminOperations";
+import { ApiError, NetworkError } from "../../api/http";
+import type { CouponIssueDlqResponse } from "../../types/api";
 
 export default function Failures() {
-  const { showToast } = useToast();
-  const [filter, setFilter] = useState<"all" | Status>("all");
-  const visible = useMemo(() => (filter === "all" ? MESSAGES : MESSAGES.filter((m) => m.status === filter)), [filter]);
-
-  return (
-    <Layout area="internal" page="failures">
-      <section className="py-8">
-        <div className="container-page flex flex-wrap items-end justify-between gap-4">
-          <div>
-          <Eyebrow>내부 운영 · 실패 처리 · 예시 데이터</Eyebrow>
-            <h1 className="mt-2">FAILED · Retry · DLQ</h1>
-            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">실패 원인을 분류하고 안전하게 재시도하거나 격리 큐로 이동하세요.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-4 animate-reveal-up" style={reveal(1)}>
-        <div className="container-page">
-          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wide">확인 필요 큐</span>
-                <h2 className="mt-1">확인이 필요한 메시지 3건</h2>
-              </div>
-              <StatusPill tone="warning">관찰 중</StatusPill>
-            </div>
-            <div className="mt-6">
-              <MetricGrid cols={3}>
-                <MetricTile label="FAILED" value="1" hint="원인 확인 필요" tone="danger" />
-                <MetricTile label="Retry 대기" value="1" hint="다음 시도 11:45" tone="warning" />
-                <MetricTile label="DLQ" value="1" hint="수동 검토 필요" tone="neutral" />
-              </MetricGrid>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10 animate-reveal-up" style={reveal(2)}>
-        <div className="container-page">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <Eyebrow>실패 기록</Eyebrow>
-              <h2 className="mt-2">실패 메시지</h2>
-              <p className="mt-1 text-[17px] text-ink/70 dark:text-ops-muted">{visible.length}개의 항목</p>
-            </div>
-            <FilterBar
-              value={filter}
-              onChange={setFilter}
-              options={[
-                { value: "all", label: `전체 ${MESSAGES.length}` },
-                { value: "failed", label: `FAILED ${countByStatus("failed")}` },
-                { value: "retry", label: `Retry ${countByStatus("retry")}` },
-                { value: "dlq", label: `DLQ ${countByStatus("dlq")}` },
-              ]}
-            />
-          </div>
-
-          <div className="mt-6 overflow-x-auto rounded-block border border-hairline dark:border-ops-border">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="border-b border-hairline text-ink/60 dark:border-ops-border dark:text-ops-muted">
-                <tr>
-                  <th className="p-4 font-medium">메시지</th>
-                  <th className="p-4 font-medium">오류</th>
-                  <th className="p-4 font-medium">재시도</th>
-                  <th className="p-4 font-medium">상태</th>
-                  <th className="p-4 font-medium">최근 처리</th>
-                  <th className="p-4 font-medium">작업</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((m) => (
-                  <tr key={m.id} className="border-b border-hairline-soft last:border-0 dark:border-ops-border-soft">
-                    <td className="p-4">
-                      <strong className="block">{m.id}</strong>
-                      <small className="text-ink/50 dark:text-ops-muted">{m.ref}</small>
-                    </td>
-                    <td className="p-4 font-mono text-sm">{m.error}</td>
-                    <td className="p-4">{m.retries}</td>
-                    <td className="p-4">
-                      <StatusPill tone={statusTone[m.status]}>{statusLabel[m.status]}</StatusPill>
-                    </td>
-                    <td className="p-4">{m.time}</td>
-                    <td className="p-4">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          // 실패 메시지 목록 조회·재시도 API는 제외 범위다. 아무 일도
-                          // 일어나지 않으면서 성공한 것처럼 보이지 않도록 비활성화한다.
-                          // showToast(`메시지 ${m.id} ${m.action}${m.action === "검토" ? "를" : "를"} 요청했습니다.`);
-                        }}
-                        className="font-medium underline underline-offset-4"
-                      >
-                        {m.action}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {visible.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="p-10 text-center text-ink/60 dark:text-ops-muted">
-                      해당 상태의 실패 메시지가 없습니다.
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10 pb-16 animate-reveal-up" style={reveal(3)}>
-        <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.2fr]">
-          <div>
-            <h2>실패 처리 원칙</h2>
-          </div>
-          <ol className="grid gap-4">
-            {[
-              ["원인 확인", "오류 코드와 페이로드, 이전 시도 결과를 함께 봅니다."],
-              ["안전한 재시도", "중복 발급 가능성을 확인한 뒤 재시도를 실행합니다."],
-              ["DLQ 격리", "반복 실패는 격리하고 담당자 검토 기록을 남깁니다."],
-            ].map(([title, desc], i) => (
-              <li key={title} className="flex gap-4">
-                <span className="font-mono text-sm text-ink/50 dark:text-ops-muted">0{i + 1}</span>
-                <div>
-                  <strong className="block">{title}</strong>
-                  <span className="text-ink/70 dark:text-ops-muted">{desc}</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-    </Layout>
-  );
+  const [messages, setMessages] = useState<CouponIssueDlqResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [processingId, setProcessingId] = useState<number | null>(null);
+  const load = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true); setError("");
+    try { setMessages(await listDlqMessages(signal)); }
+    catch (err) { if (!(err instanceof DOMException && err.name === "AbortError")) setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "DLQ를 불러오지 못했습니다."); }
+    finally { setLoading(false); }
+  }, []);
+  useEffect(() => { const controller = new AbortController(); void load(controller.signal); return () => controller.abort(); }, [load]);
+  async function handleReprocess(messageId: number) {
+    setProcessingId(messageId); setError("");
+    try { await reprocessDlqMessage(messageId); await load(); }
+    catch (err) { setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "재처리하지 못했습니다."); }
+    finally { setProcessingId(null); }
+  }
+  return <Layout area="internal" page="failures">
+    <section className="py-8"><div className="container-page"><Eyebrow>내부 운영 · 실제 DLQ API</Eyebrow><h1 className="mt-2">실패 처리</h1><p className="mt-2 text-ops-muted">격리된 발급 메시지를 확인하고 안전하게 수동 재처리합니다.</p></div></section>
+    <section className="pb-16 pt-4"><div className="container-page">
+      <div className="mb-5 flex items-center justify-between"><div><h2>DLQ 메시지</h2><p className="text-ops-muted">{loading ? "조회 중…" : `${messages.length}건`}</p></div><button type="button" onClick={()=>void load()} className="rounded-full border border-ops-border px-4 py-2">새로고침</button></div>
+      {error ? <p className="mb-4 rounded-control border border-danger/40 bg-danger/10 p-4 text-danger">{error} 관리자 인증 세션을 확인하세요.</p> : null}
+      <div className="overflow-x-auto rounded-block border border-ops-border"><table className="w-full min-w-[760px] text-left text-sm"><thead className="border-b border-ops-border text-ops-muted"><tr><th className="p-4">메시지</th><th className="p-4">쿠폰/사용자</th><th className="p-4">재시도</th><th className="p-4">마지막 오류</th><th className="p-4">생성 시각</th><th className="p-4">작업</th></tr></thead><tbody>
+        {messages.map((message)=><tr key={message.messageId} className="border-b border-ops-border-soft last:border-0"><td className="p-4"><strong>#{message.messageId}</strong><small className="block text-ops-muted">{message.requestId}</small></td><td className="p-4">쿠폰 {message.couponId}<br/>사용자 {message.userId}</td><td className="p-4"><StatusPill tone="warning">{message.retryCount}회</StatusPill></td><td className="max-w-sm p-4 font-mono text-xs">{message.lastError}</td><td className="p-4 text-ops-muted">{message.createdAt}</td><td className="p-4"><button type="button" disabled={processingId===message.messageId} onClick={()=>void handleReprocess(message.messageId)} className="font-medium underline underline-offset-4 disabled:opacity-50">{processingId===message.messageId ? "재처리 중…" : "재처리"}</button></td></tr>)}
+        {!loading && messages.length===0 ? <tr><td colSpan={6} className="p-10 text-center text-ops-muted">DLQ 메시지가 없습니다.</td></tr> : null}
+      </tbody></table></div>
+    </div></section>
+  </Layout>;
 }

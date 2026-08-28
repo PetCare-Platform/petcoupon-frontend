@@ -14,6 +14,7 @@ import Events from "./pages/admin/Events";
 import EventForm from "./pages/admin/EventForm";
 import Coupons from "./pages/admin/Coupons";
 import CouponForm from "./pages/admin/CouponForm";
+import AdminAuth from "./pages/admin/AdminAuth";
 
 import Dashboard from "./pages/internal/Dashboard";
 import Health from "./pages/internal/Health";
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/user/coupon-detail/:couponIssueId" element={<CouponDetail />} />
 
         <Route path="/admin" element={<AdminHome />} />
+        <Route path="/admin/auth" element={<AdminAuth />} />
         <Route path="/admin/events" element={<Events />} />
         <Route path="/admin/event-form" element={<EventForm />} />
         <Route path="/admin/event-form/:eventId" element={<EventForm />} />

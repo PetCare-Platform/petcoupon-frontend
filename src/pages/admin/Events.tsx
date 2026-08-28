@@ -1,106 +1,130 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Layout } from "../../components/Layout";
 import { Eyebrow, FilterBar, LinkButton } from "../../components/ui";
-import { useToast } from "../../context/ToastContext";
+import { getAllEvents } from "../../api/events";
+import { ApiError, NetworkError } from "../../api/http";
+import { formatDateTime } from "../../lib/date";
+import type { EventListResponse, EventStatus } from "../../types/api";
 
-type Status = "open" | "scheduled" | "closed";
-
-const EVENTS: { id: number; status: Status; title: string; period: string; coupons: number }[] = [
-  { id: 1, status: "open", title: "반려동물 여름 케어 위크", period: "8.20 - 8.30", coupons: 2 },
-  { id: 2, status: "scheduled", title: "건강검진 데이", period: "8.24 - 9.07", coupons: 1 },
-  { id: 3, status: "open", title: "함께 걷는 계절", period: "8.15 - 8.25", coupons: 1 },
-  { id: 4, status: "scheduled", title: "가을 입맛 찾기", period: "9.01 - 9.14", coupons: 2 },
-  { id: 5, status: "closed", title: "웰컴 펫데이", period: "7.01 - 7.31", coupons: 1 },
-];
-
-const statusLabel: Record<Status, string> = { open: "진행 중", scheduled: "예정", closed: "종료" };
-const statusClass: Record<Status, string> = {
-  open: "bg-success/10 text-accent-ink",
-  scheduled: "bg-surface-2 text-ink-muted",
-  closed: "bg-hairline-soft text-ink-muted",
+const statusLabel: Record<EventStatus, string> = { OPEN: "진행 중", SCHEDULED: "예정", CLOSED: "종료" };
+const statusClass: Record<EventStatus, string> = {
+  OPEN: "bg-success/10 text-accent-ink",
+  SCHEDULED: "bg-surface-2 text-ink-muted",
+  CLOSED: "bg-hairline-soft text-ink-muted",
 };
 
+// GET /admin/events는 상태 필터가 없다 — 최대 페이지 크기(100)로 사실상 전체를 한 번에
+// 가져와 클라이언트에서 상태별로 나눈다. 100건을 넘는 경우에만 안내를 보여준다.
+const PAGE_SIZE = 100;
+
 export default function Events() {
-  const [filter, setFilter] = useState<"all" | Status>("all");
-  const { showToast } = useToast();
-  const visible = useMemo(() => (filter === "all" ? EVENTS : EVENTS.filter((e) => e.status === filter)), [filter]);
+  const [filter, setFilter] = useState<"all" | EventStatus>("all");
+  const [events, setEvents] = useState<EventListResponse[] | null>(null);
+  const [totalElements, setTotalElements] = useState(0);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getAllEvents(0, PAGE_SIZE, controller.signal)
+      .then((result) => {
+        setEvents(result.content);
+        setTotalElements(result.totalElements);
+      })
+      .catch((err) => {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setLoadError(err instanceof ApiError || err instanceof NetworkError ? err.message : "이벤트 목록을 불러오지 못했습니다.");
+      });
+    return () => controller.abort();
+  }, []);
+
+  const visible = useMemo(
+    () => (events ?? []).filter((event) => filter === "all" || event.status === filter),
+    [events, filter],
+  );
+  const countOf = (status: EventStatus) => (events ?? []).filter((e) => e.status === status).length;
+  const hasMore = totalElements > (events ?? []).length;
 
   return (
     <Layout area="admin" page="events">
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>관리자 · 이벤트 · 데모 목록</Eyebrow>
+            <Eyebrow>관리자 · 이벤트</Eyebrow>
             <h1 className="mt-2">이벤트 목록</h1>
-            <p className="mt-2 text-[18px] text-ink/70">목록 조회 API가 없어 예시 데이터를 표시합니다. 이벤트 생성과 개별 수정은 실제 API에 연결됩니다.</p>
+            <p className="mt-2 text-[18px] text-ink/70">
+              GET /admin/events로 조회한 실제 이벤트입니다. 생성과 개별 수정도 실제 API에 연결됩니다.
+            </p>
           </div>
           <LinkButton to="/admin/event-form">새 이벤트</LinkButton>
         </div>
       </section>
 
-      <section className="py-6">
-        <div className="container-page">
-          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <span className="text-xs font-semibold uppercase tracking-wide">다음 오픈</span>
-            <h2 className="mt-1">건강검진 데이가 3일 뒤 시작됩니다.</h2>
-            <p className="mt-2">연결 쿠폰의 발급 시간과 총 수량을 마지막으로 점검해 주세요.</p>
-          </div>
-        </div>
-      </section>
-
       <section className="py-10">
         <div className="container-page">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2>등록 이벤트</h2>
-              <p className="mt-1 text-[17px] text-ink/70">{visible.length}개의 이벤트</p>
+          {loadError ? (
+            <div className="rounded-block border border-dashed border-hairline p-10 text-center">
+              <h3 className="text-xl font-semibold">{loadError}</h3>
+              <p className="mt-2 text-ink/70">관리자 세션이 필요할 수 있습니다.</p>
             </div>
-            <FilterBar
-              value={filter}
-              onChange={setFilter}
-              options={[
-                { value: "all", label: `전체 ${EVENTS.length}` },
-                { value: "open", label: `진행 중 ${EVENTS.filter((e) => e.status === "open").length}` },
-                { value: "scheduled", label: `예정 ${EVENTS.filter((e) => e.status === "scheduled").length}` },
-                { value: "closed", label: `종료 ${EVENTS.filter((e) => e.status === "closed").length}` },
-              ]}
-            />
-          </div>
-
-          <div className="mt-6 grid gap-2.5">
-            {visible.map((event) => (
-              <article key={event.id} className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-hairline p-3.5">
+          ) : events === null ? (
+            <div className="grid gap-2.5">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-24 animate-pulse rounded-control border border-hairline bg-surface-2" />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <div className="mb-1 flex items-center gap-2">
-                    <span className="text-xs text-ink/50">이벤트 {String(event.id).padStart(2, "0")}</span>
-                    <span className={`inline-flex min-h-6 items-center rounded-full px-2 text-[11px] font-semibold uppercase tracking-wide ${statusClass[event.status]}`}>
-                      {statusLabel[event.status]}
-                    </span>
-                  </div>
-                  <h3 className="text-base font-semibold">{event.title}</h3>
-                  <p className="mt-0.5 text-sm text-ink/60">
-                    {event.period} · 쿠폰 {event.coupons}개
+                  <h2>등록 이벤트</h2>
+                  <p className="mt-1 text-[17px] text-ink/70">
+                    {visible.length}개의 이벤트
+                    {hasMore ? ` · 전체 ${totalElements}건 중 ${events.length}건만 표시` : ""}
                   </p>
                 </div>
-                <div className="flex gap-4 text-sm font-medium">
-                  <LinkButton to={`/admin/event-form/${event.id}`} variant="text" className="!text-[16px]">
-                    수정
-                  </LinkButton>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // 실제 삭제 API는 없다 — 이벤트 상태 변경(종료) API로 대체될 예정이다.
-                      // 연동 전까지는 성공한 것처럼 보이지 않도록 비활성화한다.
-                      // showToast(`${event.title} 삭제를 요청했습니다.`);
-                    }}
-                    className="underline underline-offset-4"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
+                <FilterBar
+                  value={filter}
+                  onChange={setFilter}
+                  options={[
+                    { value: "all", label: `전체 ${events.length}` },
+                    { value: "OPEN", label: `진행 중 ${countOf("OPEN")}` },
+                    { value: "SCHEDULED", label: `예정 ${countOf("SCHEDULED")}` },
+                    { value: "CLOSED", label: `종료 ${countOf("CLOSED")}` },
+                  ]}
+                />
+              </div>
+
+              <div className="mt-6 grid gap-2.5">
+                {visible.map((event) => (
+                  <article key={event.eventId} className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-hairline p-3.5">
+                    <div>
+                      <div className="mb-1 flex items-center gap-2">
+                        <span className="text-xs text-ink/50">이벤트 {event.eventId}</span>
+                        <span className={`inline-flex min-h-6 items-center rounded-full px-2 text-[11px] font-semibold uppercase tracking-wide ${statusClass[event.status]}`}>
+                          {statusLabel[event.status]}
+                        </span>
+                      </div>
+                      <h3 className="text-base font-semibold">{event.name}</h3>
+                      <p className="mt-0.5 text-sm text-ink/60">
+                        {formatDateTime(event.openAt)} - {formatDateTime(event.closeAt)}
+                      </p>
+                    </div>
+                    <div className="flex gap-4 text-sm font-medium">
+                      <LinkButton to={`/admin/event-form/${event.eventId}`} variant="text" className="!text-[16px]">
+                        수정
+                      </LinkButton>
+                    </div>
+                  </article>
+                ))}
+                {visible.length === 0 ? (
+                  <div className="rounded-block border border-dashed border-hairline p-10 text-center">
+                    <h3 className="text-xl font-semibold">해당 상태의 이벤트가 없어요.</h3>
+                    <p className="mt-2 text-ink/70">다른 상태를 선택해 보세요.</p>
+                  </div>
+                ) : null}
+              </div>
+            </>
+          )}
         </div>
       </section>
     </Layout>

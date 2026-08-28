@@ -21,23 +21,21 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
   public: {
     label: "서비스",
     home: "/",
-    routes: [
-      { page: "index", label: "이벤트", path: "/" },
-      { page: "event-detail", label: "이벤트 상세", path: "/event-detail/1" },
-    ],
+    routes: [{ page: "index", label: "이벤트", path: "/" }],
   },
   user: {
     label: "사용자",
     home: "/user",
     routes: [
-      { page: "user", label: "사용자 정보", path: "/user" },
-      { page: "my-coupons", label: "보유 쿠폰", path: "/user/my-coupons" },
+      { page: "user", label: "사용자 ID 설정", path: "/user" },
+      { page: "my-coupons", label: "내 쿠폰", path: "/user/my-coupons" },
     ],
   },
   admin: {
     label: "관리자",
     home: "/admin",
     routes: [
+      { page: "auth", label: "관리자 인증", path: "/admin/auth" },
       { page: "admin", label: "관리자 홈", path: "/admin" },
       { page: "events", label: "이벤트 목록", path: "/admin/events" },
       { page: "event-form", label: "이벤트 만들기", path: "/admin/event-form" },

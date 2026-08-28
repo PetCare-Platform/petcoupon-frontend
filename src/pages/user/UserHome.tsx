@@ -1,65 +1,99 @@
+import { useEffect, useState, type FormEvent } from "react";
 import { Layout } from "../../components/Layout";
-import { ColorBlock, Eyebrow, LinkButton, MetricGrid, MetricTile } from "../../components/ui";
+import { Eyebrow, FieldGroup, LinkButton, inputClass } from "../../components/ui";
+import { useToast } from "../../context/ToastContext";
+import { clearCurrentUserId, getCurrentUserId, setCurrentUserId, subscribeCurrentUserId } from "../../api/currentUser";
 
 export default function UserHome() {
+  const { showToast } = useToast();
+  const [userId, setUserId] = useState<number | null>(() => getCurrentUserId());
+  const [draft, setDraft] = useState(() => {
+    const current = getCurrentUserId();
+    return current === null ? "" : String(current);
+  });
+  const [error, setError] = useState("");
+
+  useEffect(() => subscribeCurrentUserId(() => setUserId(getCurrentUserId())), []);
+
+  function handleSave(event: FormEvent) {
+    event.preventDefault();
+    const parsed = Number(draft.trim());
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      setError("1 이상의 정수 사용자 ID를 입력해 주세요.");
+      return;
+    }
+    setError("");
+    setCurrentUserId(parsed);
+    showToast(`사용자 ID를 ${parsed}(으)로 설정했습니다.`);
+  }
+
+  function handleClear() {
+    clearCurrentUserId();
+    setDraft("");
+    setError("");
+    showToast("사용자 ID를 해제했습니다.");
+  }
+
   return (
     <Layout area="user" page="user">
       <section className="py-10">
-        <div className="container-page">
-          <Eyebrow>사용자 정보 · 데모 프로필</Eyebrow>
-          <h1 className="mt-2">
-            사용자 정보를
-            <br />
-            한곳에서.
-          </h1>
+        <div className="container-page max-w-xl">
+          <Eyebrow>사용자 정보 · 로그인 없음</Eyebrow>
+          <h1 className="mt-2">사용자 ID 설정</h1>
+          <p className="mt-3 text-[18px] text-ink/70">
+            이 서비스에는 회원가입/로그인이 없습니다. 여기서 설정한 사용자 ID를 쿠폰 발급과 보유 쿠폰 조회에 사용하는
+            단순 식별값으로만 씁니다. (인증 토큰이 아닙니다.)
+          </p>
         </div>
       </section>
 
-      <section className="py-6">
-        <div className="container-page">
-          <ColorBlock tone="surface">
-            <span className="inline-flex min-h-8 items-center rounded-full bg-paper px-2.5 text-xs font-semibold uppercase tracking-wide">인증 API 미구현 · 데모 사용자</span>
-            <div className="mt-4 flex items-center gap-4">
-              <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-ink text-xl font-bold text-white">김</span>
-              <div>
-                <h2>김하늘 님</h2>
-                <p className="text-ink-muted">반려생활을 꼼꼼하게 기록하는 PetCoupon 회원</p>
-              </div>
+      <section className="py-4">
+        <div className="container-page max-w-xl">
+          <div className="rounded-block border border-hairline bg-white p-6">
+            <div className="flex items-center justify-between gap-4 border-b border-hairline pb-4">
+              <span className="text-sm text-ink/60">현재 사용자 ID</span>
+              <strong className="text-2xl tabular-nums">{userId === null ? "미설정" : userId}</strong>
             </div>
-            <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-hairline pt-4 text-sm">
-              <div>
-                <dt className="text-ink/60">이메일</dt>
-                <dd className="font-medium">haneul.kim@example.com</dd>
+
+            <form onSubmit={handleSave} noValidate className="mt-6 grid gap-5">
+              <FieldGroup
+                label="사용자 ID"
+                htmlFor="user-id"
+                error={error || undefined}
+                help="백엔드에 존재하는 사용자 번호를 입력하세요. 예: 1"
+              >
+                <input
+                  id="user-id"
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  autoComplete="off"
+                  className={inputClass}
+                  value={draft}
+                  onChange={(event) => setDraft(event.target.value)}
+                  aria-invalid={!!error}
+                />
+              </FieldGroup>
+              <div className="flex flex-wrap gap-3">
+                <button type="submit" className="rounded-full bg-ink px-5 py-3 text-[16px] font-medium text-white transition-colors hover:bg-ink-muted">
+                  사용자 ID 저장
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={userId === null}
+                  className="rounded-full border border-ink px-5 py-3 text-[16px] font-medium transition-colors hover:bg-surface-soft disabled:cursor-not-allowed disabled:border-hairline disabled:text-ink-muted"
+                >
+                  사용자 ID 해제
+                </button>
               </div>
-              <div>
-                <dt className="text-ink/60">휴대전화</dt>
-                <dd className="font-medium">010-27**-84**</dd>
-              </div>
-              <div>
-                <dt className="text-ink/60">가입일</dt>
-                <dd className="font-medium">2026년 3월 12일</dd>
-              </div>
-              <div>
-                <dt className="text-ink/60">사용자 번호</dt>
-                <dd className="font-medium">#1</dd>
-              </div>
-            </dl>
-            <LinkButton to="/user/my-coupons" variant="secondary" className="mt-6 !bg-ink !text-white !border-ink hover:!bg-ink-muted">
+            </form>
+          </div>
+
+          <div className="mt-6">
+            <LinkButton to="/user/my-coupons" variant="secondary">
               보유 쿠폰 보기
             </LinkButton>
-          </ColorBlock>
-        </div>
-      </section>
-
-      <section className="py-14">
-        <div className="container-page">
-          <h2>쿠폰 활동 예시</h2>
-          <div className="mt-6">
-            <MetricGrid cols={3}>
-              <MetricTile label="사용 가능" value="2장" hint="이번 주 만료 1장" />
-              <MetricTile label="사용 완료" value="1장" hint="최근 사용 7월 22일" />
-              <MetricTile label="누적 절약" value="24,800원" hint="올해 기준" />
-            </MetricGrid>
           </div>
         </div>
       </section>
