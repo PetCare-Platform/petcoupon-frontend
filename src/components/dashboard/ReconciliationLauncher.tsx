@@ -48,9 +48,12 @@ export function ReconciliationLauncher({
   error: string;
   onRun: () => void;
 }) {
+  // `검증 가능한 상태인가`와 `지금 실행 중인가`는 다른 축이다. 하나로 묶으면 실행 중일 때
+  // 사유 분기가 기본값까지 흘러내려 파이프라인이 멀쩡한데도 잔여가 남았다고 표시된다.
   const blocked = drain ? isPipelineBlocked(drain) : true;
   const notEnded = drain != null && drain.couponStatus !== "ENDED";
-  const canRun = drain != null && !blocked && !notEnded && !running;
+  const eligible = drain != null && !blocked && !notEnded;
+  const canRun = eligible && !running;
 
   return (
     <article className={`${panel} flex flex-col`}>
@@ -96,16 +99,18 @@ export function ReconciliationLauncher({
       {drain ? (
         <div
           className={`mt-3 rounded-control px-3 py-2 text-[13px] ${
-            canRun ? "bg-success/10 text-[#087c13]" : "bg-surface-2 text-ink/70"
+            eligible ? "bg-success/10 text-[#087c13]" : "bg-surface-2 text-ink/70"
           }`}
         >
-          {canRun
-            ? "검증 가능"
-            : notEnded
-              ? `검증 불가 — 쿠폰이 ${drain.couponStatus} 상태입니다. ENDED가 되어야 합니다.`
-              : drain.checkFailed
-                ? "검증 불가 — 파이프라인 잔여를 확인할 수 없습니다."
-                : "검증 불가 — 파이프라인에 처리 안 된 요청이 남아 있습니다."}
+          {running
+            ? "검증 실행 중 — 50만 건 기준 30초쯤 걸립니다."
+            : eligible
+              ? "검증 가능"
+              : notEnded
+                ? `검증 불가 — 쿠폰이 ${drain.couponStatus} 상태입니다. ENDED가 되어야 합니다.`
+                : drain.checkFailed
+                  ? "검증 불가 — 파이프라인 잔여를 확인할 수 없습니다."
+                  : "검증 불가 — 파이프라인에 처리 안 된 요청이 남아 있습니다."}
         </div>
       ) : null}
 
