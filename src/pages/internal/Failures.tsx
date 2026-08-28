@@ -12,7 +12,7 @@ export default function Failures() {
   const [processingId, setProcessingId] = useState<number | null>(null);
   const load = useCallback(async (signal?: AbortSignal) => {
     setLoading(true); setError("");
-    try { setMessages(await listDlqMessages(signal)); }
+    try { setMessages((await listDlqMessages(0, 100, signal)).content); }
     catch (err) { if (!(err instanceof DOMException && err.name === "AbortError")) setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "DLQ를 불러오지 못했습니다."); }
     finally { setLoading(false); }
   }, []);

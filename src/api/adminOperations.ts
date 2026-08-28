@@ -1,8 +1,10 @@
 import { apiGet, apiPost } from "./http";
-import type { CouponIssueDlqReprocessResponse, CouponIssueDlqResponse, ReconciliationTriggerResponse } from "../types/api";
+import type { CouponIssueDlqPageResponse, CouponIssueDlqReprocessResponse, CouponIssueDlqResponse, ReconciliationTriggerResponse } from "../types/api";
 
-export function listDlqMessages(signal?: AbortSignal): Promise<CouponIssueDlqResponse[]> {
-  return apiGet<CouponIssueDlqResponse[]>("/admin/coupon-issue/dlq", signal);
+export async function listDlqMessages(page = 0, size = 20, signal?: AbortSignal): Promise<CouponIssueDlqPageResponse> {
+  const result = await apiGet<CouponIssueDlqPageResponse | CouponIssueDlqResponse[]>(`/admin/coupon-issue/dlq?page=${page}&size=${size}`, signal);
+  if (!Array.isArray(result)) return result;
+  return { content: result, page: 0, size: result.length, totalElements: result.length, totalPages: 1, first: true, last: true };
 }
 
 export function reprocessDlqMessage(messageId: number): Promise<CouponIssueDlqReprocessResponse> {

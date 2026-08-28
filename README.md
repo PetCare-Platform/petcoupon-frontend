@@ -33,7 +33,7 @@ npm run lint
 | 서비스(공개) | `/`, `/event-detail/:id` | 이벤트를 둘러보고 쿠폰을 발급받는 방문자 |
 | 사용자 | `/user`(사용자 ID 설정), `/user/my-coupons`, `/user/coupon-detail/:couponIssueId` | 발급받은 쿠폰의 상태를 확인·사용·취소하는 사용자 |
 | 관리자 | `/admin`, `/admin/events`, `/admin/event-form(/:eventId)`, `/admin/coupons`, `/admin/coupon-form(/:eventId)` | 이벤트/쿠폰을 만들고 관리하는 스태프 |
-| 내부 운영 | `/internal/dashboard`, `/internal/health`, `/internal/monitoring`, `/internal/issues`, `/internal/failures`, `/internal/verification`, `/internal/repo-issues`, `/internal/load-test-reset` | 실제 시스템 상태와 발급 파이프라인의 샘플 현황·실패·정합성을 구분해 확인하는 운영팀 |
+| 내부 운영 | `/internal/dashboard`, `/internal/health`, `/internal/monitoring`, `/internal/failures`, `/internal/verification`, `/internal/repo-issues`, `/internal/load-test-reset` | 실제 시스템 상태와 발급 현황·실패·정합성을 확인하는 운영팀 |
 
 인증 시스템은 아직 없습니다. `src/api/currentUser.ts`가 `localStorage`에 저장한 사용자 ID(`petcoupon.demoUserId`)를 식별값으로 씁니다. 저장된 값이 없으면 `getCurrentUserId()`는 `null`을 반환하고(예전의 "기본값 1 자동 저장" 동작은 제거됨), 각 화면이 미설정 상태를 직접 처리합니다. 사용자 ID는 `/user`(사용자 ID 설정) 화면에서 지정·해제합니다.
 

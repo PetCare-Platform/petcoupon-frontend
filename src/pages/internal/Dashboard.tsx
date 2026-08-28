@@ -1,204 +1,65 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowClockwise } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
 import { Layout } from "../../components/Layout";
-import { BarChart, Eyebrow, MetricGrid, MetricTile, StatusPill, TextLink } from "../../components/ui";
-import { useToast } from "../../context/ToastContext";
+import { Eyebrow, EmptyState, StatusPill } from "../../components/ui";
+import { listDlqMessages } from "../../api/adminOperations";
+import { getCoupons } from "../../api/coupons";
+import { getDashboardSummary, getIssueStatistics, getReconciliationReports, getSystemHealth } from "../../api/dashboard";
+import { ApiError, NetworkError } from "../../api/http";
+import type { CouponIssueDlqPageResponse, CouponListResponse, DashboardSummaryResponse, IssueStatisticsResponse, ReconciliationReportSummaryResponse, SystemHealthResponse } from "../../types/api";
 
-const reveal = (i: number) => ({ animationDelay: `${i * 70}ms` });
+const panel = "rounded-block border border-hairline bg-paper p-5 text-ink dark:border-white/[0.14] dark:bg-ops-surface dark:text-ops-ink md:p-7";
+const fmt = (value: number) => value.toLocaleString("ko-KR");
+const countStatuses = (data: IssueStatisticsResponse | null, statuses: string[]) => (data?.distribution ?? []).filter((v) => statuses.includes(v.status)).reduce((sum, v) => sum + v.count, 0);
+const message = (error: unknown) => error instanceof ApiError || error instanceof NetworkError ? error.message : "대시보드 데이터를 불러오지 못했습니다.";
 
-const THROUGHPUT = [
-  { label: "10:45", value: 142 },
-  { label: "10:55", value: 158 },
-  { label: "11:05", value: 168 },
-  { label: "11:15", value: 201 },
-  { label: "11:25", value: 172 },
-  { label: "11:35", value: 216 },
-  { label: "11:45", value: 189 },
-];
+function SummaryCard({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "neutral" | "success" | "danger" }) {
+  const color = tone === "success" ? "text-[#087c13] dark:text-success" : tone === "danger" ? "text-danger" : "text-ink dark:text-ops-ink";
+  return <div className="rounded-block border border-hairline bg-surface-2 p-5 dark:border-white/[0.12] dark:bg-ops-surface"><p className="text-sm font-medium text-ink/65 dark:text-ops-muted">{label}</p><strong className={`mt-2 block text-[clamp(1.7rem,3vw,2.55rem)] leading-none tabular-nums ${color}`}>{value}</strong></div>;
+}
 
-const PIPELINE = [
-  { step: "01", title: "요청 수신", detail: "해시 생성 · 12ms" },
-  { step: "02", title: "멱등성 검증", detail: "SUCCEEDED · 18ms" },
-  { step: "03", title: "재고 선점", detail: "285→284 · 31ms" },
-  { step: "04", title: "발급 저장", detail: "ISSUED · 89ms" },
-  { step: "05", title: "알림 전송", detail: "SENT · 34ms" },
-];
+function ThroughputChart({ data }: { data: IssueStatisticsResponse }) {
+  const rows = data.timeSeries, width = 720, height = 220, pad = 18;
+  const max = Math.max(1, ...rows.flatMap((row) => [row.issuedCount, row.failedCount]));
+  const rates = rows.map((row) => { const total = row.issuedCount + row.failedCount + row.inProgressCount; return total ? row.failedCount / total : 0; });
+  const rateMax = Math.max(0.01, ...rates);
+  const points = (values: number[], ceiling: number) => values.map((value, i) => `${pad + i / Math.max(values.length - 1, 1) * (width - pad * 2)},${height - pad - value / ceiling * (height - pad * 2)}`).join(" ");
+  return <div><svg viewBox={`0 0 ${width} ${height}`} className="h-[245px] w-full" role="img" aria-label="최근 24시간 발급 처리량과 실패율">{[.25,.5,.75].map((r) => <line key={r} x1={pad} x2={width-pad} y1={height*r} y2={height*r} className="stroke-hairline dark:stroke-ops-border" />)}<polyline points={points(rows.map((v)=>v.issuedCount),max)} fill="none" stroke="#2379c9" strokeWidth="3"/><polyline points={points(rows.map((v)=>v.failedCount),max)} fill="none" stroke="#cf3e40" strokeWidth="3"/><polyline points={points(rates,rateMax)} fill="none" stroke="#8a5a00" strokeWidth="2" strokeDasharray="6 5"/></svg><div className="-mt-1 flex justify-between text-[11px] text-ink/50 dark:text-ops-muted">{rows.filter((_,i)=>i%4===0||i===rows.length-1).map((v)=><span key={v.bucket}>{v.bucket.slice(11,16)}</span>)}</div><div className="mt-5 flex gap-5 text-sm"><span className="text-[#2379c9]">━ 발급</span><span className="text-[#cf3e40]">━ 실패</span><span className="text-[#8a5a00]">┅ 실패율</span></div></div>;
+}
 
-const COMPONENTS = [
-  { name: "Application", role: "HTTP 요청 처리", status: "정상" as const, tone: "open" as const, latency: "42ms", checked: "11:42:08" },
-  { name: "MySQL", role: "원장과 운영 데이터", status: "정상" as const, tone: "open" as const, latency: "8ms", checked: "11:42:07" },
-  { name: "Redis", role: "재고와 중복 제어", status: "정상" as const, tone: "open" as const, latency: "3ms", checked: "11:42:07" },
-  { name: "Kafka", role: "발급 메시지 전달", status: "관찰" as const, tone: "warning" as const, latency: "92ms", checked: "11:42:06" },
-];
+function StatusDonut({ data }: { data: IssueStatisticsResponse }) {
+  const success=countStatuses(data,["CONSUMED"]), retry=countStatuses(data,["PENDING","SENT","FAILED"]), dlq=countStatuses(data,["DLQ","ABANDONED"]), total=success+retry+dlq;
+  const a=total?success/total*100:0, b=total?retry/total*100:0;
+  const items=[{label:"성공",value:success,color:"#079516"},{label:"재시도/진행",value:retry,color:"#8a5a00"},{label:"DLQ/포기",value:dlq,color:"#cf3e40"}];
+  const bg=total?`conic-gradient(#079516 0 ${a}%,#8a5a00 ${a}% ${a+b}%,#cf3e40 ${a+b}% 100%)`:"rgb(var(--c-hairline))";
+  return <div className="grid gap-7"><div className="relative mx-auto h-52 w-52 rounded-full" style={{background:bg}}><div className="absolute inset-[22%] flex items-center justify-center rounded-full bg-paper text-center dark:bg-ops-surface"><span><strong className="block text-2xl">{fmt(total)}</strong><small className="text-ink/50 dark:text-ops-muted">전체 메시지</small></span></div></div><dl className="grid gap-2 text-sm">{items.map((item)=><div key={item.label} className="flex justify-between"><dt className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-sm" style={{background:item.color}}/>{item.label}</dt><dd>{total?(item.value/total*100).toFixed(1):"0.0"}% <span className="text-ink/45">({fmt(item.value)})</span></dd></div>)}</dl></div>;
+}
 
-const FAILURES = [
-  { tone: "danger" as const, label: "FAILED", id: "#88419", detail: "DB_WRITE_TIMEOUT · 11:38" },
-  { tone: "warning" as const, label: "RETRY", id: "#88417", detail: "PUSH_RATE_LIMIT · 11:35" },
-  { tone: "neutral" as const, label: "DLQ", id: "#88398", detail: "INVALID_PAYLOAD · 10:52" },
-];
+function ReconciliationBars({ reports }: { reports: ReconciliationReportSummaryResponse[] }) {
+  const rows=[...reports].slice(0,10).reverse(), max=Math.max(1,...rows.map((v)=>v.totalCount));
+  if(!rows.length) return <p className="py-14 text-center text-ink/55 dark:text-ops-muted">아직 저장된 정합성 검증 이력이 없습니다.</p>;
+  return <div><div className="flex h-44 items-end gap-3 border-b border-hairline pb-1 dark:border-ops-border">{rows.map((row)=><div key={row.reportId} className="flex h-full flex-1 items-end" title={`#${row.reportId} ${row.result} · 오류 ${row.errorCount}건`}><div className={`w-full min-w-3 rounded-t ${row.result==="MATCHED"?"bg-[#079516]":row.result==="MISMATCHED"?"bg-[#cf3e40]":"bg-[#8f8f8b]"}`} style={{height:`${Math.max(row.totalCount/max*100,8)}%`}}/></div>)}</div><div className="mt-4 flex gap-5 text-sm"><span className="text-[#079516]">■ MATCHED</span><span className="text-[#cf3e40]">■ MISMATCHED</span><span className="text-[#8f8f8b]">■ ERROR</span></div></div>;
+}
 
 export default function Dashboard() {
-  const { showToast } = useToast();
-
-  return (
-    <Layout area="internal" page="dashboard">
-      <section className="py-8">
-        <div className="container-page flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <Eyebrow>내부 운영 · 대시보드 · 샘플 데이터</Eyebrow>
-            <h1 className="mt-2">내부 운영 대시보드</h1>
-            <p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">시스템 현황과 발급 처리 흐름, 실패 처리를 한 화면에서 점검하세요.</p>
-          </div>
-          <button
-            type="button"
-            disabled
-            onClick={() => {
-              // 내부 통합 대시보드 조회는 2차 범위다. 실제로 아무 것도 갱신되지 않으면서
-              // 갱신된 것처럼 보이지 않도록 비활성화한다.
-              // showToast("대시보드를 최신 상태로 갱신했습니다.");
-            }}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink bg-white px-5 text-[18px] font-medium text-ink transition-colors hover:bg-surface-soft"
-          >
-            집계 API 미지원
-          </button>
-        </div>
-      </section>
-
-      <section className="py-4 animate-reveal-up" style={reveal(1)}>
-        <div className="container-page">
-          <div className="rounded-block border border-hairline bg-surface-2 p-6 text-ink md:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wide">발표용 샘플 현황</span>
-                <h2 className="mt-1">전체 흐름은 안정적입니다.</h2>
-              </div>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-                  <span className="absolute inline-flex h-full w-full animate-live-pulse rounded-full bg-success" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
-                </span>
-                마지막 확인 11:42:08
-              </span>
-            </div>
-            <div className="mt-5">
-              <MetricGrid cols={4}>
-                <MetricTile label="API 성공률" value="99.98%" hint="최근 15분" tone="success" />
-                <MetricTile label="분당 발급" value="186" hint="평균 172건" tone="success" trend="up" />
-                <MetricTile label="처리 지연" value="184ms" hint="목표 250ms 이하" tone="success" trend="down" />
-                <MetricTile label="실패 대기" value="3" hint="긴급 항목 없음" tone="warning" />
-              </MetricGrid>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-4 animate-reveal-up" style={reveal(2)}>
-        <div className="container-page grid gap-6 lg:grid-cols-[7fr_5fr]">
-          <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">구성요소 상태</h3>
-              <span className="font-mono text-xs text-ink/50 dark:text-ops-muted">SEOUL / UTC+09:00</span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[420px] text-left text-sm">
-                <thead className="text-ink/60 dark:text-ops-muted">
-                  <tr>
-                    <th className="pb-2 font-medium">구성요소</th>
-                    <th className="pb-2 font-medium">역할</th>
-                    <th className="pb-2 font-medium">상태</th>
-                    <th className="pb-2 font-medium">응답</th>
-                    <th className="pb-2 font-medium">최근 확인</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPONENTS.map((c) => (
-                    <tr key={c.name} className="border-t border-hairline-soft dark:border-ops-border-soft">
-                      <td className="py-3 font-semibold">{c.name}</td>
-                      <td className="py-3 text-ink/70 dark:text-ops-muted">{c.role}</td>
-                      <td className="py-3">
-                        <StatusPill tone={c.tone}>{c.status}</StatusPill>
-                      </td>
-                      <td className="py-3">{c.latency}</td>
-                      <td className="py-3 text-ink/60 dark:text-ops-muted">{c.checked}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <TextLink to="/internal/monitoring">시스템 현황 전체 보기</TextLink>
-          </article>
-
-          <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">실패 큐</h3>
-              <StatusPill tone="warning">관찰 중</StatusPill>
-            </div>
-            <MetricGrid cols={3} compact>
-              <MetricTile label="FAILED" value="1" compact tone="danger" />
-              <MetricTile label="Retry" value="1" compact tone="warning" />
-              <MetricTile label="DLQ" value="1" compact tone="neutral" />
-            </MetricGrid>
-            <ul className="my-4 flex flex-col">
-              {FAILURES.map((f, i) => (
-                <li key={f.id} className={`flex items-center gap-2.5 py-2.5 text-sm ${i > 0 ? "border-t border-hairline-soft dark:border-ops-border-soft" : ""}`}>
-                  <StatusPill tone={f.tone}>{f.label}</StatusPill>
-                  <strong className="font-mono">{f.id}</strong>
-                  <span className="ml-auto text-ink/60 dark:text-ops-muted">{f.detail}</span>
-                </li>
-              ))}
-            </ul>
-            <TextLink to="/internal/failures">실패 처리 전체 보기</TextLink>
-          </article>
-        </div>
-      </section>
-
-      <section className="py-4 animate-reveal-up" style={reveal(3)}>
-        <div className="container-page">
-          <div className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold">발급 처리 흐름</h3>
-                <p className="text-xs text-ink/50 dark:text-ops-muted">REQ-20260821-8F3A21 · 사용자 #1 · 쿠폰 #10 · 184ms</p>
-              </div>
-              <TextLink to="/internal/issues">요청 조회 전체 화면</TextLink>
-            </div>
-            <ol className="grid items-start grid-cols-2 gap-3 md:grid-cols-5">
-              {PIPELINE.map((step) => (
-                <li key={step.step} className="rounded-control border-t-[3px] border-ink bg-paper p-3.5 dark:border-ops-ink dark:bg-ops-bg">
-                  <span className="font-mono text-xs text-ink/50 dark:text-ops-muted">{step.step}</span>
-                  <h4 className="mt-1 text-sm font-semibold">{step.title}</h4>
-                  <p className="text-xs text-ink/60 dark:text-ops-muted">{step.detail}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-4 pb-14 animate-reveal-up" style={reveal(4)}>
-        <div className="container-page grid gap-6 lg:grid-cols-[8fr_4fr]">
-          <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">최근 발급 처리량</h3>
-              <TextLink to="/internal/monitoring">시간대별 추이 보기</TextLink>
-            </div>
-            <BarChart points={THROUGHPUT} />
-            <p className="mt-3 text-xs text-ink/50 dark:text-ops-muted">10:45 - 11:45 · 실패율 0.04%</p>
-          </article>
-
-          <article className="rounded-block border border-hairline p-5 dark:border-white/[0.14] dark:bg-ops-surface dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">정합성 검증</h3>
-              <StatusPill tone="warning">2건 확인 필요</StatusPill>
-            </div>
-            <MetricGrid cols={2} compact>
-              <MetricTile label="일치" value="1,246" hint="99.84%" compact tone="success" />
-              <MetricTile label="불일치" value="2" hint="재고 1 · 메시지 1" compact tone="danger" />
-            </MetricGrid>
-            <div className="mt-4">
-              <TextLink to="/internal/verification">정합성 검증 전체 보기</TextLink>
-            </div>
-          </article>
-        </div>
-      </section>
-    </Layout>
-  );
+  const [summary,setSummary]=useState<DashboardSummaryResponse|null>(null), [statistics,setStatistics]=useState<IssueStatisticsResponse|null>(null), [dlq,setDlq]=useState<CouponIssueDlqPageResponse|null>(null), [health,setHealth]=useState<SystemHealthResponse|null>(null);
+  const [coupons,setCoupons]=useState<CouponListResponse[]>([]), [couponId,setCouponId]=useState<number|null>(null), [reports,setReports]=useState<ReconciliationReportSummaryResponse[]>([]);
+  const [loading,setLoading]=useState(true), [reportsLoading,setReportsLoading]=useState(false), [reportsRefreshKey,setReportsRefreshKey]=useState(0), [error,setError]=useState(""), [checkedAt,setCheckedAt]=useState<Date|null>(null);
+  const load=useCallback(async(signal?:AbortSignal)=>{setLoading(true);setError("");const results=await Promise.allSettled([getDashboardSummary(signal),getIssueStatistics(signal),listDlqMessages(0,10,signal),getSystemHealth(signal),getCoupons({},0,100,signal)]);if(signal?.aborted)return;const [a,b,c,d,e]=results;if(a.status==="fulfilled")setSummary(a.value);if(b.status==="fulfilled")setStatistics(b.value);if(c.status==="fulfilled")setDlq(c.value);if(d.status==="fulfilled")setHealth(d.value);if(e.status==="fulfilled"){setCoupons(e.value.content);setCouponId((current)=>current??e.value.content[0]?.couponId??null);}const failed=results.find((v)=>v.status==="rejected");if(failed?.status==="rejected")setError(message(failed.reason));setCheckedAt(new Date());setLoading(false);},[]);
+  useEffect(()=>{const controller=new AbortController();void load(controller.signal);return()=>controller.abort();},[load]);
+  useEffect(()=>{if(couponId===null){setReports([]);return;}const controller=new AbortController();setReportsLoading(true);getReconciliationReports(couponId,30,controller.signal).then(setReports).catch((e)=>{if(!(e instanceof DOMException&&e.name==="AbortError"))setError(message(e));}).finally(()=>{if(!controller.signal.aborted)setReportsLoading(false);});return()=>controller.abort();},[couponId,reportsRefreshKey]);
+  const total=useMemo(()=>(statistics?.distribution??[]).reduce((sum,v)=>sum+v.count,0),[statistics]), success=countStatuses(statistics,["CONSUMED"]), dlqCount=countStatuses(statistics,["DLQ"]), latest=reports[0];
+  // errorCount는 발급 건 단위 오류만 세므로, 쿠폰 전체 집계 불일치는 errorCount=0이면서
+  // result=MISMATCHED일 수 있다. 최신 result를 정합성의 단일 진실로 사용한다.
+  const reconciliationStatus=latest?.result==="MATCHED"?"일치":latest?.result==="MISMATCHED"?"불일치":latest?.result==="ERROR"?"오류":"—", up=health?.components.filter((v)=>v.status==="UP").length??0, componentTotal=health?.components.length??0, latestNeedsAttention=latest!=null&&latest.result!=="MATCHED";
+  return <Layout area="internal" page="dashboard">
+    <section className="py-8"><div className="container-page flex flex-wrap items-end justify-between gap-4"><div><Eyebrow>내부 운영 · 실제 운영 API</Eyebrow><h1 className="mt-2">쿠폰 발급 운영 대시보드</h1><p className="mt-2 text-[18px] text-ink/70 dark:text-ops-muted">발급 처리량과 실패, 정합성, 시스템 상태를 한 화면에서 확인합니다.</p></div><div className="flex items-center gap-3">{checkedAt?<span className="text-xs text-ink/50 dark:text-ops-muted">마지막 확인 {checkedAt.toLocaleTimeString("ko-KR",{hour12:false})}</span>:null}<button type="button" disabled={loading} onClick={()=>{void load();setReportsRefreshKey((key)=>key+1);}} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ink bg-paper px-5 font-medium text-ink disabled:opacity-50 dark:border-ops-ink dark:bg-ops-bg dark:text-ops-ink"><ArrowClockwise className={loading?"animate-spin":""}/> 새로고침</button></div></div></section>
+    {error?<section className="pb-4"><div className="container-page"><div className="rounded-control border border-danger/40 bg-danger/10 p-4 text-danger">{error} 관리자 인증 세션과 백엔드 실행 상태를 확인해 주세요.</div></div></section>:null}
+    <section className="py-4"><div className="container-page grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><SummaryCard label="전체 발급 요청" value={statistics?fmt(total):"—"}/><SummaryCard label="발급 성공" value={statistics?fmt(success):"—"} tone="success"/><SummaryCard label="DLQ 대기" value={statistics?fmt(dlqCount):"—"} tone={dlqCount?"danger":"neutral"}/><SummaryCard label="최신 정합성" value={reconciliationStatus} tone={latest?.result==="MATCHED"?"success":latest?"danger":"neutral"}/><SummaryCard label="시스템 상태" value={health?`${health.overallStatus==="UP"?"정상":health.overallStatus} ${up}/${componentTotal}`:"—"} tone={health?.overallStatus==="UP"?"success":"danger"}/></div></section>
+    <section className="py-4"><div className="container-page grid gap-6 lg:grid-cols-[3fr_2fr]"><article className={panel}><h2>발급 처리량 · 실패율</h2><p className="mt-1 text-ink/55 dark:text-ops-muted">최근 24시간</p><div className="mt-5">{statistics?<ThroughputChart data={statistics}/>:<p className="py-24 text-center text-ink/50">{loading?"불러오는 중…":"데이터가 없습니다."}</p>}</div></article><article className={panel}><h2>메시지 상태 분포</h2><p className="mt-1 text-ink/55 dark:text-ops-muted">전체 기간</p><div className="mt-7">{statistics?<StatusDonut data={statistics}/>:<p className="py-24 text-center text-ink/50">{loading?"불러오는 중…":"데이터가 없습니다."}</p>}</div></article></div></section>
+    <section className="py-4"><div className="container-page"><article className={panel}><div className="mb-6 flex flex-wrap justify-between gap-4"><div><h2>정합성 검증 이력</h2><p className="mt-1 text-ink/55 dark:text-ops-muted">선택한 쿠폰의 최근 검증 결과</p></div><div className="flex items-center gap-3">{latestNeedsAttention?<StatusPill tone="warning">최신 결과 확인 필요</StatusPill>:latest?<StatusPill tone="open">최신 결과 정상</StatusPill>:<StatusPill tone="neutral">검증 이력 없음</StatusPill>}<select value={couponId??""} onChange={(e)=>setCouponId(Number(e.target.value))} className="min-h-10 rounded-control border border-hairline bg-paper px-3 text-sm text-ink dark:border-ops-border dark:bg-ops-bg dark:text-ops-ink">{coupons.map((v)=><option key={v.couponId} value={v.couponId}>{v.name} (#{v.couponId})</option>)}</select></div></div>{reportsLoading?<p className="py-14 text-center text-ink/50">이력을 불러오는 중…</p>:couponId===null?<EmptyState title="조회할 쿠폰이 없습니다." description="쿠폰을 생성하면 정합성 이력을 확인할 수 있습니다."/>:<ReconciliationBars reports={reports}/>}</article></div></section>
+    <section className="py-4 pb-16"><div className="container-page grid gap-6 lg:grid-cols-[1.25fr_1fr]"><article className={panel}><div className="mb-5 flex justify-between"><div><h2>최근 실패 메시지</h2><p className="mt-1 text-ink/55 dark:text-ops-muted">DLQ 최신 {dlq?.content.length??0}건</p></div><Link to="/internal/failures" className="text-sm underline underline-offset-4">전체 보기</Link></div><div className="overflow-x-auto"><table className="w-full min-w-[560px] text-left text-sm"><thead className="text-ink/55 dark:text-ops-muted"><tr><th className="pb-3">ID</th><th className="pb-3">상태</th><th className="pb-3">오류</th><th className="pb-3 text-right">시각</th></tr></thead><tbody>{(dlq?.content??[]).slice(0,5).map((v)=><tr key={v.messageId} className="border-t border-hairline-soft dark:border-ops-border-soft"><td className="py-3 font-mono">#{v.messageId}</td><td className="py-3"><StatusPill tone="danger">DLQ</StatusPill></td><td className="max-w-xs truncate py-3 font-mono text-xs">{v.lastError}</td><td className="py-3 text-right text-ink/50 dark:text-ops-muted">{new Date(v.createdAt).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit",hour12:false})}</td></tr>)}{!loading&&!dlq?.content.length?<tr><td colSpan={4} className="py-10 text-center text-ink/50">DLQ 메시지가 없습니다.</td></tr>:null}</tbody></table></div></article>
+    <article className={panel}><div className="mb-5 flex justify-between"><div><h2>시스템 헬스체크</h2><p className="mt-1 text-ink/55 dark:text-ops-muted">백엔드 컴포넌트 상태</p></div>{health?<StatusPill tone={health.overallStatus==="UP"?"open":"danger"}>{health.overallStatus}</StatusPill>:null}</div><dl className="grid gap-3">{(health?.components??[]).map((v)=><div key={v.name} className="flex justify-between border-b border-hairline-soft pb-3 last:border-0 dark:border-ops-border-soft"><dt className="font-medium capitalize">{v.name==="db"?"MySQL":v.name}</dt><dd className={v.status==="UP"?"font-semibold text-[#087c13] dark:text-success":"font-semibold text-danger"}>{v.status}</dd></div>)}</dl>{summary?<div className="mt-6 grid grid-cols-2 gap-3 border-t border-hairline pt-5 text-sm dark:border-ops-border"><p>활성 이벤트 <strong className="float-right">{summary.activeEvents}/{summary.totalEvents}</strong></p><p>활성 쿠폰 <strong className="float-right">{summary.activeCoupons}/{summary.totalCoupons}</strong></p><p>발급 재고 <strong className="float-right">{fmt(summary.startedCouponIssuedStock)}</strong></p><p>잔여 재고 <strong className="float-right">{fmt(summary.startedCouponRemainingStock)}</strong></p></div>:null}</article></div></section>
+  </Layout>;
 }

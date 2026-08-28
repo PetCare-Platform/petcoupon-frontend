@@ -211,9 +211,69 @@ export interface CouponIssueCreateResponse {
 export interface CouponIssueRequestStatusResponse { status: "WAITING" | "IN_PROGRESS" | string; couponIssueId?: number | null; couponId?: number; userId?: number; sequenceNo?: number | null; }
 
 export interface CouponIssueDlqResponse { messageId: number; couponId: number; userId: number; requestId: string; retryCount: number; lastError: string; createdAt: string; }
+export interface CouponIssueDlqPageResponse {
+  content: CouponIssueDlqResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
 export interface CouponIssueDlqReprocessResponse { messageId: number; requestId: string; }
 // CouponIssueDlqAbandonResponse(POST .../abandon 응답)는 정의하지 않는다 — adminOperations.ts 주석 참고.
 export interface ReconciliationTriggerResponse { reportId: number; couponId: number; asOfAt: string; result: string; totalCount: number; successCount: number; errorCount: number; }
+export type ReconciliationResult = "MATCHED" | "MISMATCHED" | "ERROR";
+export interface ReconciliationReportSummaryResponse {
+  reportId: number;
+  couponId: number;
+  asOfAt: string;
+  result: ReconciliationResult;
+  totalCount: number;
+  successCount: number;
+  errorCount: number;
+}
+
+export type IssueMessageStatus = "PENDING" | "SENT" | "CONSUMED" | "FAILED" | "DLQ" | "ABANDONED";
+export interface IssueThroughputBucketResponse {
+  bucket: string;
+  issuedCount: number;
+  failedCount: number;
+  inProgressCount: number;
+}
+export interface IssueStatusDistributionResponse { status: IssueMessageStatus; count: number; }
+export interface IssueStatisticsResponse {
+  timeSeries: IssueThroughputBucketResponse[];
+  distribution: IssueStatusDistributionResponse[];
+}
+
+export interface DashboardIssueStatusDistributionResponse { status: IssueStatus; count: number; }
+export interface DashboardSummaryResponse {
+  totalEvents: number;
+  activeEvents: number;
+  totalCoupons: number;
+  activeCoupons: number;
+  startedCouponTotalStock: number;
+  startedCouponIssuedStock: number;
+  startedCouponRemainingStock: number;
+  startedCouponIssueRate: number;
+  couponIssueStatusDistribution: DashboardIssueStatusDistributionResponse[];
+}
+
+export interface ComponentHealthResponse { name: string; status: string; }
+export interface SystemHealthResponse {
+  overallStatus: string;
+  components: ComponentHealthResponse[];
+}
+export interface MonitoringSettingsResponse { streamEnabled: boolean; }
+export interface MonitoringEventResponse {
+  id: string;
+  level: "WARN" | "ERROR" | string;
+  source: string;
+  message: string;
+  exception: string | null;
+  occurredAt: string;
+}
 export interface AdminSessionCreateResponse { token: string; expiresAt: string; }
 
 export interface CouponIssueUseRequest {
