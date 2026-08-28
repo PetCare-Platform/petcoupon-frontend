@@ -30,7 +30,11 @@ export function SummaryCards({
   const notRun = status === null || status.accepted === 0;
   const dash = "—";
 
-  const overIssuedCount = status ? Math.max(status.consumed - (coupon?.totalQuantity ?? 0), 0) : 0;
+  // 색은 백엔드 overIssued 플래그를 쓰므로 숫자도 같은 식으로 센다 —
+  // 백엔드: passed > min(accepted, totalQuantity). 재고만 기준으로 삼으면
+  // "재고는 안 넘었는데 접수보다 많이 나간" 초과 발급에서 빨간 카드에 0건이 찍힌다.
+  const expectedPassed = status ? Math.min(status.accepted, coupon?.totalQuantity ?? 0) : 0;
+  const overIssuedCount = status ? Math.max(status.passed - expectedPassed, 0) : 0;
 
   return (
     <div className="container-page grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
