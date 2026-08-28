@@ -311,6 +311,51 @@ export interface CouponPipelineDrainStatusResponse {
   checkFailed: boolean;
 }
 
+/**
+ * GET /admin/coupons/{couponId}/load-test-status — 백엔드 #195.
+ *
+ * 대시보드 1줄 카드와 2줄 깔때기가 이 응답 하나로 그려진다.
+ * load-test/sql/verify_issue_result.sql을 서비스로 옮긴 값들이다.
+ */
+export interface CouponLoadTestStatusResponse {
+  /** 접수된 요청 수 — idempotency_key 기준 */
+  accepted: number;
+  /** Redis 재고 차감을 통과한 수 */
+  passed: number;
+  /** 재고 소진 등으로 탈락한 수 */
+  rejected: number;
+
+  // 발급 파이프라인 단계별 잔여·완료
+  pending: number;
+  sent: number;
+  consumed: number;
+  failed: number;
+  dlq: number;
+  inProgressIdempotencyKeys: number;
+
+  /** 발급 수가 재고를 넘었는가 — 선착순의 합격 조건 */
+  overIssued: boolean;
+  /** 2매 이상 받은 회원 수 */
+  duplicateUsers: number;
+  /** 순번이 1..N으로 온전한가 */
+  sequenceIntact: boolean;
+  /** 첫 발급부터 마지막 발급까지 걸린 시간 */
+  elapsedSeconds: number;
+}
+
+/**
+ * GET /admin/coupons/{couponId}/failure-reasons — 백엔드 #195.
+ *
+ * 원안보다 분류가 좁다. EVENT_NOT_OPEN·EVENT_CLOSED는 멱등키 등록 전에 Fail-Fast로
+ * 끝나 저장되지 않고, failures도 실제 코드에 있는 발생 지점 2개만 분류한다.
+ */
+export interface CouponFailureReasonResponse {
+  /** 정상 탈락 — 선착순이 제대로 동작한 결과다. 실패로 표시하면 안 된다. */
+  rejections: { soldOut: number; alreadyIssued: number };
+  /** 이상 실패 — 0이어야 한다. */
+  failures: { kafkaPublishFailed: number; consumeProcessingFailed: number };
+}
+
 /** GET /admin/coupons/{couponId}/issue-timeseries?windowSeconds=&bucketSeconds= — 백엔드 #198. */
 export interface CouponIssueTimeSeriesResponse {
   couponId: number;

@@ -1,6 +1,8 @@
 import { apiGet } from "./http";
 import type {
+  CouponFailureReasonResponse,
   CouponIssueTimeSeriesResponse,
+  CouponLoadTestStatusResponse,
   CouponPipelineDrainStatusResponse,
   DashboardSummaryResponse,
   IssueStatisticsResponse,
@@ -55,4 +57,20 @@ export function getIssueTimeSeries(
     `/admin/coupons/${couponId}/issue-timeseries?windowSeconds=${windowSeconds}&bucketSeconds=${bucketSeconds}`,
     signal,
   );
+}
+
+/** GET /admin/coupons/{couponId}/load-test-status — 백엔드 #195 */
+export function getLoadTestStatus(
+  couponId: number,
+  signal?: AbortSignal,
+): Promise<CouponLoadTestStatusResponse> {
+  return apiGet<CouponLoadTestStatusResponse>(`/admin/coupons/${couponId}/load-test-status`, signal);
+}
+
+/** GET /admin/coupons/{couponId}/failure-reasons — 백엔드 #195 */
+export function getFailureReasons(
+  couponId: number,
+  signal?: AbortSignal,
+): Promise<CouponFailureReasonResponse> {
+  return apiGet<CouponFailureReasonResponse>(`/admin/coupons/${couponId}/failure-reasons`, signal);
 }
