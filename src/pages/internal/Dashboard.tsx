@@ -8,7 +8,7 @@ import { IssuePipeline } from "../../components/dashboard/IssuePipeline";
 import { ReconciliationLauncher } from "../../components/dashboard/ReconciliationLauncher";
 import { LoadTestChart } from "../../components/dashboard/LoadTestChart";
 import { FailureReasons } from "../../components/dashboard/FailureReasons";
-import { triggerReconciliation } from "../../api/adminOperations";
+import { reconciliationErrorMessage, triggerReconciliation } from "../../api/adminOperations";
 import { getCoupons } from "../../api/coupons";
 import {
   getFailureReasons,
@@ -123,7 +123,7 @@ export default function Dashboard() {
       setReconResult(await triggerReconciliation(couponId));
       setRefreshKey((key) => key + 1);
     } catch (err) {
-      setReconError(message(err));
+      setReconError(reconciliationErrorMessage(err));
     } finally {
       setReconRunning(false);
     }

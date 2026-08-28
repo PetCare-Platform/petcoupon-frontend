@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Layout } from "../../components/Layout";
 import { Eyebrow, StatusPill } from "../../components/ui";
-import { triggerReconciliation } from "../../api/adminOperations";
+import { reconciliationErrorMessage, triggerReconciliation } from "../../api/adminOperations";
 import { getCoupons } from "../../api/coupons";
-import { ApiError, NetworkError } from "../../api/http";
 import type {
   CouponListResponse,
   ReconciliationTriggerResponse,
@@ -32,8 +31,7 @@ const fmtElapsed = (ms: number) => {
   const seconds = ms / 1000;
   return seconds >= 60 ? `${seconds.toFixed(1)}초 (약 ${(seconds / 60).toFixed(1)}분)` : `${seconds.toFixed(1)}초`;
 };
-const errorMessage = (err: unknown) =>
-  err instanceof ApiError || err instanceof NetworkError ? err.message : "정합성 검증을 실행하지 못했습니다.";
+const errorMessage = reconciliationErrorMessage;
 
 type BatchRowStatus = "waiting" | "running" | "done" | "failed" | "cancelled";
 

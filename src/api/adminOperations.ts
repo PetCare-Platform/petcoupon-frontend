@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./http";
+import { ApiError, NetworkError, apiGet, apiPost } from "./http";
 import type { CouponIssueDlqPageResponse, CouponIssueDlqReprocessResponse, CouponIssueDlqResponse, ReconciliationTriggerResponse } from "../types/api";
 
 export async function listDlqMessages(page = 0, size = 20, signal?: AbortSignal): Promise<CouponIssueDlqPageResponse> {
@@ -17,4 +17,19 @@ export function reprocessDlqMessage(messageId: number): Promise<CouponIssueDlqRe
 
 export function triggerReconciliation(couponId: number): Promise<ReconciliationTriggerResponse> {
   return apiPost<ReconciliationTriggerResponse>(`/admin/coupons/${couponId}/reconcile`);
+}
+
+/**
+ * 검증 트리거 실패 문구. 백엔드 메시지를 그대로 보여주면 COUPON409-5가
+ * "요청이 처리 중입니다"로만 나와서, 발급 요청이 밀린 건지 검증이 겹친 건지 구분이 안 된다.
+ *
+ * 이 코드는 자동 스케줄러와 겹쳤을 때(기다리면 풀림)와 배치 실행 기록이 STARTED로 굳었을 때
+ * (기다려도 안 풀림) 둘 다에서 나오므로, 양쪽을 다 짚어준다.
+ */
+export function reconciliationErrorMessage(error: unknown): string {
+  if (error instanceof ApiError && error.code === "COUPON409-5") {
+    return "이미 이 쿠폰의 검증이 실행 중입니다. 자동 검증과 겹쳤다면 잠시 후 다시 시도하면 되고, 계속 같은 응답이면 이전 검증이 비정상 종료돼 실행 기록이 남은 경우입니다.";
+  }
+  if (error instanceof ApiError || error instanceof NetworkError) return error.message;
+  return "정합성 검증을 실행하지 못했습니다.";
 }
