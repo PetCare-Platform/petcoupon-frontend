@@ -28,6 +28,10 @@ const SEED_NAME_PREFIX = "SEED-쿠폰-";
 const fmt = (value: number) => value.toLocaleString("ko-KR");
 /** null은 "미검증"(Redis 키 없음 등), 0은 "검증했고 실제로 0건"이라 구분해서 보여준다. */
 const fmtNullable = (value: number | null) => (value === null ? "미검증" : fmt(value));
+const fmtElapsed = (ms: number) => {
+  const seconds = ms / 1000;
+  return seconds >= 60 ? `${seconds.toFixed(1)}초 (약 ${(seconds / 60).toFixed(1)}분)` : `${seconds.toFixed(1)}초`;
+};
 const errorMessage = (err: unknown) =>
   err instanceof ApiError || err instanceof NetworkError ? err.message : "정합성 검증을 실행하지 못했습니다.";
 
@@ -201,11 +205,13 @@ function summarize(rows: BatchRow[]) {
     verdict,
     totalCount: done.reduce((sum, r) => sum + (r.result?.totalCount ?? 0), 0),
     mismatchCount: done.reduce((sum, r) => sum + (r.result?.verificationDetailCount ?? 0), 0),
+    // 회차별 소요의 합이라 회차 사이 간격은 빠진다 — 무시할 수준이다.
+    totalElapsedMs: done.reduce((sum, r) => sum + (r.elapsedMs ?? 0), 0),
   };
 }
 
 function BatchResult({ rows, running }: { rows: BatchRow[]; running: boolean }) {
-  const { done, failed, cancelled, verdict, totalCount, mismatchCount } = summarize(rows);
+  const { done, failed, cancelled, verdict, totalCount, mismatchCount, totalElapsedMs } = summarize(rows);
   const currentIndex = rows.findIndex((r) => r.status === "running");
 
   return (
@@ -283,7 +289,9 @@ function BatchResult({ rows, running }: { rows: BatchRow[]; running: boolean }) 
               <td className={`py-2 text-right tabular-nums ${mismatchCount > 0 ? "text-danger" : "text-[#087c13]"}`}>
                 {fmt(mismatchCount)}
               </td>
-              <td />
+              <td className="py-2 text-right tabular-nums text-ink/60">
+                {totalElapsedMs > 0 ? fmtElapsed(totalElapsedMs) : "—"}
+              </td>
               <td className="py-2 text-right">
                 {running ? (
                   <span className="text-ink/45">—</span>
@@ -335,6 +343,12 @@ export default function Verification() {
   // ref는 루프가 읽고, state는 버튼 문구를 바꾸는 용도라 둘 다 둔다.
   const cancelRef = useRef(false);
   const [cancelRequested, setCancelRequested] = useState(false);
+
+  // 언마운트 시 루프를 멈춘다. 안 그러면 페이지를 떠나도 남은 회차가 계속 실행되고,
+  // 돌아와서 다시 시작하면 옛 루프와 겹쳐 백엔드가 REQUEST_IN_PROGRESS로 막는다.
+  useEffect(() => () => {
+    cancelRef.current = true;
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
