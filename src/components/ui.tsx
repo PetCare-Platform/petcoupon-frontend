@@ -219,14 +219,14 @@ export function FieldGroup({
   children: ReactNode;
 }) {
   return (
-    <div className="grid gap-2">
-      <label htmlFor={htmlFor} className="text-[18px] font-medium">
+    <div className="grid gap-1.5">
+      <label htmlFor={htmlFor} className="text-[14px] font-medium">
         {label}
       </label>
       {children}
-      {help && !error ? <small className="text-[15px] text-ink/60 dark:text-ops-muted">{help}</small> : null}
+      {help && !error ? <small className="text-[13px] text-ink/60 dark:text-ops-muted">{help}</small> : null}
       {error ? (
-        <p className="flex items-start gap-1.5 text-[15px] text-danger">
+        <p className="flex items-start gap-1.5 text-[13px] text-danger">
           <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-danger font-mono text-[11px] font-bold text-paper">
             !
           </span>
@@ -238,7 +238,7 @@ export function FieldGroup({
 }
 
 export const inputClass =
-  "w-full min-h-12 rounded-control border border-hairline bg-paper px-3.5 py-2.5 text-[18px] text-ink placeholder:text-ink-subtle outline-none transition-colors focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-ink dark:border-ops-border dark:bg-ops-bg dark:text-ops-ink dark:placeholder:text-ops-muted";
+  "w-full min-h-10 rounded-control border border-hairline bg-paper px-3 py-2 text-[15px] text-ink placeholder:text-ink-subtle outline-none transition-colors focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-ink dark:border-ops-border dark:bg-ops-bg dark:text-ops-ink dark:placeholder:text-ops-muted";
 
 export function FilterBar<T extends string>({
   options,
