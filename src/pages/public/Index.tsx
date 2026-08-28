@@ -56,7 +56,7 @@ export default function Index() {
   );
 
   return (
-    <Layout area="public" page="index">
+    <Layout area="public">
       <div ref={rootRef}>
         <section id="event-list" className="py-8 md:py-10">
           <div className="container-page">

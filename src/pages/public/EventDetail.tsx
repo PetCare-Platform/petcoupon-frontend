@@ -237,7 +237,7 @@ export default function EventDetail() {
 
   if (eventError) {
     return (
-      <Layout area="public" page="event-detail">
+      <Layout area="public">
         <section className="py-10">
           <div className="container-page">
             <BackLink to="/">이벤트 목록</BackLink>
@@ -251,7 +251,7 @@ export default function EventDetail() {
 
   if (!event) {
     return (
-      <Layout area="public" page="event-detail">
+      <Layout area="public">
         <section className="py-10">
           <div className="container-page">
             <div className="h-8 w-40 animate-pulse rounded-full bg-surface-2" />
@@ -263,7 +263,7 @@ export default function EventDetail() {
   }
 
   return (
-    <Layout area="public" page="event-detail">
+    <Layout area="public">
       <section className="py-10">
         <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
           <div>

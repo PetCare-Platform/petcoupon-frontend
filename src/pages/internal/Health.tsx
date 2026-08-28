@@ -144,7 +144,7 @@ export default function Health() {
   const backendDown = healthError && metricsError;
 
   return (
-    <Layout area="internal" page="health">
+    <Layout area="internal">
       <section>
         <div className="container-page">
           <div className="flex flex-wrap items-start justify-between gap-4">

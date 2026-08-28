@@ -31,7 +31,7 @@ export default function AdminAuth() {
     finally { setActive(false); setExpiresAt(""); setSubmitting(false); }
   }
 
-  return <Layout area="admin" page="auth"><section className="py-10"><div className="container-page max-w-xl">
+  return <Layout area="admin"><section className="py-10"><div className="container-page max-w-xl">
     <Eyebrow>관리자 · 실제 인증 API</Eyebrow><h1 className="mt-2">관리자 인증</h1>
     <p className="mt-3 text-ink-muted">인증 코드는 저장하지 않으며, 발급된 세션 토큰만 현재 탭의 sessionStorage에 보관합니다.</p>
     <div className="mt-8 rounded-block border border-hairline bg-white p-6">

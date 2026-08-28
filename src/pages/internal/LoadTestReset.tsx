@@ -39,7 +39,7 @@ export default function LoadTestReset() {
   }
 
   return (
-    <Layout area="internal" page="load-test-reset">
+    <Layout area="internal">
       <section className="py-10">
         <div className="container-page">
           <Eyebrow>내부 운영 · 실제 API 도구</Eyebrow>

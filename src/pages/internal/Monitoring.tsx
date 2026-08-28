@@ -72,7 +72,7 @@ export default function Monitoring() {
   const connectionLabel = connection === "connected" ? "연결됨" : connection === "connecting" ? "연결 중" : connection === "unauthorized" ? "인증 필요" : "연결 끊김";
 
   return (
-    <Layout area="internal" page="monitoring">
+    <Layout area="internal">
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>

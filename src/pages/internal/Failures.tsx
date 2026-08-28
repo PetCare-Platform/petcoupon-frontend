@@ -23,7 +23,7 @@ export default function Failures() {
     catch (err) { setError(err instanceof ApiError || err instanceof NetworkError ? err.message : "재처리하지 못했습니다."); }
     finally { setProcessingId(null); }
   }
-  return <Layout area="internal" page="failures">
+  return <Layout area="internal">
     <section className="py-8"><div className="container-page"><Eyebrow>내부 운영 · 실제 DLQ API</Eyebrow><h1 className="mt-2">실패 처리</h1><p className="mt-2 text-ops-muted">격리된 발급 메시지를 확인하고 안전하게 수동 재처리합니다.</p></div></section>
     <section className="pb-16 pt-4"><div className="container-page">
       <div className="mb-5 flex items-center justify-between"><div><h2>DLQ 메시지</h2><p className="text-ops-muted">{loading ? "조회 중…" : `${messages.length}건`}</p></div><button type="button" onClick={()=>void load()} className="rounded-full border border-ops-border px-4 py-2">새로고침</button></div>

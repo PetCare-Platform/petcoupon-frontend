@@ -45,7 +45,7 @@ export default function Events() {
   const hasMore = totalElements > (events ?? []).length;
 
   return (
-    <Layout area="admin" page="events">
+    <Layout area="admin">
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>

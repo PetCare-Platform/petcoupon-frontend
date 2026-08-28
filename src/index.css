@@ -377,6 +377,13 @@ body:has(.theme-geist) {
 }
 .theme-geist nav a { border-radius: var(--r-control); }
 
+/* 운영 세로 사이드바는 검은 판이라, 위 규칙(활성 항목 = 검정 배경 + 흰 글씨)이
+   그대로 걸리면 배경과 같은 색이 되어 사라진다. 흰 알약으로 뒤집는다. */
+[data-ops-sidebar] nav a[aria-current="page"] {
+  background-color: #fff;
+  color: rgb(var(--c-ink));
+}
+
 /* --- 테이블: 헤더도 한글이라 모노·대문자를 쓰지 않는다 --- */
 .theme-geist th {
   font-size: 12px;

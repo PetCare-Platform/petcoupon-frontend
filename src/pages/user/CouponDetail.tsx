@@ -96,7 +96,7 @@ export default function CouponDetail() {
 
   if (!couponIssueId) {
     return (
-      <Layout area="user" page="coupon-detail">
+      <Layout area="user">
         <section className="py-6">
           <div className="container-page">
             <p className="text-[15px] text-ink-muted">발급 번호가 없어 쿠폰을 찾을 수 없어요.</p>
@@ -108,7 +108,7 @@ export default function CouponDetail() {
 
   if (loadError) {
     return (
-      <Layout area="user" page="coupon-detail">
+      <Layout area="user">
         <section className="py-6">
           <div className="container-page">
             <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.02em] md:text-[32px]">{loadError}</h1>
@@ -120,7 +120,7 @@ export default function CouponDetail() {
 
   if (!detail) {
     return (
-      <Layout area="user" page="coupon-detail">
+      <Layout area="user">
         <section className="py-6">
           <div className="container-page">
             <div className="h-8 w-40 animate-pulse rounded-full bg-surface-2" />
@@ -135,7 +135,7 @@ export default function CouponDetail() {
   }
 
   return (
-    <Layout area="user" page="coupon-detail">
+    <Layout area="user">
       {/* 네 개로 쪼개져 있던 섹션(발급 헤더 / 코드 / 발급 정보 / 쿠폰 처리)을
           한 섹션 2단 그리드로 합친다. 스크롤 없이 한 화면에서 끝나야 한다. */}
       <section className="py-6">

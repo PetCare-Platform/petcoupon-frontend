@@ -122,7 +122,7 @@ export default function EventForm() {
 
   if (isEdit && loadingEvent) {
     return (
-      <Layout area="admin" page="event-form">
+      <Layout area="admin">
         <section className="py-10">
           <div className="container-page">불러오는 중…</div>
         </section>
@@ -132,7 +132,7 @@ export default function EventForm() {
 
   if (isEdit && loadError) {
     return (
-      <Layout area="admin" page="event-form">
+      <Layout area="admin">
         <section className="py-10">
           <div className="container-page">
             <BackLink to="/admin/events">이벤트 목록</BackLink>
@@ -144,7 +144,7 @@ export default function EventForm() {
   }
 
   return (
-    <Layout area="admin" page="event-form">
+    <Layout area="admin">
       <section className="py-10">
         <div className="container-page">
           <BackLink to="/admin/events">이벤트 목록</BackLink>

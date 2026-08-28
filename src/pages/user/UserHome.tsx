@@ -36,7 +36,7 @@ export default function UserHome() {
   }
 
   return (
-    <Layout area="user" page="user">
+    <Layout area="user">
       <section className="py-5">
         <div className="container-page">
           <div className="mx-auto max-w-5xl">

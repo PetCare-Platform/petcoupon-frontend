@@ -63,7 +63,7 @@ export default function MyCoupons() {
   const expiringSoon = (coupons ?? []).find((c) => c.status === "ISSUED" && isWithinHours(c.expiresAt, 48));
 
   return (
-    <Layout area="user" page="my-coupons">
+    <Layout area="user">
       <section className="py-8 md:py-10">
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
