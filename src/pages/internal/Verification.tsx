@@ -173,12 +173,39 @@ function SingleResult({ result, elapsedMs }: { result: ReconciliationTriggerResp
   );
 }
 
-function BatchResult({ rows, running }: { rows: BatchRow[]; running: boolean }) {
+/**
+ * 요약 판정. 중단(cancelled)을 따로 세지 않으면 failed도 allMatched도 아니어서
+ * "불일치 있음"으로 떨어진다 — 정합성 문제를 찾은 게 아니라 사용자가 멈춘 것뿐인데도.
+ *
+ * 불일치를 중단보다 앞에 둔다. 멈추기 전에 이미 불일치를 찾았다면 그쪽이 더 중요한 정보다.
+ */
+function summarize(rows: BatchRow[]) {
   const done = rows.filter((r) => r.status === "done");
-  const totalCount = done.reduce((sum, r) => sum + (r.result?.totalCount ?? 0), 0);
-  const mismatchCount = done.reduce((sum, r) => sum + (r.result?.verificationDetailCount ?? 0), 0);
-  const allMatched = done.length === rows.length && done.every((r) => r.result?.result === "MATCHED");
   const failed = rows.filter((r) => r.status === "failed").length;
+  const cancelled = rows.filter((r) => r.status === "cancelled").length;
+  const mismatched = done.filter((r) => r.result?.result !== "MATCHED").length;
+
+  const verdict: { label: string; tone: "open" | "danger" | "warning" | "neutral" } =
+    failed > 0
+      ? { label: `${failed}건 실패`, tone: "danger" }
+      : mismatched > 0
+        ? { label: "불일치 있음", tone: "danger" }
+        : cancelled > 0
+          ? { label: "중단됨", tone: "warning" }
+          : { label: "전부 MATCHED", tone: "open" };
+
+  return {
+    done,
+    failed,
+    cancelled,
+    verdict,
+    totalCount: done.reduce((sum, r) => sum + (r.result?.totalCount ?? 0), 0),
+    mismatchCount: done.reduce((sum, r) => sum + (r.result?.verificationDetailCount ?? 0), 0),
+  };
+}
+
+function BatchResult({ rows, running }: { rows: BatchRow[]; running: boolean }) {
+  const { done, failed, cancelled, verdict, totalCount, mismatchCount } = summarize(rows);
   const currentIndex = rows.findIndex((r) => r.status === "running");
 
   return (
@@ -188,18 +215,16 @@ function BatchResult({ rows, running }: { rows: BatchRow[]; running: boolean }) 
           <h2>{SEED_NAME_PREFIX} 일괄 검증</h2>
           {running ? (
             <StatusPill tone="neutral">검증 중</StatusPill>
-          ) : failed > 0 ? (
-            <StatusPill tone="danger">{failed}건 실패</StatusPill>
-          ) : allMatched ? (
-            <StatusPill tone="open">전부 MATCHED</StatusPill>
           ) : (
-            <StatusPill tone="warning">불일치 있음</StatusPill>
+            <StatusPill tone={verdict.tone}>{verdict.label}</StatusPill>
           )}
         </div>
         <p className="text-[13px] text-ink/60" aria-live="polite">
           {running && currentIndex >= 0
             ? `${currentIndex + 1}/${rows.length} 검증 중… ${rows[currentIndex].name}`
-            : `${done.length}/${rows.length} 완료`}
+            : cancelled > 0
+              ? `${done.length}/${rows.length} 완료 · ${cancelled}건 중단`
+              : `${done.length}/${rows.length} 완료`}
         </p>
       </div>
 
@@ -260,12 +285,20 @@ function BatchResult({ rows, running }: { rows: BatchRow[]; running: boolean }) 
               </td>
               <td />
               <td className="py-2 text-right">
-                {!running && failed === 0 ? (
-                  <span className={allMatched ? "text-[#087c13]" : "text-danger"}>
-                    {allMatched ? "전부 MATCHED" : "불일치 있음"}
-                  </span>
-                ) : (
+                {running ? (
                   <span className="text-ink/45">—</span>
+                ) : (
+                  <span
+                    className={
+                      verdict.tone === "open"
+                        ? "text-[#087c13]"
+                        : verdict.tone === "warning"
+                          ? "text-clay-ink"
+                          : "text-danger"
+                    }
+                  >
+                    {verdict.label}
+                  </span>
                 )}
               </td>
             </tr>
@@ -299,7 +332,9 @@ export default function Verification() {
   const [batchRows, setBatchRows] = useState<BatchRow[] | null>(null);
   const [batchRunning, setBatchRunning] = useState(false);
   // 4분짜리 작업이라 중단 수단이 필요하다. 순차 루프가 매 회차 시작 전에 확인한다.
+  // ref는 루프가 읽고, state는 버튼 문구를 바꾸는 용도라 둘 다 둔다.
   const cancelRef = useRef(false);
+  const [cancelRequested, setCancelRequested] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -356,6 +391,7 @@ export default function Verification() {
   async function handleBatch() {
     if (seedCoupons.length === 0) return;
     cancelRef.current = false;
+    setCancelRequested(false);
     setBatchRunning(true);
     setError("");
     setResult(null);
@@ -390,6 +426,7 @@ export default function Verification() {
     }
 
     setBatchRunning(false);
+    setCancelRequested(false);
   }
 
   return (
@@ -443,15 +480,25 @@ export default function Verification() {
                   : `${SEED_NAME_PREFIX} 쿠폰이 없습니다. 시드 데이터를 먼저 적재하세요.`}
               </p>
               {batchRunning ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    cancelRef.current = true;
-                  }}
-                  className="mt-2 inline-flex min-h-9 w-full items-center justify-center rounded-full border border-ink px-4 text-[14px] font-medium"
-                >
-                  중단
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      cancelRef.current = true;
+                      setCancelRequested(true);
+                    }}
+                    disabled={cancelRequested}
+                    className="mt-2 inline-flex min-h-9 w-full items-center justify-center rounded-full border border-ink px-4 text-[14px] font-medium disabled:opacity-50"
+                  >
+                    {cancelRequested ? "중단 대기 중…" : "다음 회차부터 중단"}
+                  </button>
+                  {/* 백엔드에 실행 중인 배치를 취소하는 API가 없다. 진행 중인 회차는 끝까지 돈다. */}
+                  <p className="mt-1.5 text-[12px] text-ink/55">
+                    {cancelRequested
+                      ? "진행 중인 회차가 끝나면 멈춥니다. 최대 1분 정도 걸립니다."
+                      : "진행 중인 회차는 끝까지 돌고, 다음 회차부터 실행하지 않습니다."}
+                  </p>
+                </>
               ) : (
                 <button
                   type="button"
