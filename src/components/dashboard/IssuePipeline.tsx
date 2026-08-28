@@ -28,10 +28,9 @@ export function IssuePipeline({
   // 확정된 것, 실패한 것을 모두 더한다.
   const outbox = status.pending + status.sent + status.consumed + status.failed + status.dlq;
 
-  // Kafka 발행 단계는 두지 않는다. DLQ 건이 발행 전에 실패했는지(KAFKA_PUBLISH_FAILED)
-  // 발행 후 소비에서 실패했는지(CONSUME_PROCESSING_FAILED) 이 응답만으로는 갈리지 않아,
-  // sent+consumed로 계산하면 발행됐는데도 빠지는 건이 생긴다.
-
+  // Kafka 발행은 백엔드가 세어준 published를 그대로 쓴다(#200). sent+consumed로 직접
+  // 계산하면 발행된 뒤 소비에서 실패해 DLQ로 간 건이 빠져서, 발행에 실패한 것처럼
+  // 손실 위치를 거꾸로 가리킨다.
   const rows: { label: string; value: number; note?: string; color: string; danger?: boolean }[] = [
     { label: "접수", value: status.accepted, color: "#B5D4F4" },
     {
@@ -40,7 +39,11 @@ export function IssuePipeline({
       note: status.rejected > 0 ? `탈락 ${fmt(status.rejected)}` : undefined,
       color: "#85B7EB",
     },
-    { label: "Outbox 적재", value: outbox, color: "#378ADD" },
+    { label: "Outbox 적재", value: outbox, color: "#6BA5E5" },
+    // 이 단계에는 danger를 걸지 않는다. FAILED는 발행에 실패했지만 Outbox 폴러가 다시
+    // 집어가는 재시도 대기 상태라, 미달을 곧바로 빨갛게 칠하면 곧 복구될 값에 경보가 뜬다.
+    // 최종 손실은 아래 DLQ와 DB 확정이 잡는다.
+    { label: "Kafka 발행", value: status.published, color: "#378ADD" },
     {
       label: "DB 확정",
       value: status.consumed,

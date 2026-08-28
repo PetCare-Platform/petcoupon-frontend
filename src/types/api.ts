@@ -331,6 +331,12 @@ export interface CouponLoadTestStatusResponse {
   consumed: number;
   failed: number;
   dlq: number;
+  /**
+   * Kafka 발행에 성공한 수 (#200). sent+consumed로 계산하면 발행된 뒤 소비에서 실패해
+   * DLQ로 간 건이 빠져서 "발행을 못 했다"처럼 거꾸로 보이므로 백엔드가 직접 세어준다.
+   * = SENT + CONSUMED + (DLQ·ABANDONED 중 사유가 CONSUME_PROCESSING_FAILED인 것)
+   */
+  published: number;
   inProgressIdempotencyKeys: number;
 
   /** 발급 수가 재고를 넘었는가 — 선착순의 합격 조건 */
