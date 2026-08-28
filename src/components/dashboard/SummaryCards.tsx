@@ -40,7 +40,10 @@ export function SummaryCards({
     <div className="container-page grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
       <SummaryCard
         label="재고 / 발급"
-        value={coupon ? `${fmt(coupon.totalQuantity)} / ${status ? fmt(status.consumed) : dash}` : dash}
+        // 발급 수는 consumed(Outbox 소비 건수)가 아니라 passed(실제 coupon_issue 행)다 —
+        // 옆 카드의 초과 발급 판정과 기준을 맞춘다. consumed와의 차이(유실)는 판정 배지와
+        // 깔때기의 `단계 간 손실`이 이미 잡는다.
+        value={coupon ? `${fmt(coupon.totalQuantity)} / ${status ? fmt(status.passed) : dash}` : dash}
       />
       <SummaryCard
         label="초과 발급"
