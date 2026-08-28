@@ -76,7 +76,7 @@ export default function CouponForm() {
 
   if (!eventId) {
     return (
-      <Layout area="admin" page="coupon-form">
+      <Layout area="admin">
         <section className="py-10">
           <div className="container-page">
             <BackLink to="/admin/events">이벤트 목록</BackLink>
@@ -95,7 +95,7 @@ export default function CouponForm() {
     // 더 이상 ?couponId= 우회 링크가 필요 없다 — 이벤트 상세로 바로 이동한다.
     const applyLink = `/event-detail/${created.eventId}`;
     return (
-      <Layout area="admin" page="coupon-form">
+      <Layout area="admin">
         <section className="py-10">
           <div className="container-page max-w-2xl">
             <BackLink to="/admin/coupons">쿠폰 목록</BackLink>
@@ -126,7 +126,7 @@ export default function CouponForm() {
   }
 
   return (
-    <Layout area="admin" page="coupon-form">
+    <Layout area="admin">
       <section className="py-10">
         <div className="container-page">
           <BackLink to="/admin/coupons">쿠폰 목록</BackLink>

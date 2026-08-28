@@ -127,7 +127,7 @@ export default function Coupons() {
   }
 
   return (
-    <Layout area="admin" page="coupons">
+    <Layout area="admin">
       <section className="py-10">
         <div className="container-page flex flex-wrap items-end justify-between gap-6">
           <div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { PawPrint } from "@phosphor-icons/react";
+import { DownloadSimple, PawPrint } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
 import { BackLink, BrandIllustration, Eyebrow, LinkButton, StatusPill } from "../../components/ui";
 import { getPublicEventDetail } from "../../api/events";
@@ -237,7 +237,7 @@ export default function EventDetail() {
 
   if (eventError) {
     return (
-      <Layout area="public" page="event-detail">
+      <Layout area="public">
         <section className="py-10">
           <div className="container-page">
             <BackLink to="/">이벤트 목록</BackLink>
@@ -251,7 +251,7 @@ export default function EventDetail() {
 
   if (!event) {
     return (
-      <Layout area="public" page="event-detail">
+      <Layout area="public">
         <section className="py-10">
           <div className="container-page">
             <div className="h-8 w-40 animate-pulse rounded-full bg-surface-2" />
@@ -263,44 +263,45 @@ export default function EventDetail() {
   }
 
   return (
-    <Layout area="public" page="event-detail">
-      <section className="py-10">
-        <div className="container-page grid gap-10 md:grid-cols-[1.15fr_1fr] md:items-center">
-          <div>
+    <Layout area="public">
+      {/* 이벤트 정보는 한 화면의 상단 요약 영역으로 압축한다. 데이터와 일러스트는 그대로 유지한다. */}
+      <section className="py-5 md:py-6">
+        <div className="container-page grid gap-6 md:grid-cols-[minmax(0,1fr)_400px] md:items-center lg:grid-cols-[minmax(0,1fr)_460px">
+          <div className="min-w-0">
             <BackLink to="/">이벤트 목록</BackLink>
-            <Eyebrow>{eventStatusLabel[event.status]}</Eyebrow>
-            <h1 className="mt-2">{event.name}</h1>
-            {event.description ? <p className="mt-4 max-w-[56ch] text-[18px] text-ink/70">{event.description}</p> : null}
-            <p className="mt-4 text-[15px] font-medium text-ink-muted">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <StatusPill tone={eventStatusTone[event.status]}>{eventStatusLabel[event.status]}</StatusPill>
+              <span className="text-[12px] font-medium text-ink/50">EVENT #{event.eventId}</span>
+            </div>
+            <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.025em] md:text-[36px]">{event.name}</h1>
+            {event.description ? <p className="mt-2 max-w-[70ch] text-[14px] leading-relaxed text-ink/70 md:text-[15px]">{event.description}</p> : null}
+            <p className="mt-2 text-[13px] font-medium text-ink-muted">
               이벤트 기간 · {formatDateTime(event.openAt)} ~ {formatDateTime(event.closeAt)}
             </p>
-            <div className="mt-8">
-              <LinkButton to="#coupons">쿠폰 확인하기</LinkButton>
-            </div>
           </div>
-          <div>
-            <BrandIllustration aspect="aspect-[4/3]" />
+          <div className="hidden md:block [&_[role=tablist]]:mx-auto [&_[role=tablist]]:w-[30%]">
+            <BrandIllustration aspect="aspect-[5/2.35]" />
           </div>
         </div>
       </section>
 
-      <section id="coupons" className="py-10">
-        <div className="container-page max-w-3xl">
-          <div className="flex items-start justify-between gap-3">
+      <section id="coupons" className="pb-6 pt-2 md:pb-8">
+        <div className="container-page">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-t border-hairline pt-4">
             <div>
               <Eyebrow>
                 <PawPrint weight="fill" className="h-3.5 w-3.5" aria-hidden="true" />
                 이벤트 쿠폰
               </Eyebrow>
-              <h2 className="mt-2">이 이벤트에서 받을 수 있는 쿠폰</h2>
-              <p className="mt-2 text-[17px] text-ink/70">한 사람당 쿠폰 한 종류당 한 장만 받을 수 있어요.</p>
+              <h2 className="mt-1.5 text-[22px] font-semibold leading-tight tracking-[-0.02em] md:text-[26px]">이 이벤트에서 받을 수 있는 쿠폰</h2>
             </div>
+            <p className="text-[13px] text-ink/70">한 사람당 쿠폰 한 종류당 한 장만 받을 수 있어요.</p>
           </div>
 
           {userId === null ? (
-            <div className="mt-6 rounded-control border border-clay/30 bg-clay/10 p-4 text-sm text-clay-ink">
-              <strong className="block">사용자 ID가 설정되어 있지 않아요.</strong>
-              <p className="mt-1">
+            <div className="mt-3 flex flex-wrap items-center gap-x-2 rounded-control border border-clay/30 bg-clay/10 px-3.5 py-2.5 text-[13px] text-clay-ink">
+              <strong>사용자 ID가 설정되어 있지 않아요.</strong>
+              <p>
                 쿠폰을 발급받으려면 먼저{" "}
                 <Link to="/user" className="underline underline-offset-4">
                   사용자 정보
@@ -311,108 +312,149 @@ export default function EventDetail() {
           ) : null}
 
           {coupons && coupons.length === 0 ? (
-            <div className="mt-6 rounded-block border border-dashed border-hairline p-10 text-center">
+            <div className="mt-4 rounded-block border border-dashed border-hairline p-8 text-center">
               <h3 className="text-lg font-semibold">아직 연결된 쿠폰이 없어요.</h3>
-              <p className="mt-2 text-ink/70">이 이벤트에 쿠폰이 등록되면 이곳에서 발급받을 수 있어요.</p>
+              <p className="mt-1.5 text-[14px] text-ink/70">이 이벤트에 쿠폰이 등록되면 이곳에서 발급받을 수 있어요.</p>
             </div>
           ) : (
-            <div className="mt-6 grid gap-4">
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
               {(coupons ?? []).map((coupon) => {
                 const remaining = coupon.stock?.remainingQuantity;
                 const soldOutByStock = remaining !== undefined && remaining <= 0;
                 const canIssue = coupon.status === "ACTIVE" && !soldOutByStock && userId !== null && !issuing;
                 const thisIssue = issue?.couponId === coupon.couponId ? issue : null;
+                const actionLabel =
+                  thisIssue?.phase === "issuing"
+                    ? "쿠폰 발급 요청 중"
+                    : thisIssue?.phase === "waiting"
+                      ? "쿠폰 발급 처리 중"
+                      : coupon.status === "READY"
+                        ? "발급 예정인 쿠폰"
+                        : coupon.status === "SOLD_OUT" || soldOutByStock
+                          ? "소진된 쿠폰"
+                          : coupon.status === "ENDED"
+                            ? "발급이 종료된 쿠폰"
+                            : "쿠폰 발급";
                 return (
-                  <article key={coupon.couponId} className="rounded-block border border-hairline p-6">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-lg font-semibold">{coupon.name}</h3>
-                          <StatusPill tone={couponStatusTone[coupon.status]}>{couponStatusLabel[coupon.status]}</StatusPill>
+                  <article
+                    key={coupon.couponId}
+                    className="relative overflow-hidden rounded-block border border-hairline bg-paper shadow-[0_6px_18px_rgba(23,36,58,0.07)]"
+                  >
+                    {/* 양옆 홈과 절취선을 넣은 티켓 본체. */}
+                    <span className="absolute -left-2 top-[42%] z-[2] h-4 w-4 rounded-full border border-hairline bg-canvas" aria-hidden="true" />
+                    <span className="absolute -right-2 top-[42%] z-[2] h-4 w-4 rounded-full border border-hairline bg-canvas" aria-hidden="true" />
+
+                    <div className="grid min-h-[190px] grid-cols-[minmax(0,1fr)_120px] sm:grid-cols-[minmax(0,1fr)_138px]">
+                      <div className="min-w-0 p-4 pr-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-ink">
+                              PETCOUPON{" "}
+                              <span className="text-ink/40">
+                                · COUPON #{coupon.couponId}
+                              </span>
+                            </p>
+                            <h3 className="mt-0.5 truncate text-[19px] font-semibold">{coupon.name}</h3>
+                          </div>
+                          <span className="flex-none text-[30px] font-semibold leading-none tracking-[-0.03em]">
+                            {discountLabel(coupon.discountType, coupon.discountValue)}
+                            <small className="ml-1 text-[14px] font-medium text-ink-muted">할인</small>
+                          </span>
                         </div>
-                        {conditionLine(coupon) ? <p className="mt-1 text-sm text-ink/70">{conditionLine(coupon)}</p> : null}
-                      </div>
-                      <span className="text-2xl font-semibold">{discountLabel(coupon.discountType, coupon.discountValue)}</span>
-                    </div>
 
-                    <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                      <div>
-                        <dt className="text-ink/50">발급 기간</dt>
-                        <dd className="font-medium">
-                          {formatDateTime(coupon.issueStartAt)} ~ {formatDateTime(coupon.issueEndAt)}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-ink/50">사용 기한</dt>
-                        <dd className="font-medium">발급 후 {coupon.validDays}일</dd>
-                      </div>
-                      <div className="col-span-2">
-                        <dt className="text-ink/50">남은 수량</dt>
-                        <dd className="font-medium tabular-nums">
-                          {coupon.stockError ? (
-                            <span className="text-clay-ink">재고 정보를 불러오지 못했습니다.</span>
-                          ) : coupon.stock ? (
-                            <>
-                              {coupon.stock.remainingQuantity.toLocaleString()} / {coupon.stock.totalQuantity.toLocaleString()}장
-                              <span className="ml-2 font-normal text-ink/50">발급 {coupon.stock.issuedQuantity.toLocaleString()}건</span>
-                            </>
-                          ) : couponStatusLoading ? (
-                            <span className="text-ink/50">재고 확인 중…</span>
-                          ) : (
-                            <span className="text-ink/50">—</span>
-                          )}
-                        </dd>
-                      </div>
-                    </dl>
+                        {conditionLine(coupon) ? <p className="mt-1.5 text-[14px] text-ink/70">{conditionLine(coupon)}</p> : null}
 
-                    <div className="mt-5">
+                        <dl className="mt-3.5 grid gap-x-3 gap-y-2 text-[14px] sm:grid-cols-2">
+                          <div>
+                            <dt className="text-[12px] text-ink/50">발급 기간</dt>
+                            <dd className="mt-0.5 font-medium leading-snug">
+                              {formatDateTime(coupon.issueStartAt)} ~ {formatDateTime(coupon.issueEndAt)}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-[12px] text-ink/50">사용 기한</dt>
+                            <dd className="mt-0.5 font-medium">발급 후 {coupon.validDays}일</dd>
+                          </div>
+                          <div className="sm:col-span-2">
+                            <dt className="text-ink/50">남은 수량</dt>
+                            <dd className="mt-0.5 font-medium tabular-nums">
+                              {coupon.stockError ? (
+                                <span className="text-clay-ink">재고 정보를 불러오지 못했습니다.</span>
+                              ) : coupon.stock ? (
+                                <>
+                                  {coupon.stock.remainingQuantity.toLocaleString()} / {coupon.stock.totalQuantity.toLocaleString()}장
+                                  <span className="ml-1.5 font-normal text-ink/50">· 발급 {coupon.stock.issuedQuantity.toLocaleString()}건</span>
+                                </>
+                              ) : couponStatusLoading ? (
+                                <span className="text-ink/50">재고 확인 중…</span>
+                              ) : (
+                                <span className="text-ink/50">—</span>
+                              )}
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                      
                       <button
                         type="button"
                         onClick={() => handleIssue(coupon.couponId)}
                         disabled={!canIssue}
-                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink bg-ink px-5 text-[18px] font-medium text-paper transition-all active:scale-[0.97] hover:bg-[#262626] disabled:cursor-not-allowed disabled:border-hairline disabled:bg-surface-2 disabled:text-ink-muted disabled:hover:bg-surface-2"
+                        aria-label={actionLabel}
+                        title={actionLabel}
+                        className="relative flex h-full w-full items-center justify-center border-l border-dashed border-hairline bg-accent/15 text-ink transition-colors hover:bg-accent/30 active:bg-accent/40 disabled:cursor-not-allowed disabled:bg-surface-2/60 disabled:text-ink-muted"
                       >
-                        {thisIssue?.phase === "issuing" || thisIssue?.phase === "waiting" ? (
-                          <span className="h-4 w-4 flex-none animate-spin rounded-full border-2 border-paper/30 border-t-paper" aria-hidden="true" />
-                        ) : null}
-                        {thisIssue?.phase === "issuing"
-                          ? "발급 요청 중"
-                          : thisIssue?.phase === "waiting"
-                            ? "발급 처리 중"
-                            : coupon.status === "READY"
-                              ? "발급 예정"
-                              : coupon.status === "SOLD_OUT" || soldOutByStock
-                                ? "소진되었습니다"
-                                : coupon.status === "ENDED"
-                                  ? "발급이 종료되었습니다"
-                                  : "쿠폰 발급"}
+                        <span
+                          className="absolute -left-2 -top-2 h-4 w-4 rounded-full border border-hairline bg-canvas"
+                          aria-hidden="true"
+                        />
+
+                        <span
+                          className="absolute -bottom-2 -left-2 h-4 w-4 rounded-full border border-hairline bg-canvas"
+                          aria-hidden="true"
+                        />
+
+                        {thisIssue?.phase === "issuing" ||
+                        thisIssue?.phase === "waiting" ? (
+                          <span
+                            className="h-7 w-7 animate-spin rounded-full border-[3px] border-ink/20 border-t-ink"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <DownloadSimple
+                            weight="bold"
+                            className="h-9 w-9"
+                            aria-hidden="true"
+                          />
+                        )}
                       </button>
                     </div>
 
                     {thisIssue && thisIssue.phase === "success" ? (
-                      <div className="mt-4 rounded-control border border-success/30 bg-success/10 p-4 text-sm">
-                        <strong className="block text-[#0a8f3c]">쿠폰이 발급되었습니다.</strong>
-                        <LinkButton to="/user/my-coupons" variant="secondary" className="mt-3 !min-h-10 !text-[15px]">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-success/30 bg-success/10 px-4 py-2.5 text-[12px]">
+                        <strong className="text-[#0a8f3c]">쿠폰이 발급되었습니다.</strong>
+                        <LinkButton to="/user/my-coupons" variant="secondary" className="!min-h-8 !px-3 !py-1 !text-[12px]">
                           내 쿠폰 보기
                         </LinkButton>
                       </div>
                     ) : null}
 
                     {thisIssue && thisIssue.phase === "pending" ? (
-                      <div className="mt-4 rounded-control border border-hairline bg-surface-2 p-4 text-sm">
-                        <strong className="block">발급 요청이 접수됐어요.</strong>
-                        {thisIssue.message ? <p className="mt-1 text-ink/80">{thisIssue.message}</p> : null}
-                        <LinkButton to="/user/my-coupons" variant="secondary" className="mt-3 !min-h-10 !text-[15px]">
+                      <div className="border-t border-hairline bg-surface-2 px-4 py-2.5 text-[12px]">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <strong>발급 요청이 접수됐어요.</strong>
+                          <LinkButton to="/user/my-coupons" variant="secondary" className="!min-h-8 !px-3 !py-1 !text-[12px]">
                           내 쿠폰 보기
-                        </LinkButton>
+                          </LinkButton>
+                        </div>
+                        {thisIssue.message ? <p className="mt-1 text-ink/80">{thisIssue.message}</p> : null}
                       </div>
                     ) : null}
 
                     {thisIssue && thisIssue.phase === "error" ? (
-                      <div className="mt-4 rounded-control border border-danger/30 bg-danger/10 p-4 text-sm">
+                      <div className="border-t border-danger/30 bg-danger/10 px-4 py-2.5 text-[12px]">
                         <strong className="block text-danger">{thisIssue.message}</strong>
                         {userId === null ? (
-                          <LinkButton to="/user" variant="secondary" className="mt-3 !min-h-10 !text-[15px]">
+                          <LinkButton to="/user" variant="secondary" className="mt-2 !min-h-8 !px-3 !py-1 !text-[12px]">
                             사용자 ID 설정하기
                           </LinkButton>
                         ) : (
@@ -425,11 +467,9 @@ export default function EventDetail() {
               })}
 
               {coupons === null ? (
-                <div className="grid gap-4">
-                  {[0, 1].map((i) => (
-                    <div key={i} className="h-[200px] animate-pulse rounded-block border border-hairline bg-surface-2" />
-                  ))}
-                </div>
+                [0, 1, 2, 3].map((i) => (
+                  <div key={i} className="h-[178px] animate-pulse rounded-block border border-hairline bg-surface-2" />
+                ))
               ) : null}
             </div>
           )}

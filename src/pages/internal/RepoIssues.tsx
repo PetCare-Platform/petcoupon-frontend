@@ -80,7 +80,7 @@ export default function RepoIssues() {
   const closedCount = issues.filter((i) => i.state === "closed").length;
 
   return (
-    <Layout area="internal" page="repo-issues">
+    <Layout area="internal">
       <section className="py-8">
         <div className="container-page flex flex-wrap items-end justify-between gap-4">
           <div>

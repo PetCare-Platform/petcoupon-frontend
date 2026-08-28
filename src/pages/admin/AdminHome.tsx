@@ -11,7 +11,7 @@ export default function AdminHome() {
   const todayLabel = formatDate(new Date());
 
   return (
-    <Layout area="admin" page="admin">
+    <Layout area="admin">
       <section className="py-10">
         <div className="container-page grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-start">
           <div>

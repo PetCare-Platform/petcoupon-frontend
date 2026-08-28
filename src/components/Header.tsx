@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { CaretDown, PawPrint, UserCircle } from "@phosphor-icons/react";
-import { AREA_ROUTES, type AreaKey } from "../routes";
+import { PawPrint, UserCircle } from "@phosphor-icons/react";
 import { getCurrentUserId, subscribeCurrentUserId } from "../api/currentUser";
 import { getAdminSessionToken } from "../api/adminSession";
 import { deleteAdminSession } from "../api/adminAuth";
 
-/** 공개 사용자에게 노출하는 주요 메뉴. 관리자/내부 운영 메뉴는 헤더에서 동급으로 노출하지 않는다. */
+/**
+ * 공개 사용자에게 노출하는 주요 메뉴.
+ *
+ * 관리자·내부 운영은 이 헤더를 쓰지 않는다 — Layout이 그 영역에서는 Sidebar로
+ * 갈아끼우므로, 여기에 운영 메뉴 분기를 둘 필요가 없다.
+ */
 const PUBLIC_LINKS = [
   { label: "이벤트", path: "/" },
   { label: "내 쿠폰", path: "/user/my-coupons" },
@@ -42,13 +46,11 @@ function AdminEntry({
   );
 }
 
-export function Header({ area, page }: { area: AreaKey; page: string }) {
+export function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-
-  const isStaff = area === "admin" || area === "internal";
 
   const [userId, setUserId] = useState<number | null>(() => getCurrentUserId());
   const [adminActive, setAdminActive] = useState(() => Boolean(getAdminSessionToken()));
@@ -115,78 +117,33 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
               <span>PetCoupon</span>
             </Link>
 
-            {isStaff ? (
-              <nav aria-label="전체 영역" className="ml-2 hidden min-w-0 items-center gap-1 md:flex">
-                {Object.entries(AREA_ROUTES).map(([key, cfg]) => {
-                  const isCurrentArea = key === area;
-                  return (
-                    <div key={key} className="group relative">
-                      <Link
-                        to={cfg.home}
-                        className="flex min-h-11 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[15px] font-medium transition-colors duration-300 ease-fluid hover:bg-surface-soft group-focus-within:bg-surface-soft dark:hover:bg-ops-bg dark:group-focus-within:bg-ops-bg"
-                      >
-                        <span className={isCurrentArea ? "underline decoration-accent/70 underline-offset-[5px]" : ""}>{cfg.label}</span>
-                        <CaretDown
-                          weight="bold"
-                          aria-hidden="true"
-                          className="h-3 w-3 flex-none text-ink/50 transition-transform duration-300 ease-fluid group-hover:rotate-180 group-focus-within:rotate-180 dark:text-ops-muted"
-                        />
-                      </Link>
-                      <div className="absolute left-0 top-full z-20 hidden pt-1.5 group-hover:block group-focus-within:block">
-                        <div className="min-w-[172px] rounded-2xl border border-hairline bg-paper/95 p-1.5 shadow-[0_16px_32px_-16px_rgba(32,29,24,0.3)] backdrop-blur-xl dark:border-ops-border dark:bg-ops-surface/95">
-                          {cfg.routes.map((route) => {
-                            const isCurrentPage = isCurrentArea && page === route.page;
-                            return (
-                              <Link
-                                key={route.path}
-                                to={route.path}
-                                className={`block rounded-xl px-3 py-2 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
-                                  isCurrentPage
-                                    ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg"
-                                    : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-bg"
-                                }`}
-                              >
-                                {route.label}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </nav>
-            ) : (
-              <nav aria-label="주요 메뉴" className="ml-2 hidden items-center gap-1 md:flex">
-                {PUBLIC_LINKS.map((link) => (
-                  <NavLink
-                    key={link.path}
-                    to={link.path}
-                    end={link.path === "/"}
-                    className={({ isActive }) =>
-                      `inline-flex min-h-11 items-center rounded-full px-3 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
-                        isActive ? "bg-accent text-ink" : "text-ink hover:bg-surface-soft"
-                      }`
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
-                ))}
-              </nav>
-            )}
-
-            {!isStaff ? (
-              <div className="ml-auto hidden items-center gap-3 md:flex">
-                <Link
-                  to="/user"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[14px] font-medium hover:border-ink"
+            <nav aria-label="주요 메뉴" className="ml-2 hidden items-center gap-1 md:flex">
+              {PUBLIC_LINKS.map((link) => (
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  end={link.path === "/"}
+                  className={({ isActive }) =>
+                    `inline-flex min-h-11 items-center rounded-full px-3 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
+                      isActive ? "bg-accent text-ink" : "text-ink hover:bg-surface-soft"
+                    }`
+                  }
                 >
-                  <UserCircle weight="bold" className="h-4 w-4 flex-none text-ink/60" aria-hidden="true" />
-                  사용자 ID: <span className="tabular-nums">{userIdLabel}</span>
-                </Link>
-                <AdminEntry adminActive={adminActive} onSignOut={handleAdminSignOut} busy={signingOut} />
-              </div>
-            ) : null}
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
+
+            <div className="ml-auto hidden items-center gap-3 md:flex">
+              <Link
+                to="/user"
+                className="inline-flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[14px] font-medium hover:border-ink"
+              >
+                <UserCircle weight="bold" className="h-4 w-4 flex-none text-ink/60" aria-hidden="true" />
+                사용자 ID: <span className="tabular-nums">{userIdLabel}</span>
+              </Link>
+              <AdminEntry adminActive={adminActive} onSignOut={handleAdminSignOut} busy={signingOut} />
+            </div>
 
             <button
               ref={menuButtonRef}
@@ -195,7 +152,7 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
               aria-expanded={open}
               aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
               onClick={() => setOpen((v) => !v)}
-              className={`relative flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface-soft transition-colors duration-300 ease-fluid hover:bg-accent/30 dark:bg-ops-bg md:hidden ${isStaff ? "ml-auto" : ""}`}
+              className="relative flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface-soft transition-colors duration-300 ease-fluid hover:bg-accent/30 dark:bg-ops-bg md:hidden"
             >
               <span
                 aria-hidden="true"
@@ -211,30 +168,6 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
               />
             </button>
           </div>
-
-          {isStaff ? (
-            <nav
-              aria-label={`${AREA_ROUTES[area].label} 메뉴`}
-              className="flex min-h-12 items-center gap-1.5 overflow-x-auto border-t border-hairline-soft px-4 dark:border-ops-border-soft md:px-6"
-            >
-              {AREA_ROUTES[area].routes.map((route) => (
-                <NavLink
-                  key={route.path}
-                  to={route.path}
-                  end
-                  className={({ isActive }) =>
-                    `inline-flex min-h-9 flex-none items-center whitespace-nowrap rounded-full px-3 text-[15px] font-medium transition-colors duration-300 ease-fluid ${
-                      isActive
-                        ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg"
-                        : "text-ink hover:bg-surface-soft dark:text-ops-ink dark:hover:bg-ops-bg"
-                    }`
-                  }
-                >
-                  {route.label}
-                </NavLink>
-              ))}
-            </nav>
-          ) : null}
         </div>
       </header>
 
@@ -246,63 +179,30 @@ export function Header({ area, page }: { area: AreaKey; page: string }) {
         }`}
       >
         <div className="flex h-full flex-col gap-5 overflow-y-auto px-6 pb-8 pt-32">
-          {isStaff ? (
-            Object.entries(AREA_ROUTES).map(([key, cfg], groupIndex) => (
-              <div key={key} className="border-b border-hairline-soft pb-5 dark:border-ops-border-soft">
-                <p
-                  className={`text-[20px] font-semibold transition-all duration-500 ease-fluid ${key === area ? "text-accent-ink dark:text-ops-accent" : ""} ${
-                    open ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-                  }`}
-                  style={{ transitionDelay: open ? `${groupIndex * 60}ms` : "0ms" }}
-                >
-                  {cfg.label}
-                </p>
-                <div className="mt-2 flex flex-col gap-0.5">
-                  {cfg.routes.map((route, i) => {
-                    const isCurrentPage = key === area && page === route.page;
-                    return (
-                      <NavLink
-                        key={route.path}
-                        to={route.path}
-                        onClick={() => setOpen(false)}
-                        className={`flex min-h-11 items-center rounded-xl px-3 text-[17px] font-medium transition-all duration-500 ease-fluid ${
-                          isCurrentPage ? "bg-accent text-ink dark:bg-ops-ink dark:text-ops-bg" : "text-ink/80 dark:text-ops-muted"
-                        } ${open ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
-                        style={{ transitionDelay: open ? `${groupIndex * 60 + (i + 1) * 40}ms` : "0ms" }}
-                      >
-                        {route.label}
-                      </NavLink>
-                    );
-                  })}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="flex flex-col gap-2">
-              {PUBLIC_LINKS.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  end={link.path === "/"}
-                  onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    `flex min-h-12 items-center rounded-xl px-3 text-[19px] font-semibold ${isActive ? "bg-accent text-ink" : "text-ink/80"}`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-              <div className="mt-4 border-t border-hairline-soft pt-4">
-                <Link to="/user" onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-2 rounded-xl px-3 text-[17px] font-medium text-ink/80">
-                  <UserCircle weight="bold" className="h-5 w-5 flex-none text-ink/60" aria-hidden="true" />
-                  사용자 ID: <span className="tabular-nums">{userIdLabel}</span>
-                </Link>
-                <div className="px-3 pt-3">
-                  <AdminEntry adminActive={adminActive} onSignOut={handleAdminSignOut} busy={signingOut} />
-                </div>
+          <div className="flex flex-col gap-2">
+            {PUBLIC_LINKS.map((link) => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                end={link.path === "/"}
+                onClick={() => setOpen(false)}
+                className={({ isActive }) =>
+                  `flex min-h-12 items-center rounded-xl px-3 text-[19px] font-semibold ${isActive ? "bg-accent text-ink" : "text-ink/80"}`
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+            <div className="mt-4 border-t border-hairline-soft pt-4">
+              <Link to="/user" onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-2 rounded-xl px-3 text-[17px] font-medium text-ink/80">
+                <UserCircle weight="bold" className="h-5 w-5 flex-none text-ink/60" aria-hidden="true" />
+                사용자 ID: <span className="tabular-nums">{userIdLabel}</span>
+              </Link>
+              <div className="px-3 pt-3">
+                <AdminEntry adminActive={adminActive} onSignOut={handleAdminSignOut} busy={signingOut} />
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </>

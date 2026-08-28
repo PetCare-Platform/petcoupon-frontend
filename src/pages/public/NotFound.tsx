@@ -3,7 +3,7 @@ import { Eyebrow, LinkButton, TextLink } from "../../components/ui";
 
 export default function NotFound() {
   return (
-    <Layout area="public" page="not-found">
+    <Layout area="public">
       <section className="py-24 md:py-32">
         <div className="container-page max-w-xl">
           <Eyebrow>404</Eyebrow>

@@ -377,6 +377,13 @@ body:has(.theme-geist) {
 }
 .theme-geist nav a { border-radius: var(--r-control); }
 
+/* 운영 세로 사이드바는 검은 판이라, 위 규칙(활성 항목 = 검정 배경 + 흰 글씨)이
+   그대로 걸리면 배경과 같은 색이 되어 사라진다. 흰 알약으로 뒤집는다. */
+[data-ops-sidebar] nav a[aria-current="page"] {
+  background-color: #fff;
+  color: rgb(var(--c-ink));
+}
+
 /* --- 테이블: 헤더도 한글이라 모노·대문자를 쓰지 않는다 --- */
 .theme-geist th {
   font-size: 12px;
@@ -403,11 +410,11 @@ body:has(.theme-geist) {
  * 한 번에 정리된다(요소 선택자를 끼워 유틸리티보다 우선순위를 높였다).
  * ========================================================================= */
 .theme-geist main > section {
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
-.theme-geist main > section:first-child { padding-top: 40px; }
-.theme-geist main > section:last-child { padding-bottom: 64px; }
+.theme-geist main > section:first-child { padding-top: 16px; }
+.theme-geist main > section:last-child { padding-bottom: 16px; }
 
 /* 컨테이너: 원본은 ~1200px 중앙 정렬. 1380px는 표가 과하게 늘어져 읽기 나쁘다. */
 .theme-geist .container-page {
