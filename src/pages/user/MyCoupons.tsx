@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "@phosphor-icons/react";
 import { Layout } from "../../components/Layout";
@@ -7,7 +7,8 @@ import { listUserCouponIssues } from "../../api/couponIssues";
 import { getCurrentUserId, subscribeCurrentUserId } from "../../api/currentUser";
 import { ApiError, NetworkError } from "../../api/http";
 import { formatDateTime, isWithinHours } from "../../lib/date";
-import type { CouponIssueRequestResponse, IssueStatus } from "../../types/api";
+import type { CouponIssueDetailResponse, CouponIssueRequestResponse, IssueStatus } from "../../types/api";
+import { CouponDetailModal } from "./CouponDetailModal";
 
 type Status = "available" | "used" | "expired";
 
@@ -33,6 +34,7 @@ export default function MyCoupons() {
   const [coupons, setCoupons] = useState<CouponIssueRequestResponse[] | null>(null);
   const [loadError, setLoadError] = useState("");
   const [userId, setUserId] = useState<number | null>(() => getCurrentUserId());
+  const [selectedCoupon, setSelectedCoupon] = useState<CouponIssueRequestResponse | null>(null);
 
   useEffect(() => subscribeCurrentUserId(() => setUserId(getCurrentUserId())), []);
 
@@ -41,8 +43,10 @@ export default function MyCoupons() {
     if (userId === null) {
       setCoupons(null);
       setLoadError("");
+      setSelectedCoupon(null);
       return;
     }
+    setSelectedCoupon(null);
     const controller = new AbortController();
     setCoupons(null);
     setLoadError("");
@@ -61,6 +65,26 @@ export default function MyCoupons() {
   );
   const availableCount = (coupons ?? []).filter((c) => c.status === "ISSUED").length;
   const expiringSoon = (coupons ?? []).find((c) => c.status === "ISSUED" && isWithinHours(c.expiresAt, 48));
+
+  const reflectDetailChange = useCallback((detail: CouponIssueDetailResponse) => {
+    setCoupons((current) =>
+      current?.map((coupon) =>
+        coupon.couponIssueId === detail.couponIssueId
+          ? {
+              ...coupon,
+              couponCode: detail.couponCode,
+              status: detail.status,
+              usedAt: detail.usedAt,
+              expiresAt: detail.expiresAt,
+            }
+          : coupon,
+      ) ?? null,
+    );
+  }, []);
+
+  const closeDetailModal = useCallback(() => {
+    setSelectedCoupon(null);
+  }, []);
 
   return (
     <Layout area="user">
@@ -93,10 +117,10 @@ export default function MyCoupons() {
 
           {/* 곧 만료 알림은 별도 섹션(패딩 포함 200px)이었다. 한 줄 띠로 접어 둔다. */}
           {expiringSoon ? (
-            <Link
-              to={`/user/coupon-detail/${expiringSoon.couponIssueId}`}
-              state={{ couponName: expiringSoon.couponName }}
-              className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-control border border-clay/40 bg-clay/10 px-3.5 py-2.5 text-[14px] transition-colors duration-200 ease-fluid hover:border-clay"
+            <button
+              type="button"
+              onClick={() => setSelectedCoupon(expiringSoon)}
+              className="mt-4 flex w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-control border border-clay/40 bg-clay/10 px-3.5 py-2.5 text-left text-[14px] transition-colors duration-200 ease-fluid hover:border-clay"
             >
               <strong className="font-semibold text-clay-ink">곧 만료</strong>
               <span>
@@ -106,7 +130,7 @@ export default function MyCoupons() {
                 쿠폰 확인하기
                 <ArrowRight weight="bold" className="h-3 w-3 flex-none" aria-hidden="true" />
               </span>
-            </Link>
+            </button>
           ) : null}
 
           {userId === null ? (
@@ -134,14 +158,30 @@ export default function MyCoupons() {
                 const status = statusFromIssueStatus[coupon.status];
                 const soon = status === "available" && isWithinHours(coupon.expiresAt, 48);
                 return (
-                  <article key={coupon.couponIssueId} className="overflow-visible rounded-control border border-hairline bg-paper p-3.5 shadow-[0_1px_2px_rgba(29,29,27,0.06)]">
+                  <article key={coupon.couponIssueId} className="overflow-visible rounded-control border border-hairline bg-paper shadow-[0_1px_2px_rgba(29,29,27,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-ink hover:shadow-[0_8px_24px_rgba(23,36,58,0.10)]">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCoupon(coupon)}
+                      className="block w-full p-3.5 text-left"
+                      aria-label={`${coupon.couponName} 상세 보기`}
+                    >
+
                     <div className="mb-2 flex items-center justify-between">
                       {soon ? (
                         <span className="inline-flex min-h-6 items-center rounded-full border border-clay/30 bg-clay/10 px-2 text-[11px] font-semibold uppercase tracking-wide text-clay-ink">곧 만료</span>
                       ) : (
-                        <span className="inline-flex min-h-6 items-center rounded-full bg-hairline-soft px-2 text-[11px] font-semibold uppercase tracking-wide">{statusLabel[status]}</span>
+                        <span
+                          className={`inline-flex min-h-6 items-center rounded-full border px-2 text-[11px] font-semibold uppercase tracking-wide ${
+                            status === "available"
+                              ? "border-accent/50 bg-accent/20 text-accent-ink"
+                              : "border-hairline bg-hairline-soft text-ink/60"
+                          }`}
+                        >
+                          {statusLabel[status]}
+                        </span>
                       )}
-                      <span className="text-[11px] text-ink/50">발급번호 {coupon.couponIssueId}</span>
+                      <span className="text-[11px] text-ink/50">발급번호 {coupon.couponIssueId}
+                      </span>
                     </div>
                     <h3 className="mt-0.5 text-base font-semibold">{coupon.couponName}</h3>
                     <p className="mt-1 font-mono text-sm text-ink/60">{coupon.couponCode}</p>
@@ -149,11 +189,12 @@ export default function MyCoupons() {
                       <span className="absolute -left-2 top-0 h-4 w-4 -translate-y-1/2 rounded-full bg-canvas" aria-hidden="true" />
                       <span className="absolute -right-2 top-0 h-4 w-4 -translate-y-1/2 rounded-full bg-canvas" aria-hidden="true" />
                       <span className={soon ? "font-semibold text-clay-ink" : "text-ink/60"}>{deadlineText(coupon, status)}</span>
-                      <Link to={`/user/coupon-detail/${coupon.couponIssueId}`} state={{ couponName: coupon.couponName }} className="group inline-flex items-center gap-1 font-medium underline underline-offset-4">
+                      <span className="group inline-flex items-center gap-1 font-medium underline underline-offset-4">
                         상세 보기
                         <ArrowRight weight="bold" className="h-3 w-3 flex-none transition-transform duration-200 ease-fluid group-hover:translate-x-0.5" aria-hidden="true" />
-                      </Link>
+                      </span>
                     </div>
+                    </button>
                   </article>
                 );
               })}
@@ -170,6 +211,11 @@ export default function MyCoupons() {
           )}
         </div>
       </section>
+      <CouponDetailModal
+        coupon={selectedCoupon}
+        onClose={closeDetailModal}
+        onChanged={reflectDetailChange}
+      />
     </Layout>
   );
 }
