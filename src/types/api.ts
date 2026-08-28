@@ -222,8 +222,54 @@ export interface CouponIssueDlqPageResponse {
 }
 export interface CouponIssueDlqReprocessResponse { messageId: number; requestId: string; }
 // CouponIssueDlqAbandonResponse(POST .../abandon 응답)는 정의하지 않는다 — adminOperations.ts 주석 참고.
-export interface ReconciliationTriggerResponse { reportId: number; couponId: number; asOfAt: string; result: string; totalCount: number; successCount: number; errorCount: number; }
 export type ReconciliationResult = "MATCHED" | "MISMATCHED" | "ERROR";
+
+/** 정합성 검증 배치가 보는 6가지 항목. 백엔드 VerificationErrorType과 1:1이다. */
+export type VerificationErrorType =
+  | "STOCK_MISMATCH"
+  | "DUPLICATE_ISSUE"
+  | "INVALID_STATUS"
+  | "HISTORY_MISMATCH"
+  | "SEQUENCE_GAP"
+  | "STOCK_NOT_RESTORED";
+
+export interface VerificationDetailResponse {
+  errorType: VerificationErrorType;
+  couponIssueId: number | null;
+  userId: number | null;
+  expectedValue: string | null;
+  actualValue: string | null;
+  message: string | null;
+}
+
+/**
+ * POST /admin/coupons/{couponId}/reconcile 응답.
+ *
+ * 정합성 문제 여부는 반드시 result로 판단한다 — errorCount는 발급 건 단위 오류만 세므로
+ * STOCK_MISMATCH처럼 쿠폰 전체를 가리키는 문제만 있으면 result=MISMATCHED인데도 0이 된다.
+ */
+export interface ReconciliationTriggerResponse {
+  reportId: number;
+  couponId: number;
+  asOfAt: string;
+  result: ReconciliationResult;
+  totalCount: number;
+  successCount: number;
+  errorCount: number;
+
+  // null은 "미검증"(예: Redis 키가 아예 없음), 0은 "검증했고 실제로 0건"이라 구분해야 한다.
+  stockTotal: number | null;
+  stockIssued: number | null;
+  stockRemaining: number | null;
+  redisRemaining: number | null;
+  dbDlqCount: number | null;
+  maxSequenceNo: number | null;
+
+  // verificationDetails는 응답 크기 보호를 위해 최대 500건까지만 담긴다. 전체 불일치 건수는
+  // verificationDetailCount에 있고, 잘림 여부는 두 값을 비교해 판단한다.
+  verificationDetailCount: number;
+  verificationDetails: VerificationDetailResponse[];
+}
 export interface ReconciliationReportSummaryResponse {
   reportId: number;
   couponId: number;
