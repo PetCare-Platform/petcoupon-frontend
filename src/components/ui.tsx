@@ -193,8 +193,8 @@ export function MetricTile({
         compact ? "px-4 py-3.5" : "rounded-2xl border border-hairline p-4 dark:border-white/[0.14]"
       }`}
     >
-      <dt className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
-      <dd className={`flex flex-wrap items-baseline gap-x-2 font-bold leading-none tracking-tight tabular-nums ${metricToneClass[tone]} ${compact ? "text-[30px]" : "text-[40px]"}`}>
+      <dt className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/70 dark:text-ops-muted">{label}</dt>
+      <dd className={`flex flex-wrap items-baseline gap-x-2 font-bold leading-none tracking-tight tabular-nums ${metricToneClass[tone]} ${compact ? "text-[24px]" : "text-[28px]"}`}>
         <span className="inline-flex items-baseline gap-1.5">
           {trend ? <span className={`text-[0.4em] ${metricToneClass[tone]}`} aria-hidden="true">{trendGlyph[trend]}</span> : null}
           {value}

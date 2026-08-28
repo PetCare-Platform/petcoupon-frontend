@@ -187,14 +187,14 @@ export default function Health() {
         <>
           <section>
             <div className="container-page">
-              <div className="rounded-block border border-hairline bg-surface-2 p-6">
+              <div className="rounded-block border border-hairline bg-surface-2 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h2>구성요소 상태</h2>
                   {health ? <StatusPill tone={statusTone[health.status]}>{health.status}</StatusPill> : null}
                 </div>
 
                 {components.length > 0 ? (
-                  <div className="mt-5 overflow-x-auto">
+                  <div className="mt-4 overflow-x-auto">
                     <table className="w-full min-w-[420px] text-left">
                       <thead>
                         <tr>
@@ -257,7 +257,7 @@ export default function Health() {
                 </div>
               </div>
 
-              <div className="mt-5">
+              <div className="mt-3">
                 <MetricGrid cols={4}>
                   <MetricTile
                     label="초당 요청"
@@ -284,7 +284,7 @@ export default function Health() {
               </div>
 
               {intervals.length > 0 && peak > 0 ? (
-                <div className="mt-5 rounded-block border border-hairline bg-paper p-6">
+                <div className="mt-4 rounded-block border border-hairline bg-paper p-4">
                   <h3>구간별 처리량</h3>
                   <div className="mt-4 flex h-32 items-end gap-1.5">
                     {intervals.map((iv) => (
@@ -306,7 +306,7 @@ export default function Health() {
                   </div>
                 </div>
               ) : (
-                <div className="mt-5 rounded-block border border-dashed border-hairline p-8 text-center text-ink/60">
+                <div className="mt-4 rounded-block border border-dashed border-hairline p-5 text-center text-ink/60">
                   {metricsError ||
                     `아직 표본이 없습니다. ${POLL_MS / 1000}초마다 한 구간씩 쌓입니다 — 요청이 발생하면 막대가 나타납니다.`}
                 </div>
@@ -317,7 +317,7 @@ export default function Health() {
           <section>
             <div className="container-page">
               <h2>자원</h2>
-              <div className="mt-5">
+              <div className="mt-3">
                 <MetricGrid cols={2}>
                   {RESOURCE_METRICS.map((m) => {
                     const r = resources[m.name];

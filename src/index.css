@@ -410,11 +410,11 @@ body:has(.theme-geist) {
  * 한 번에 정리된다(요소 선택자를 끼워 유틸리티보다 우선순위를 높였다).
  * ========================================================================= */
 .theme-geist main > section {
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
-.theme-geist main > section:first-child { padding-top: 40px; }
-.theme-geist main > section:last-child { padding-bottom: 64px; }
+.theme-geist main > section:first-child { padding-top: 16px; }
+.theme-geist main > section:last-child { padding-bottom: 16px; }
 
 /* 컨테이너: 원본은 ~1200px 중앙 정렬. 1380px는 표가 과하게 늘어져 읽기 나쁘다. */
 .theme-geist .container-page {
