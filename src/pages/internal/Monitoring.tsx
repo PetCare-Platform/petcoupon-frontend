@@ -129,9 +129,8 @@ export default function Monitoring() {
       <section className="py-10 animate-reveal-up" style={reveal(4)}>
         <div className="container-page">
           <h2 className="mb-6">운영 상세로 이동</h2>
-          <nav aria-label="내부 운영 화면" className="grid items-start gap-4 sm:grid-cols-3">
+          <nav aria-label="내부 운영 화면" className="grid items-start gap-4 sm:grid-cols-2">
             {[
-              { to: "/internal/issues", tag: "발급", title: "발급 처리 흐름", desc: "요청 단계 추적" },
               { to: "/internal/failures", tag: "실패", title: "실패 처리", desc: "Retry와 DLQ" },
               { to: "/internal/verification", tag: "검증", title: "정합성 검증", desc: "원장 차이 확인" },
             ].map((item) => (

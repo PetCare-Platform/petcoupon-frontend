@@ -19,7 +19,6 @@ import AdminAuth from "./pages/admin/AdminAuth";
 import Dashboard from "./pages/internal/Dashboard";
 import Health from "./pages/internal/Health";
 import Monitoring from "./pages/internal/Monitoring";
-import Issues from "./pages/internal/Issues";
 import Failures from "./pages/internal/Failures";
 import Verification from "./pages/internal/Verification";
 import RepoIssues from "./pages/internal/RepoIssues";
@@ -49,7 +48,6 @@ export default function App() {
         <Route path="/internal/dashboard" element={<Dashboard />} />
         <Route path="/internal/health" element={<Health />} />
         <Route path="/internal/monitoring" element={<Monitoring />} />
-        <Route path="/internal/issues" element={<Issues />} />
         <Route path="/internal/failures" element={<Failures />} />
         <Route path="/internal/verification" element={<Verification />} />
         <Route path="/internal/repo-issues" element={<RepoIssues />} />

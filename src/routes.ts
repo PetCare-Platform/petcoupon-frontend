@@ -50,7 +50,6 @@ export const AREA_ROUTES: Record<AreaKey, AreaConfig> = {
       { page: "dashboard", label: "대시보드", path: "/internal/dashboard" },
       { page: "health", label: "시스템 상태", path: "/internal/health" },
       { page: "monitoring", label: "시스템 현황", path: "/internal/monitoring" },
-      { page: "issues", label: "발급 처리 흐름", path: "/internal/issues" },
       { page: "failures", label: "실패 처리", path: "/internal/failures" },
       { page: "verification", label: "정합성 검증", path: "/internal/verification" },
       { page: "repo-issues", label: "GitHub 이슈", path: "/internal/repo-issues" },
