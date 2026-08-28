@@ -10,15 +10,27 @@ export type Verdict = {
  * 종합 판정. HTTP 응답만 세면 Redis 재고 차감은 통과했는데 DB 확정이 실패한 유실을
  * 놓치므로, `DB 확정 = 재고 통과`를 조건에 포함한다.
  *
- * 우선순위 — 초과 발급 > 유실 > 중복 발급 > 순번 누락 > 정상 방어.
+ * 우선순위 — 초과 발급 > 중복 발급 > (발급 진행 중) > 유실 > 순번 누락 > 정상 방어.
  * 초과 발급이 가장 위인 이유는 그게 선착순 시스템의 실패 그 자체이기 때문이다.
+ *
+ * 유실과 순번은 파이프라인에 처리 중인 요청이 남아 있는 동안 판정하지 않는다. 컨슈머가
+ * coupon_issue 저장과 issue_message CONSUMED 확정을 서로 다른 트랜잭션으로 처리해서,
+ * 부하가 도는 내내 passed > consumed가 정상적으로 벌어져 있기 때문이다(순번도 같은 이유로
+ * 중간엔 비어 보인다). 소진된 뒤에도 남아 있는 차이만 진짜 유실이다.
+ *
+ * 초과 발급과 중복 발급은 진행 중에도 판정한다 — 둘은 도중에 나타나도 그 자체로 결함이고,
+ * 잔여가 빠진다고 사라지지 않는다.
  */
 export function judge(status: CouponLoadTestStatusResponse | null): Verdict {
   if (status === null) return { label: "—", tone: "neutral" };
   if (status.accepted === 0) return { label: "실행 전", tone: "neutral" };
   if (status.overIssued) return { label: "초과 발급 감지", tone: "danger" };
-  if (status.consumed !== status.passed) return { label: "유실 감지", tone: "danger" };
   if (status.duplicateUsers > 0) return { label: "중복 발급 감지", tone: "danger" };
+
+  const inFlight = status.pending + status.sent + status.inProgressIdempotencyKeys > 0;
+  if (inFlight) return { label: "발급 진행 중", tone: "neutral" };
+
+  if (status.consumed !== status.passed) return { label: "유실 감지", tone: "danger" };
   if (!status.sequenceIntact) return { label: "순번 누락", tone: "danger" };
   return { label: "정상 방어", tone: "success" };
 }
