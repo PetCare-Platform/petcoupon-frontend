@@ -7,9 +7,13 @@ function SummaryCard({ label, value, tone = "neutral" }: { label: string; value:
   const color = tone === "success" ? "text-[#087c13]" : tone === "danger" ? "text-danger" : "text-ink";
   const bg = tone === "success" ? "bg-success/10" : tone === "danger" ? "bg-danger/10" : "bg-surface-2";
   return (
-    <div className={`rounded-block border border-hairline p-4 ${bg}`}>
+    // 작은 화면에서는 fit-* 가 여백과 숫자를 줄인다(index.css). 다섯 장을 한 줄에 세우는 쪽이
+    // 두 줄로 접혀 200px 넘게 차지하는 것보다 낫다.
+    <div className={`fit-panel rounded-block border border-hairline p-4 ${bg}`}>
       <p className={`text-[13px] font-medium ${tone === "neutral" ? "text-ink/65" : color}`}>{label}</p>
-      <strong className={`mt-1 block text-[26px] leading-none tabular-nums ${color}`}>{value}</strong>
+      <strong className={`fit-metric mt-1 block text-[26px] leading-none tabular-nums ${color}`}>
+        {value}
+      </strong>
     </div>
   );
 }
@@ -37,7 +41,10 @@ export function SummaryCards({
   const overIssuedCount = status ? Math.max(status.passed - expectedPassed, 0) : 0;
 
   return (
-    <div className="container-page grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    // 다섯 장이 한 줄로 서는 시점을 xl(1280)에서 lg(1024)로 당긴다. 사이드바를 뺀 실폭이
+    // 800px 남짓이면 다섯 장이 충분히 들어가는데, 예전 기준으로는 2열 3줄이 되면서 이 구역만
+    // 295px를 먹어 화면 아래가 잘렸다(한 줄이면 80px).
+    <div className="container-page grid gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:gap-4">
       <SummaryCard
         label="재고 / 발급"
         // 발급 수는 consumed(Outbox 소비 건수)가 아니라 passed(실제 coupon_issue 행)다 —

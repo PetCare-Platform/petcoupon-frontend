@@ -42,7 +42,7 @@ function Lines({ data }: { data: CouponIssueTimeSeriesResponse }) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="none"
-        className="h-[150px] w-full"
+        className="fit-chart h-[150px] w-full"
         role="img"
         aria-label={`최근 ${data.windowSeconds}초 발급 추이`}
       >
