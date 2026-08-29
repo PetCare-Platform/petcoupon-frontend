@@ -66,7 +66,7 @@ export function IssuePipeline({
         <p className="text-ink/55">접수부터 DB 확정까지</p>
       </div>
 
-      <div className="grid grid-cols-[72px_1fr_130px] items-center gap-x-3 gap-y-1.5 text-[13px]">
+      <div className="grid grid-cols-[72px_1fr_130px] items-center gap-x-3 gap-y-1.5 text-[13px] fit-grid">
         {rows.map((row) => (
           <div key={row.label} className="contents">
             <span className="text-ink/60">{row.label}</span>

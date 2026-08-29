@@ -27,7 +27,9 @@ export function Sidebar({ area }: { area: AreaKey }) {
   return (
     <aside
       data-ops-sidebar
-      className="w-full flex-none bg-ink px-3 py-4 text-white md:flex md:h-screen md:w-[20%] md:min-w-[200px] md:flex-col md:overflow-y-auto md:px-4 md:py-5"
+      // 최소 너비는 좁은 화면에서만 낮춘다(200 → 176). 20% 비율은 그대로라 넓은 화면에서는
+      // 예전과 같고, 창을 줄였을 때만 오른쪽 본문에 폭을 더 내준다.
+      className="w-full flex-none bg-ink px-3 py-4 text-white md:flex md:h-screen md:w-[20%] md:min-w-[176px] md:flex-col md:overflow-y-auto md:px-4 md:py-5 xl:min-w-[200px]"
     >
       {/* 관리자 홈은 거의 들어가지 않는다 — 로고는 운영 대시보드로 보낸다. */}
       <Link to={AREA_ROUTES.internal.home} className="mb-5 hidden items-center gap-2 text-[17px] font-semibold tracking-tight md:inline-flex">

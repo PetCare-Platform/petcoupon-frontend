@@ -20,7 +20,7 @@ export function isPipelineBlocked(drain: CouponPipelineDrainStatusResponse): boo
 
 function Row({ label, value, tone }: { label: string; value: string; tone?: "danger" | "success" }) {
   return (
-    <div className="flex justify-between gap-3 border-b border-hairline-soft py-1.5 last:border-0 text-[13px]">
+    <div className="flex justify-between gap-3 fit-row border-b border-hairline-soft py-1.5 last:border-0 text-[13px]">
       <dt className="text-ink/60">{label}</dt>
       <dd
         className={`font-semibold tabular-nums ${

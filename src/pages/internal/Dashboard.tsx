@@ -173,8 +173,10 @@ export default function Dashboard() {
 
   return (
     <Layout area="internal">
+      {/* 좁은 화면에서는 제목 줄과 컨트롤 줄 사이 간격을 줄인다 — 두 줄로 접히면서
+          헤더만 130px 넘게 차지해 아래가 잘렸다. */}
       <section className="section-tight-b py-6">
-        <div className="container-page flex flex-wrap items-end justify-between gap-4">
+        <div className="container-page flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
           <div>
             <Eyebrow>내부 운영 · 실제 운영 API</Eyebrow>
             <div className="mt-1 flex flex-wrap items-center gap-2.5">
@@ -255,7 +257,7 @@ export default function Dashboard() {
       </section>
 
       <section className={hasAbnormalFailure ? "py-2" : "py-2 pb-8"}>
-        <div className="container-page grid gap-4 lg:grid-cols-[4fr_6fr]">
+        <div className="container-page grid gap-3 md:grid-cols-[4fr_6fr] xl:gap-4">
           <ReconciliationLauncher
             drain={drain}
             loading={couponLoading}
