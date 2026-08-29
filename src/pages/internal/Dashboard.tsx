@@ -123,13 +123,20 @@ export default function Dashboard() {
   );
 
   /**
-   * 자동 갱신을 켤 조건. 항상 5초마다 때리면 끝난 쿠폰을 띄워두기만 해도 계속 조회가 나가서,
-   * 실제로 값이 움직일 때만 돈다 — 이벤트가 열려 있거나(발급이 들어올 수 있다),
-   * 파이프라인에 처리 중인 게 남아 있을 때. 부하 테스트가 끝나고 다 소진되면 스스로 멈춘다.
+   * 자동 갱신을 켤 조건은 "더 발급될 수 있는 쿠폰인가"다. 재고가 남아 있고 발급을 받는
+   * 동안(READY·ACTIVE)에만 돌고, 품절(SOLD_OUT)·종료(ENDED)에서는 멈춘다.
+   *
+   * 여기서 멈춰야 부하 실황 차트가 마지막 화면으로 고정된다 — 시계열 API가 현재 시각
+   * 기준 최근 N초를 돌려주기 때문에, 계속 폴링하면 방금 찍힌 발급 구간이 창 밖으로
+   * 밀려나 0만 남은 그래프가 된다.
+   *
+   * 파이프라인에 처리 중인 요청이 남아 있으면 상태와 무관하게 계속 돈다. 품절된 뒤에도
+   * 마지막 요청들이 DB 확정까지 가는 과정은 화면에서 이어져야 한다.
    */
+  const issuable = drain != null && (drain.couponStatus === "READY" || drain.couponStatus === "ACTIVE");
   const live =
     drain != null &&
-    (drain.couponStatus !== "ENDED" ||
+    (issuable ||
       isPipelineBlocked(drain) ||
       (status != null && status.pending + status.sent + status.inProgressIdempotencyKeys > 0));
   const polling = autoRefresh && live && couponId !== null;
