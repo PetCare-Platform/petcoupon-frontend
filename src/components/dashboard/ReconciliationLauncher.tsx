@@ -106,7 +106,7 @@ export function ReconciliationLauncher({
           }`}
         >
           {running
-            ? "검증 실행 중 — 50만 건 기준 30초쯤 걸립니다."
+            ? "검증 실행 중 — 발급 건수에 따라 몇 초에서 몇십 초 걸립니다."
             : eligible
               ? "검증 가능"
               : notSettled
