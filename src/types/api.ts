@@ -328,8 +328,17 @@ export interface CouponPipelineDrainStatusResponse {
 export interface CouponLoadTestStatusResponse {
   /** 접수된 요청 수 — idempotency_key 기준 */
   accepted: number;
-  /** Redis 재고 차감을 통과한 수 */
+  /**
+   * 확정된 발급 수 — coupon_issue 기준. 초과 발급 판정과 손실 계산이 이 값을 쓴다.
+   * 파이프라인 맨 끝에서 세므로 부하 중에는 stockPassed 보다 작다.
+   */
   passed: number;
+  /**
+   * Redis Lua 가 실제로 통과시킨 수 — totalQuantity - Redis 재고 (#210).
+   * 깔때기의 "재고 통과" 전용이다. 이 자리에 passed 를 쓰면 상류 단계가
+   * Kafka 발행보다 작아지는 역전이 생긴다.
+   */
+  stockPassed: number;
   /** 재고 소진 등으로 탈락한 수 */
   rejected: number;
 
