@@ -5,6 +5,14 @@
 
 // coupon/entity/enums
 export type CouponStatus = "READY" | "ACTIVE" | "SOLD_OUT" | "ENDED";
+
+/**
+ * 정합성 검증을 실행할 수 있는 쿠폰 상태. 백엔드 CouponStatus.RECONCILABLE_STATUSES와
+ * 같은 값이다(#202) — 기준은 "발급 기간이 끝났는가"가 아니라 "더 이상 발급될 수 없는가"라,
+ * 재고가 0이라 새 발급이 생길 수 없는 SOLD_OUT도 포함한다.
+ * 백엔드에서 이 목록이 바뀌면 여기도 함께 고쳐야 한다.
+ */
+export const RECONCILABLE_STATUSES: readonly CouponStatus[] = ["SOLD_OUT", "ENDED"];
 export type DiscountType = "FIXED_AMOUNT" | "RATE";
 export type IssueStatus = "ISSUED" | "USED" | "EXPIRED";
 
