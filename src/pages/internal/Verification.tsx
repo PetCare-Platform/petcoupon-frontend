@@ -527,7 +527,7 @@ export default function Verification() {
             </div>
 
             <p className="mt-3 text-[12px] text-ink/55">
-              쿠폰 상태가 ENDED이고 발급 파이프라인이 비어 있어야 실행됩니다.
+              쿠폰이 재고 소진(SOLD_OUT)이나 발급 종료(ENDED) 상태이고, 발급 파이프라인이 비어 있어야 실행됩니다.
             </p>
           </form>
 

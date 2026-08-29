@@ -1,5 +1,6 @@
 import { panel } from "./shared";
 import { StatusPill } from "../ui";
+import { RECONCILABLE_STATUSES } from "../../types/api";
 import type { CouponPipelineDrainStatusResponse, ReconciliationTriggerResponse } from "../../types/api";
 
 /**
@@ -51,8 +52,10 @@ export function ReconciliationLauncher({
   // `검증 가능한 상태인가`와 `지금 실행 중인가`는 다른 축이다. 하나로 묶으면 실행 중일 때
   // 사유 분기가 기본값까지 흘러내려 파이프라인이 멀쩡한데도 잔여가 남았다고 표시된다.
   const blocked = drain ? isPipelineBlocked(drain) : true;
-  const notEnded = drain != null && drain.couponStatus !== "ENDED";
-  const eligible = drain != null && !blocked && !notEnded;
+  // 검증 전제는 "더 이상 발급될 수 없는가"다 — 품절(SOLD_OUT)도 재고가 0이라 새 발급이
+  // 생기지 않으므로 종료(ENDED)와 같이 통과시킨다. 백엔드 판정과 맞춘 값이다(#202).
+  const notSettled = drain != null && !RECONCILABLE_STATUSES.includes(drain.couponStatus);
+  const eligible = drain != null && !blocked && !notSettled;
   const canRun = eligible && !running;
 
   return (
@@ -74,7 +77,7 @@ export function ReconciliationLauncher({
           <Row
             label="쿠폰 상태"
             value={drain.couponStatus}
-            tone={drain.couponStatus === "ENDED" ? "success" : "danger"}
+            tone={notSettled ? "danger" : "success"}
           />
           <Row
             label="Outbox 미소비"
@@ -106,8 +109,8 @@ export function ReconciliationLauncher({
             ? "검증 실행 중 — 50만 건 기준 30초쯤 걸립니다."
             : eligible
               ? "검증 가능"
-              : notEnded
-                ? `검증 불가 — 쿠폰이 ${drain.couponStatus} 상태입니다. ENDED가 되어야 합니다.`
+              : notSettled
+                ? `검증 불가 — 쿠폰이 ${drain.couponStatus} 상태입니다. 재고 소진(SOLD_OUT)이나 발급 종료(ENDED) 후 실행할 수 있습니다.`
                 : drain.checkFailed
                   ? "검증 불가 — 파이프라인 잔여를 확인할 수 없습니다."
                   : "검증 불가 — 파이프라인에 처리 안 된 요청이 남아 있습니다."}
