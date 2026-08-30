@@ -49,7 +49,7 @@ function Lines({ data }: { data: CouponIssueTimeSeriesResponse }) {
     // 그래프가 위에 몰리고 아래가 비어 보인다.
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 gap-1">
-        <div className="relative w-9 shrink-0 text-[11px] tabular-nums text-ink/50">
+        <div className="relative w-12 shrink-0 text-[11px] tabular-nums text-ink/50">
           {ticks.map((t) => (
             <span
               key={t.f}
@@ -102,8 +102,9 @@ function Lines({ data }: { data: CouponIssueTimeSeriesResponse }) {
           />
         </svg>
       </div>
-      {/* 세로축 눈금 폭(w-9)만큼 밀어야 시각 라벨이 그래프와 맞는다 */}
-      <div className="-mt-1 flex justify-between pl-10 text-[11px] text-ink/50">
+      {/* 세로축 눈금 폭(w-12 = 48px) + gap-1(4px) 만큼 밀어야 시각 라벨이 그래프와 맞는다.
+          Tailwind 3 기본 스케일에 pl-13 이 없어 임의값으로 쓴다. */}
+      <div className="-mt-1 flex justify-between pl-[52px] text-[11px] text-ink/50">
         {labelIndexes.map((i) => (
           <span key={rows[i].bucket}>{rows[i].bucket.slice(11, 19)}</span>
         ))}
