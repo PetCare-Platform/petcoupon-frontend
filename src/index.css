@@ -444,8 +444,6 @@ body:has(.theme-geist) {
   .theme-geist main .fit-grid { row-gap: 4px; }
   /* 카드 숫자 26px -> 22px */
   .theme-geist main .fit-metric { font-size: 22px; }
-  /* 실황 차트 150px -> 118px */
-  .theme-geist main .fit-chart { height: 118px; }
 }
 
 /* 노트북에서 흔한 720px 안팎의 낮은 창. 위 단계만으로는 아직 넘쳐서 한 단 더 줄인다. */
@@ -458,7 +456,6 @@ body:has(.theme-geist) {
   .theme-geist main .fit-panel { padding: 10px; }
   .theme-geist main .fit-row { padding-top: 2px; padding-bottom: 2px; }
   .theme-geist main .fit-grid { row-gap: 3px; }
-  .theme-geist main .fit-chart { height: 96px; }
 }
 
 /* 컨테이너: 원본은 ~1200px 중앙 정렬. 1380px는 표가 과하게 늘어져 읽기 나쁘다. */

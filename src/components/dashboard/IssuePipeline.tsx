@@ -39,7 +39,12 @@ export function IssuePipeline({
     { label: "접수", value: status.accepted, color: "#B5D4F4" },
     {
       label: "재고 통과",
-      value: status.passed,
+      // Redis 가 실제로 통과시킨 수. passed(coupon_issue)를 쓰면 파이프라인 맨 끝 값이라
+      // 아래 Kafka 발행보다 작아져서 상류가 하류보다 적어 보이는 역전이 생긴다.
+      // 백엔드 #210 이전 번들·롤백·캐시로 stockPassed 가 없으면 fmt(undefined) 가 TypeError 를
+      // 던져 대시보드 트리 전체가 언마운트된다(ErrorBoundary 없음). passed 로 떨어뜨리면
+      // 역전은 남지만 화면은 산다.
+      value: status.stockPassed ?? status.passed,
       note: status.rejected > 0 ? `탈락 ${fmt(status.rejected)}` : undefined,
       color: "#85B7EB",
     },
@@ -57,6 +62,13 @@ export function IssuePipeline({
   ];
 
   const max = Math.max(1, ...rows.map((r) => r.value));
+
+  // 부하 중에는 "확정 대기"를 stockPassed 기준으로 센다 — passed 는 coupon_issue 라
+  // consumed 와 거의 같이 올라가서, 깔때기가 벌어져 보이는데 0이 찍힌다.
+  // 부하가 끝난 뒤의 손실 판정은 확정된 발급 수(passed)로 봐야 하므로 기준을 나눈다.
+  // stockPassed 는 Redis, consumed 는 DB 라 읽는 시점이 달라 순간적으로 음수가 나올 수 있다.
+  // "확정 대기 -3" 은 설명할 수 없는 값이라 0 으로 막는다.
+  const waiting = Math.max(0, (status.stockPassed ?? status.passed) - status.consumed);
   const lost = status.passed - status.consumed;
 
   return (
@@ -100,8 +112,8 @@ export function IssuePipeline({
           </span>
         </span>
         <span className={`ml-auto ${!inFlight && lost !== 0 ? "text-danger" : "text-ink/50"}`}>
-          {inFlight ? "처리 중 " : "단계 간 손실 "}
-          {fmt(lost)}
+          {inFlight ? "확정 대기 " : "단계 간 손실 "}
+          {fmt(inFlight ? waiting : lost)}
         </span>
       </div>
     </article>
