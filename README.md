@@ -25,14 +25,25 @@
 - **관리자**: 관리자 세션 인증, 이벤트 생성·수정·상태 변경, 쿠폰 생성·수정·재고 확인
 - **내부 운영**: 발급 대시보드, 시스템 상태, 실시간 WARN/ERROR 로그, DLQ 재처리, 정합성 검증, 부하 테스트 초기화
 
-## 기술 스택
+## 🛠 Tech Stack
 
-- React 19
-- TypeScript
-- Vite 8
-- Tailwind CSS
-- React Router 6
-- GSAP
+### Application
+
+![React](https://img.shields.io/badge/React_19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript_5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router_6.26-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white)
+
+### Styling · Interaction
+
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![GSAP](https://img.shields.io/badge/GSAP_3.15-88CE02?style=for-the-badge&logo=greensock&logoColor=black)
+![Phosphor Icons](https://img.shields.io/badge/Phosphor_Icons-3C402B?style=for-the-badge)
+
+### Build · Quality
+
+![Vite](https://img.shields.io/badge/Vite_8.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint_10.8-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
+![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)
 
 ## 로컬 실행
 
