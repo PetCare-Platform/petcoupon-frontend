@@ -1,77 +1,135 @@
-# petcoupon-frontend
+# PetCoupon Frontend
 
-> **1차본 (WIP)** — 아직 다듬는 중인 초안입니다. 백엔드 API 명세가 계속 바뀌고 있어서 실제 연동 범위와 여기 적힌 내용이 어긋날 수 있습니다. 오래된 내용을 발견하면 바로 고쳐주세요.
+반려동물 이벤트 기반 선착순 쿠폰 발급 시스템의 프론트엔드입니다. 사용자의 쿠폰 발급·사용 흐름부터 관리자 이벤트/쿠폰 관리, 운영 대시보드와 장애 대응 화면까지 하나의 애플리케이션에서 제공합니다.
 
-선착순 쿠폰 발급 시스템 프론트엔드입니다. 반려동물 관련 이벤트에 딸린 한정 수량 쿠폰을 사용자가 선착순으로 신청하고, 관리자가 이벤트/쿠폰을 만들고, 내부 운영팀이 발급 파이프라인의 상태와 실패를 들여다볼 수 있게 하는 4개 영역(공개/사용자/관리자/내부 운영)으로 구성되어 있습니다.
+## 주요 기능
+
+- **서비스**: 진행 중 이벤트 조회, 이벤트별 쿠폰 및 실시간 재고 확인, 선착순 쿠폰 발급
+- **사용자**: 테스트 사용자 ID 설정, 보유 쿠폰 조회, 쿠폰 상세·사용·사용 취소
+- **관리자**: 관리자 세션 인증, 이벤트 생성·수정·상태 변경, 쿠폰 생성·수정·재고 확인
+- **내부 운영**: 발급 대시보드, 시스템 상태, 실시간 WARN/ERROR 로그, DLQ 재처리, 정합성 검증, 부하 테스트 초기화
 
 ## 기술 스택
 
-React 19 · TypeScript · Vite · Tailwind CSS · react-router-dom v6
+- React 19
+- TypeScript
+- Vite 8
+- Tailwind CSS
+- React Router 6
+- GSAP
 
-## 실행
+## 로컬 실행
+
+### 사전 준비
+
+- Node.js와 npm
+- `http://localhost:8080`에서 실행 중인 [`petcoupon-backend`](https://github.com/PetCare-Platform/petcoupon-backend)
+- 백엔드가 사용하는 MySQL, Redis, Kafka
+
+백엔드 인프라와 애플리케이션의 자세한 실행 방법은 백엔드 저장소 README를 따릅니다. 프론트엔드 개발 서버는 `/api/*` 요청을 `vite.config.ts`의 프록시를 통해 `http://localhost:8080`으로 전달합니다.
+
+### 프론트엔드 실행
 
 ```bash
 npm install
 npm run dev
 ```
 
-http://localhost:5173 에서 열립니다.
+Windows PowerShell에서 실행 정책으로 `npm.ps1`이 차단되면 다음 명령을 사용합니다.
 
-백엔드 API 서버([petcoupon-backend](https://github.com/PetCare-Platform/petcoupon-backend))가 `http://localhost:8080`에서 떠 있어야 합니다. dev 서버는 `/api/*` 요청을 `vite.config.ts`의 프록시를 통해 백엔드로 그대로 넘겨줍니다(브라우저 입장에서는 같은 출처라 CORS 제약이 없습니다).
-
-```bash
-npm run build   # tsc -b && vite build
-npm run lint
+```powershell
+npm.cmd install
+npm.cmd run dev
 ```
+
+브라우저에서 `http://localhost:5173`으로 접속합니다.
+
+## 인증과 사용자 설정
+
+### 사용자
+
+실제 로그인 시스템은 프로젝트 범위에 포함되지 않습니다. `/user` 화면에서 DB에 존재하는 테스트 사용자 ID를 설정하며, 선택한 값은 브라우저 `localStorage`에 저장됩니다. 사용자 ID가 없거나 DB에 존재하지 않으면 쿠폰을 발급할 수 없습니다.
+
+### 관리자
+
+`/admin/auth`에서 백엔드에 설정된 관리자 인증 코드로 세션을 발급합니다. 발급된 세션 토큰은 현재 브라우저 탭의 `sessionStorage`에 저장되며, `/admin/**` 요청에 `X-ADMIN-KEY` 헤더로 자동 첨부됩니다.
+
+인증 코드나 운영 환경의 비밀값은 프론트엔드 소스와 README에 저장하지 않습니다.
 
 ## 화면 구성
 
-`src/routes.ts`의 `AREA_ROUTES` 하나가 전역 영역 전환 메뉴와 각 영역의 서브 내비게이션을 함께 생성합니다. 새 페이지를 추가하면 이 파일과 `src/App.tsx`의 라우트 둘 다 갱신해야 합니다.
+`src/routes.ts`의 `AREA_ROUTES`가 영역 전환 메뉴와 하위 내비게이션의 기준입니다. 페이지를 추가하거나 제거할 때는 이 파일과 `src/App.tsx`의 라우트를 함께 변경해야 합니다.
 
-| 영역 | 경로 | 대상 |
+| 영역 | 주요 경로 | 기능 |
 | --- | --- | --- |
-| 서비스(공개) | `/`, `/event-detail/:id` | 이벤트를 둘러보고 쿠폰을 발급받는 방문자 |
-| 사용자 | `/user`(사용자 ID 설정), `/user/my-coupons`, `/user/coupon-detail/:couponIssueId` | 발급받은 쿠폰의 상태를 확인·사용·취소하는 사용자 |
-| 관리자 | `/admin`, `/admin/events`, `/admin/event-form(/:eventId)`, `/admin/coupons`, `/admin/coupon-form(/:eventId)` | 이벤트/쿠폰을 만들고 관리하는 스태프 |
-| 내부 운영 | `/internal/dashboard`, `/internal/health`, `/internal/monitoring`, `/internal/failures`, `/internal/verification`, `/internal/repo-issues`, `/internal/load-test-reset` | 실제 시스템 상태와 발급 현황·실패·정합성을 확인하는 운영팀 |
+| 서비스 | `/`, `/event-detail/:id` | 공개 이벤트 목록, 쿠폰 정보·재고 조회, 쿠폰 발급 |
+| 사용자 | `/user`, `/user/my-coupons`, `/user/coupon-detail/:couponIssueId` | 사용자 ID 설정, 내 쿠폰 조회·사용·취소 |
+| 관리자 | `/admin/auth`, `/admin`, `/admin/events`, `/admin/event-form`, `/admin/coupons`, `/admin/coupon-form` | 관리자 인증, 이벤트·쿠폰 관리 |
+| 내부 운영 | `/internal/dashboard`, `/internal/health`, `/internal/monitoring`, `/internal/failures`, `/internal/verification`, `/internal/repo-issues`, `/internal/load-test-reset` | 운영 지표, 헬스체크, 로그 스트림, DLQ, 정합성 검증, 테스트 초기화 |
 
-인증 시스템은 아직 없습니다. `src/api/currentUser.ts`가 `localStorage`에 저장한 사용자 ID(`petcoupon.demoUserId`)를 식별값으로 씁니다. 저장된 값이 없으면 `getCurrentUserId()`는 `null`을 반환하고(예전의 "기본값 1 자동 저장" 동작은 제거됨), 각 화면이 미설정 상태를 직접 처리합니다. 사용자 ID는 `/user`(사용자 ID 설정) 화면에서 지정·해제합니다.
+## 백엔드 연동 범위
 
-## 백엔드 연동 현황
+`src/api/http.ts`가 백엔드의 `CustomResponse` 응답을 해제하고 HTTP 오류와 네트워크 오류를 구분합니다. API DTO는 `src/types/api.ts`, 도메인별 요청 함수는 `src/api/*.ts`에 정의되어 있습니다.
 
-`src/types/api.ts`가 팀 API 명세와 실제 `petcoupon-backend` 코드를 함께 확인해서 만든 타입 정의고, `src/api/*.ts`가 그걸 쓰는 얇은 클라이언트 레이어입니다(`http.ts`가 `CustomResponse` 봉투를 벗기고 `ApiError`/`NetworkError`로 구분해서 던집니다).
+현재 다음 흐름이 실제 백엔드 API와 연결되어 있습니다.
 
-**실제 백엔드에 연동된 것:**
-- 관리자 세션 발급·폐기와 `X-ADMIN-KEY` 자동 적용
-- 공개 이벤트 목록(`GET /events`, OPEN만), 공개 이벤트 상세(`GET /events/{eventId}` — 연결 쿠폰 기본정보 포함)
-- 관리자 이벤트 생성·상세·수정·상태 조회·상태 변경
-- 쿠폰 생성·부분 수정·실시간 재고 조회
-- 쿠폰 신청(`POST /coupons/{id}/issues`, Idempotency-Key 포함), 신청 결과 폴링, 보유 쿠폰 목록·상세·상태 조회, 사용·사용 취소
-- DLQ 목록·재처리, 재고 정합성 검증, 부하 테스트용 재고 초기화
+- 공개 이벤트 목록·상세 및 쿠폰 실시간 재고 조회
+- 멱등키를 포함한 비동기 쿠폰 발급, 처리 상태 확인, 사용자 보유 쿠폰 조회
+- 쿠폰 상세 조회, 사용 및 사용 취소
+- 관리자 세션 발급·폐기
+- 관리자 이벤트 생성·조회·수정·상태 변경
+- 관리자 쿠폰 생성·목록·수정·실시간 재고 조회
+- 발급 요약, 처리량·상태 분포, 시계열, 실패 사유 및 파이프라인 상태
+- 시스템 헬스체크와 Actuator 지표 조회
+- 관리자 WARN/ERROR 로그 SSE 스트림 및 스트림 ON/OFF 설정
+- DLQ 목록·재처리, 정합성 검증 실행·이력 조회
+- 부하 테스트용 쿠폰 상태 조회 및 재고 초기화
 
-공개 사용자 흐름(홈 → 이벤트 목록 → 이벤트 상세 → 연결 쿠폰 + 실시간 재고 → 발급 → 발급 결과 → 내 쿠폰)은 위 실제 API로 연결돼 있습니다. 이벤트 상세는 각 쿠폰의 `GET /coupons/{couponId}/status`를 병렬 조회해 기본정보와 병합하며, 일부 재고 조회가 실패해도 상세 전체를 실패로 만들지 않습니다.
+실시간 모니터링은 관리자 인증 헤더가 필요하므로 네이티브 `EventSource` 대신 `fetch` 기반 SSE 스트림을 사용합니다. 연결이 끊긴 동안 발생한 로그는 재전송되지 않으며 현재 탭에는 최근 100건만 보관합니다.
 
-**아직 실제 API가 없어서 데모/샘플로 남아있는 것:**
-- 이벤트별 쿠폰 목록(관리자), 쿠폰 단건 조회, 내부 운영 집계·모니터링 — 백엔드에 해당 API가 없어 데모/샘플 상태입니다.
-- 관리자 홈·사용자 활동 요약 등 일부 대시보드 숫자.
+## 시연 데이터
+
+시연용 이벤트·쿠폰은 프론트엔드 목데이터가 아니라 백엔드 API와 DB에 생성합니다. 백엔드 저장소의 다음 스크립트를 사용하면 진행 중 이벤트 4개와 쿠폰·Redis 재고를 준비할 수 있습니다.
+
+```bash
+./load-test/scripts/setup-demo-coupon.sh
+```
+
+스크립트는 여러 번 실행할 때마다 데이터를 새로 생성하므로 중복 실행에 주의합니다. 세부 옵션과 초기화 방법은 백엔드의 `load-test/README.md`를 확인합니다.
 
 ## 프로젝트 구조
 
-```
+```text
 src/
-  api/         API 클라이언트 (도메인별 파일 + http.ts 공통 래퍼)
-  components/  공용 UI(Layout, Header, Footer, ui.tsx의 프리미티브)
-  context/     ToastContext 등 전역 상태
-  lib/         날짜 포맷 등 순수 유틸
-  pages/       public/user/admin/internal 4개 영역별 페이지
+  api/         도메인별 API 클라이언트와 공통 HTTP 래퍼
+  components/  레이아웃, 헤더, 푸터 및 공용 UI
+  context/     토스트 등 전역 컨텍스트
+  lib/         날짜 포맷 등 공용 유틸리티
+  pages/       public, user, admin, internal 영역별 페이지
   types/       백엔드 DTO에 대응하는 TypeScript 타입
-  routes.ts    영역·내비게이션 단일 소스
+  routes.ts    영역 및 내비게이션 설정
 ```
 
-## 알려진 로컬 개발 함정
+## 검증 명령
 
-이 저장소를 백엔드와 함께 로컬에서 띄울 때, macOS에 Homebrew로 설치된 `redis-server`가 `localhost:6379`를 먼저 점유하고 있으면 `docker-compose`의 Redis 컨테이너 대신 그 인스턴스로 연결됩니다. 선착순 신청이 계속 `STOCK_NOT_INITIALIZED`로 실패한다면 `redis-cli -h localhost -p 6379`로 직접 확인해보세요(`docker exec` 로 컨테이너 안에 들어가서 확인하면 다른 인스턴스를 보게 됩니다).
+```bash
+npm run lint
+npm run build
+npm run check:api-coverage
+```
+
+- `lint`: ESLint 정적 검사
+- `build`: TypeScript 검사 후 프로덕션 번들 생성
+- `check:api-coverage`: 백엔드 API 연동 목록과 프론트 API 클라이언트 누락 여부 검사
+
+## 현재 제한 사항
+
+- 사용자 로그인·회원가입은 구현하지 않았으며 테스트 사용자 ID를 직접 설정합니다.
+- 관리자 쿠폰 수정 화면은 별도 쿠폰 단건 조회 API가 없어 관리자 쿠폰 목록 데이터를 사용합니다.
+- `/internal/health`의 Actuator 화면은 백엔드에서 노출한 엔드포인트와 지표만 표시할 수 있습니다.
+- GitHub 이슈 화면은 GitHub 공개 API를 사용하므로 API 제한의 영향을 받을 수 있습니다.
+- 관리자 세션과 실시간 로그 목록은 브라우저 탭을 닫으면 유지되지 않습니다.
 
 ## 관련 저장소
 
-- [petcoupon-backend](https://github.com/PetCare-Platform/petcoupon-backend)
+- [PetCoupon Backend](https://github.com/PetCare-Platform/petcoupon-backend)
