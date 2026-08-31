@@ -3,20 +3,28 @@
 반려동물 이벤트 기반 선착순 쿠폰 발급 시스템의 프론트엔드입니다. 사용자의 쿠폰 발급·사용 흐름부터 관리자 이벤트/쿠폰 관리, 운영 대시보드와 장애 대응 화면까지 하나의 애플리케이션에서 제공합니다.
 
 <p align="center">
-  <img src="./docs/images/event-list.png" alt="PetCoupon 사용자 메인 페이지의 진행 중 이벤트 목록" width="100%" />
+  <img src="./docs/images/petcoupon-main.png" alt="PetCoupon 이벤트 목록과 관리자 선착순 발급 대시보드" width="100%" />
 </p>
 
 ## 주요 화면
 
-| 이벤트 상세 및 쿠폰 발급 | 내 쿠폰 목록 |
-| --- | --- |
-| 이벤트에 연결된 쿠폰의 혜택과 실시간 재고를 확인하고 발급받을 수 있습니다. | 사용 가능, 사용 완료, 만료 상태별로 보유 쿠폰을 확인할 수 있습니다. |
-| <img src="./docs/images/event-detail.png" alt="이벤트 상세와 발급 가능한 쿠폰" width="100%" /> | <img src="./docs/images/my-coupons.png" alt="상태별 내 쿠폰 목록" width="100%" /> |
+### 1. 이벤트 상세 및 쿠폰 발급
 
-| 내 쿠폰 상세 | 관리자 발급 대시보드 |
-| --- | --- |
-| QR과 쿠폰 코드를 확인하고 쿠폰 사용 또는 사용 취소를 처리할 수 있습니다. | 발급 파이프라인, 정합성 검증과 부하 테스트 현황을 확인할 수 있습니다. |
-| <img src="./docs/images/coupon-detail.png" alt="내 쿠폰 상세와 사용 및 취소 기능" width="100%" /> | <img src="./docs/images/admin-dashboard.png" alt="관리자 선착순 발급 대시보드" width="100%" /> |
+이벤트에 연결된 쿠폰의 혜택과 실시간 재고를 확인하고 발급받을 수 있습니다.
+
+<img src="./docs/images/event-detail.png" alt="이벤트 상세와 발급 가능한 쿠폰" width="100%" />
+
+### 2. 내 쿠폰 목록
+
+사용 가능, 사용 완료, 만료 상태별로 보유 쿠폰을 확인할 수 있습니다.
+
+<img src="./docs/images/my-coupons.png" alt="상태별 내 쿠폰 목록" width="100%" />
+
+### 3. 내 쿠폰 상세
+
+QR과 쿠폰 코드를 확인하고 쿠폰 사용 또는 사용 취소를 처리할 수 있습니다.
+
+<img src="./docs/images/coupon-detail.png" alt="내 쿠폰 상세와 사용 및 취소 기능" width="100%" />
 
 ## 주요 기능
 
